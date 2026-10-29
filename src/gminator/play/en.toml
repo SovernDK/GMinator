@@ -1,0 +1,106 @@
+# Every player-facing string the engine writes. Placeholders use Python's str.format syntax.
+
+[command]
+help = """Commands:
+  /look              where you are, the way on, and who is here
+  /go <place>        go through an exit
+  /moves             the moves you can make now
+  /move <move> [target] [stat]
+                     make a move, e.g. /move hack_and_slash corwin or /move defy_danger dex
+  /sheet             your character
+  /clocks            the dangers and their grim portents so far
+  /secrets           the secrets you have uncovered
+  /help              this list"""
+unknown = "There is no command {command}. Type /help for the list."
+free_text = "Without the narrator, play goes through commands. Type /help for the list."
+ended = "The story has ended: {title}."
+go_where = "Go where? Use /go <place>; /look shows the way on."
+no_exit = "You can't go to {place} from here."
+move_which = "Which move? Use /move <move>; /moves lists them."
+no_move = "You can't make the move {move}. /moves lists the ones you can."
+not_now = "You can't make {move} right now."
+not_here = "{target} is not here."
+no_target = "There is no {target} here."
+failed = "That doesn't work: {reason}"
+
+[look]
+location = "== {name} =="
+exits = "Ways on: {exits}"
+no_exits = "There is no way on."
+here = "Here: {characters}"
+dead = "{name} (dead)"
+named = "{name} ({id})"
+
+[moves]
+title = "Moves you can make:"
+move = "  {id} — {name}: {trigger}"
+
+[sheet]
+title = "{name}, {class_name}"
+hp = "HP {hp}/{max_hp}   Armor {armor}   XP {xp}   Level {level}"
+stats = "Stats: {stats}"
+forward = "Forward: {forward:+d}"
+hold = "Hold: {hold}"
+tags = "Tags: {tags}"
+inventory = "Gear: {items}"
+uses = "{name} ({uses})"
+nothing = "nothing"
+
+[clocks]
+none = "No dangers loom."
+clock = "{label}: {filled}/{segments}"
+portent = "  - {portent}"
+
+[secrets]
+none = "You have uncovered no secrets."
+secret = "- {text}"
+
+[event]
+rolled = "{who} makes {move}: {total}, {band}."
+made = "{who} makes {move}."
+damage = "{who} takes {amount} damage ({hp}/{max_hp} HP)."
+no_damage = "{who} takes no damage."
+healed = "{who} heals {amount} ({hp}/{max_hp} HP)."
+down = "{who} falls."
+xp = "{who} marks {amount} XP."
+clock = "{label}: {filled}/{segments}."
+portent = "Grim portent: {portent}"
+tagged = "{who}: {description}"
+untagged = "{who} is no longer {tag}."
+hold_gained = "{who} holds {amount} ({move})."
+hold_spent = "{who} spends {amount} hold ({move})."
+forward = "{who} takes {amount:+d} forward."
+item_gained = "{who} gains {item}."
+item_used = "{who} uses {item}."
+chosen = "Chosen: {chosen}."
+asked = "{who} asks: {question}"
+secret = "Revealed: {text}"
+moved = "{who} goes to {location}."
+gm_move = "The GM makes a move, {name}: {text}"
+ending = "THE END: {title}"
+
+[band]
+strong = "a strong hit"
+partial = "a weak hit"
+miss = "a miss"
+
+[table]
+confirm_move = "Make {move}{stat}{target}?"
+stat = " +{stat}"
+target = " against {target}"
+confirm_go = "Go to {place}?"
+cancelled = "Nothing happens."
+speaks = "{name}:"
+said = "{name} says: {words}"
+ooc = "That sounds like a question for the game, not an action in the story. Type /help for the commands."
+unclear = "I'm not sure what you want to do. Try saying it another way, or type /help for the commands."
+offline = "The narrator is unavailable ({reason}). Play on with commands: type /help for the list."
+
+[cli]
+welcome = "{scenario}: type /help for commands, /quit to stop."
+prompt = "> "
+choose = "{prompt}: choose {n}."
+option = "  {number}. {option}"
+confirm = "{question} [Enter] yes · [n] no "
+retracted = "(The narrator takes that back.)"
+answer = "Answer with {n} different number(s) from 1 to {count}, separated by spaces."

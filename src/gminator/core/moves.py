@@ -1,28 +1,31 @@
 """Resolves a pack move into events: roll, pick the band, apply its effects."""
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Protocol, TypeVar
 
 from gminator.core.events import (
     Band,
+    CharacterMoved,
     ChoiceMade,
     ClockAdvanced,
     Event,
     ForwardChanged,
+    GmMoveMade,
     GmMoveTriggered,
     HoldChanged,
     HpChanged,
     ItemUsed,
     MoveMade,
     QuestionsAsked,
+    SecretRevealed,
     TagAdded,
     TagRemoved,
     XpMarked,
 )
 from gminator.core.expr import ExpressionError
 from gminator.core.game import Game
-from gminator.core.state import ReplayError
+from gminator.core.state import Character, ReplayError
 from gminator.packs.models import (
     AddForward,
     AddTag,
@@ -33,11 +36,14 @@ from gminator.packs.models import (
     Effect,
     GainHold,
     GmMove,
+    GmMoveDefinition,
     Heal,
     MarkXp,
     Move,
+    MoveTo,
     Pack,
     RemoveTag,
+    RevealSecret,
     SpendHold,
     TakeDamage,
     Target,
@@ -79,18 +85,50 @@ def resolve_move(
         raise ResolveError(f"no move {move_id!r}")
     _check_request(game, move, actor_id, target_id, stat)
 
+    def play(scratch: Game) -> tuple[Band | None, int | None, str]:
+        return _Run(scratch, pack, move.id, move.name, actor_id, target_id, stat, decider).resolve(
+            move
+        )
+
+    (band, total, text), events = _commit(game, play)
+    return Resolution(move_id, band, total, text, events)
+
+
+def make_gm_move(
+    game: Game,
+    pack: Pack,
+    gm_move: GmMoveDefinition,
+    pc_id: str,
+    decider: Decider,
+    *,
+    target_id: str | None = None,
+) -> Resolution:
+    """The GM move happens to the player character; `target` is whoever it comes from."""
+
+    def play(scratch: Game) -> None:
+        scratch.record(GmMoveMade(gm_move_id=gm_move.id))
+        run = _Run(scratch, pack, gm_move.id, gm_move.name, pc_id, target_id, None, decider)
+        run.apply(gm_move.effects)
+
+    _, events = _commit(game, play)
+    return Resolution(gm_move.id, None, None, gm_move.text, events)
+
+
+T = TypeVar("T")
+
+
+def _commit(game: Game, play: Callable[[Game], T]) -> tuple[T, tuple[Event, ...]]:
+    """Plays on a copy of the game and records its events only if all of it works."""
     scratch = Game(game.events)
     start = len(scratch.events)
-    run = _Run(scratch, pack, move, actor_id, target_id, stat, decider)
     try:
-        band, total, text = run.resolve()
+        result = play(scratch)
     except (ReplayError, ExpressionError) as error:
         raise ResolveError(str(error)) from error
-
     events = scratch.events[start:]
     for event in events:
         game.record(event)
-    return Resolution(move_id, band, total, text, events)
+    return result, events
 
 
 def _check_request(
@@ -112,12 +150,20 @@ def _check_request(
             raise ResolveError(f"{move.name} cannot roll {stat!r}")
 
 
+def armor(pack: Pack, character: Character) -> int:
+    """The character's own armor plus the armor of everything they carry."""
+    items = pack.items
+    worn = sum(items[p.item_id].armor for p in character.inventory if p.item_id in items)
+    return character.armor + worn
+
+
 class _Run:
     def __init__(
         self,
         game: Game,
         pack: Pack,
-        move: Move,
+        move_id: str,
+        name: str,
         actor_id: str,
         target_id: str | None,
         stat: str | None,
@@ -125,19 +171,19 @@ class _Run:
     ) -> None:
         self._game = game
         self._pack = pack
-        self._move = move
+        self._move_id = move_id
+        self._name = name
         self._actor = actor_id
         self._target = target_id
         self._stat = stat
         self._decider = decider
 
-    def resolve(self) -> tuple[Band | None, int | None, str]:
-        move = self._move
+    def resolve(self, move: Move) -> tuple[Band | None, int | None, str]:
         if move.roll is None or move.outcomes is None:
             self._record(
                 MoveMade(character_id=self._actor, move_id=move.id, target_id=self._target)
             )
-            self._apply(move.effects)
+            self.apply(move.effects)
             return None, None, move.text
 
         forward = self._game.state.characters[self._actor].forward
@@ -156,11 +202,11 @@ class _Run:
             self._record(ForwardChanged(character_id=self._actor, amount=-forward))
         outcome = getattr(move.outcomes, band)
         if band == "miss":
-            self._apply(self._pack.manifest.miss_effects)
-        self._apply(outcome.effects)
+            self.apply(self._pack.manifest.miss_effects)
+        self.apply(outcome.effects)
         return band, total, outcome.text
 
-    def _apply(self, effects: Sequence[Effect]) -> None:
+    def apply(self, effects: Sequence[Effect]) -> None:
         for effect in effects:
             self._apply_one(effect)
 
@@ -180,19 +226,19 @@ class _Run:
                 self._record(
                     ChoiceMade(
                         character_id=actor,
-                        move_id=self._move.id,
+                        move_id=self._move_id,
                         chosen=[option.label for option in chosen],
                     )
                 )
                 for option in chosen:
-                    self._apply(option.effects)
+                    self.apply(option.effects)
             case AskQuestions(ask_questions=args):
                 picks = self._decide(args.questions, args.n)
                 questions = [args.questions[i] for i in picks]
                 self._record(QuestionsAsked(character_id=actor, questions=questions))
             case GainHold(gain_hold=args):
                 self._record(
-                    HoldChanged(character_id=actor, move_id=self._move.id, amount=args.amount)
+                    HoldChanged(character_id=actor, move_id=self._move_id, amount=args.amount)
                 )
             case SpendHold(spend_hold=args):
                 self._record(
@@ -214,6 +260,12 @@ class _Run:
                 )
             case UseItem(use_item=args):
                 self._record(ItemUsed(character_id=actor, item_id=self._item_tagged(args.tag)))
+            case RevealSecret(reveal_secret=secret_id):
+                self._record(SecretRevealed(secret_id=secret_id))
+            case MoveTo(move_to=args):
+                self._record(
+                    CharacterMoved(character_id=self._who(args.target), location_id=args.location)
+                )
 
     def _hurt(self, character_id: str, amount: str) -> None:
         damage = self._roll(amount)
@@ -221,7 +273,7 @@ class _Run:
         self._record(HpChanged(character_id=character_id, amount=-loss))
 
     def _decide(self, options: list[str], n: int) -> list[int]:
-        picks = list(self._decider.choose(self._move.name, options, n))
+        picks = list(self._decider.choose(self._name, options, n))
         valid = len(picks) == n == len(set(picks)) and all(0 <= i < len(options) for i in picks)
         if not valid:
             raise ResolveError(f"must choose {n} of {len(options)} options, got {picks}")
@@ -238,14 +290,11 @@ class _Run:
         if target == "self":
             return self._actor
         if self._target is None:
-            raise ResolveError(f"{self._move.name} has no target")
+            raise ResolveError(f"{self._name} has no target")
         return self._target
 
     def _armor(self, character_id: str) -> int:
-        character = self._game.state.characters[character_id]
-        items = self._pack.items
-        worn = sum(items[p.item_id].armor for p in character.inventory if p.item_id in items)
-        return character.armor + worn
+        return armor(self._pack, self._game.state.characters[character_id])
 
     def _roll(self, expression: str) -> int:
         return self._game.roll(expression, self._refs())

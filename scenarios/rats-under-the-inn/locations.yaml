@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=../../schemas/locations.schema.json
+- id: common_room
+  name: The common room
+  description: >-
+    Low beams, a sullen fire, and the smell of wet wool. A trapdoor behind the bar leads down
+    to the cellar.
+  exits: [cellar]
+- id: cellar
+  name: The cellar
+  description: >-
+    Barrels and sacks, many of them gnawed open. Droppings everywhere, and a draught where
+    there should be none.
+  exits: [common_room, broken_wall]
+- id: broken_wall
+  name: The broken wall
+  description: >-
+    The back wall of the cellar has been knocked through into a rough tunnel. The rubble is
+    old; the scratches on it are not.
+  exits: [cellar, cache, gallery]
+- id: cache
+  name: The smugglers' cache
+  description: >-
+    A dry side cave stacked with crates stamped for other ports, a lantern hook, and a small
+    writing desk.
+  exits: [broken_wall]
+- id: gallery
+  name: The flooded gallery
+  description: >-
+    Black water to the knee. Something swims past your legs. Far off, the sound of a river.
+  exits: [broken_wall, nest, river_exit]
+- id: nest
+  name: The rat nest
+  description: >-
+    A cavern carpeted in straw, bones and shredded sacking. The floor heaves with rats.
+  exits: [gallery]
+- id: river_exit
+  name: The hidden river exit
+  description: >-
+    A crack in the rock opens onto the riverbank below the village. A rowing boat is tied up,
+    loaded with crates.
+  exits: [gallery]

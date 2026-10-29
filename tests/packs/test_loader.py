@@ -1,9 +1,9 @@
 from pathlib import Path
-from textwrap import dedent
 
 import pytest
 
 from gminator.packs.loader import PackError, load_pack
+from support import write_files
 
 MANIFEST = """\
 id: tiny
@@ -66,8 +66,20 @@ gear_choices:
     options: [[club]]
 """
 
+GM_MOVES = """\
+- id: show_signs
+  name: Show signs of an approaching threat
+  severity: soft
+- id: deal_damage
+  name: Deal damage
+  severity: hard
+  effects:
+    - take_damage: {amount: d6}
+"""
+
 VALID = {
     "pack.yaml": MANIFEST,
+    "gm_moves.yaml": GM_MOVES,
     "tags.yaml": TAGS,
     "gear.yaml": GEAR,
     "moves/rest.yaml": REST,
@@ -76,17 +88,9 @@ VALID = {
 }
 
 
-def write_pack(root: Path, files: dict[str, str]) -> Path:
-    for name, text in files.items():
-        path = root / name
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(dedent(text), encoding="utf-8")
-    return root
-
-
 def pack_problems(root: Path, files: dict[str, str]) -> list:
     with pytest.raises(PackError) as error:
-        load_pack(write_pack(root, files))
+        load_pack(write_files(root, files))
     return error.value.problems
 
 
@@ -97,20 +101,21 @@ def only_problem(root: Path, files: dict[str, str]):
 
 
 def test_loads_every_part_of_a_pack(tmp_path):
-    pack = load_pack(write_pack(tmp_path, VALID))
+    pack = load_pack(write_files(tmp_path, VALID))
 
     assert pack.manifest.name == "Tiny"
     assert set(pack.moves) == {"rest", "smash"}
     assert set(pack.classes) == {"brute"}
     assert set(pack.items) == {"bread", "club"}
     assert set(pack.tags) == {"ration", "close"}
+    assert set(pack.gm_moves) == {"show_signs", "deal_damage"}
 
 
 def test_only_the_manifest_and_moves_are_required(tmp_path):
-    pack = load_pack(write_pack(tmp_path, {"pack.yaml": MANIFEST, "moves/smash.yaml": SMASH}))
+    pack = load_pack(write_files(tmp_path, {"pack.yaml": MANIFEST, "moves/smash.yaml": SMASH}))
 
     assert set(pack.moves) == {"smash"}
-    assert pack.classes == pack.items == pack.tags == {}
+    assert pack.classes == pack.items == pack.tags == pack.gm_moves == {}
 
 
 def test_missing_manifest_is_reported(tmp_path):
@@ -276,7 +281,7 @@ def test_chosen_stat_needs_stat_options(tmp_path):
 def test_chosen_stat_rolls_with_stat_options(tmp_path):
     chosen = SMASH.replace("roll: stat.str", "roll: stat.chosen\nstat_options: [str, dex]")
 
-    pack = load_pack(write_pack(tmp_path, {**VALID, "moves/smash.yaml": chosen}))
+    pack = load_pack(write_files(tmp_path, {**VALID, "moves/smash.yaml": chosen}))
 
     assert pack.moves["smash"].stat_options == ["str", "dex"]
 
@@ -305,3 +310,27 @@ def test_score_array_must_cover_every_stat(tmp_path):
 
     assert problem.path.name == "pack.yaml"
     assert "score_array" in problem.message
+
+
+def test_gm_move_effects_are_checked(tmp_path):
+    broken = GM_MOVES.replace("{amount: d6}", "{amount: target.damage}")
+
+    problem = only_problem(tmp_path, {**VALID, "gm_moves.yaml": broken})
+
+    assert (problem.path.name, problem.line) == ("gm_moves.yaml", 8)
+    assert "target.damage" in problem.message
+
+
+def test_duplicate_gm_move_ids_are_rejected(tmp_path):
+    again = "- {id: show_signs, name: Show signs again, severity: soft}\n"
+
+    problem = only_problem(tmp_path, {**VALID, "gm_moves.yaml": GM_MOVES + again})
+
+    assert (problem.path.name, problem.line) == ("gm_moves.yaml", 9)
+
+
+def test_dying_move_must_exist(tmp_path):
+    problem = only_problem(tmp_path, {**VALID, "pack.yaml": MANIFEST + "dying_move: last_gasp\n"})
+
+    assert problem.path.name == "pack.yaml"
+    assert "last_gasp" in problem.message

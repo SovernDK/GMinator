@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=../../../schemas/scenario_move.schema.json
+id: search_the_cache
+name: Search the cache
+category: special
+trigger: When you go through the smugglers' crates and papers
+requires: {pc_at: cache}
+roll: stat.int
+outcomes:
+  strong:
+    text: >-
+      A ledger in Corwin's hand, entries for every shipment, and Maud's cut marked in the
+      margin. Under the desk, a nest of fur that is not from any rat.
+    effects:
+      - reveal_secret: corwin_is_wererat
+      - reveal_secret: inn_smuggling
+  partial:
+    text: You find enough to know what Corwin is, but you made a lot of noise doing it.
+    effects:
+      - reveal_secret: corwin_is_wererat
+      - gm_move: soft
+  miss:
+    text: The GM makes a move.
+    effects:
+      - gm_move: hard

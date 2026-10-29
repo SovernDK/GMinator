@@ -127,6 +127,11 @@ class UseItemArgs(_Model):
     tag: Id
 
 
+class MoveToArgs(_Model):
+    location: Id
+    target: Target = "self"
+
+
 # Effects: each is a mapping with exactly one key, the effect's name.
 
 
@@ -186,6 +191,14 @@ class UseItem(_Model):
     use_item: UseItemArgs
 
 
+class RevealSecret(_Model):
+    reveal_secret: Id
+
+
+class MoveTo(_Model):
+    move_to: MoveToArgs
+
+
 EFFECT_TYPES: tuple[type[_Model], ...] = (
     DealDamage,
     TakeDamage,
@@ -201,32 +214,121 @@ EFFECT_TYPES: tuple[type[_Model], ...] = (
     MarkXp,
     AddForward,
     UseItem,
+    RevealSecret,
+    MoveTo,
 )
 
 
-def effect_name(effect_type: type[BaseModel]) -> str:
-    return next(iter(effect_type.model_fields))
+def _key(model: type[BaseModel]) -> str:
+    """The single key a one-key mapping model is written with."""
+    name, field = next(iter(model.model_fields.items()))
+    return field.alias or name
 
 
-def _effect_kind(value: Any) -> str | None:
-    if isinstance(value, BaseModel):
-        return effect_name(type(value))
-    if isinstance(value, dict) and len(value) == 1:
-        return next(iter(value))
-    return None
+def _one_key_union(types: tuple[type[BaseModel], ...], what: str) -> Any:
+    """A union of one-key mapping models, told apart by their key."""
+
+    def kind(value: Any) -> str | None:
+        if isinstance(value, BaseModel):
+            return _key(type(value))
+        if isinstance(value, dict) and len(value) == 1:
+            return next(iter(value))
+        return None
+
+    return Annotated[
+        Union[tuple(Annotated[cls, UnionTag(_key(cls))] for cls in types)],  # noqa: UP007
+        Discriminator(
+            kind,
+            custom_error_type=f"invalid_{what}",
+            custom_error_message=f"{'an' if what[0] in 'aeiou' else 'a'} {what} is a mapping "
+            "with exactly one key, one of: " + ", ".join(_key(cls) for cls in types),
+        ),
+    ]
 
 
-Effect = Annotated[
-    Union[tuple(Annotated[cls, UnionTag(effect_name(cls))] for cls in EFFECT_TYPES)],  # noqa: UP007
-    Discriminator(
-        _effect_kind,
-        custom_error_type="invalid_effect",
-        custom_error_message="an effect is a mapping with exactly one key, one of: "
-        + ", ".join(effect_name(cls) for cls in EFFECT_TYPES),
-    ),
-]
+Effect = _one_key_union(EFFECT_TYPES, "effect")
 
 Option.model_rebuild()
+
+
+# Conditions: each is a mapping with exactly one key, the condition's name.
+
+
+class NpcTagArgs(_Model):
+    npc: Id
+    tag: Id
+
+
+class AllOf(_Model):
+    all: list["Condition"] = Field(min_length=1)
+
+
+class AnyOf(_Model):
+    any: list["Condition"] = Field(min_length=1)
+
+
+class Not(_Model):
+    not_: "Condition" = Field(alias="not")
+
+
+class SecretRevealedIs(_Model):
+    secret_revealed: Id
+
+
+class ClockFull(_Model):
+    clock_full: Id
+
+
+class PcAt(_Model):
+    pc_at: Id
+
+
+class PcHasTag(_Model):
+    pc_has_tag: Id
+
+
+class NpcHasTag(_Model):
+    npc_has_tag: NpcTagArgs
+
+
+class NpcDead(_Model):
+    npc_dead: Id
+
+
+class NpcWithPc(_Model):
+    npc_with_pc: Id
+
+
+CONDITION_TYPES: tuple[type[_Model], ...] = (
+    AllOf,
+    AnyOf,
+    Not,
+    SecretRevealedIs,
+    ClockFull,
+    PcAt,
+    PcHasTag,
+    NpcHasTag,
+    NpcDead,
+    NpcWithPc,
+)
+
+Condition = _one_key_union(CONDITION_TYPES, "condition")
+
+for _condition in (AllOf, AnyOf, Not):
+    _condition.model_rebuild()
+
+
+class GmMoveDefinition(_Model):
+    """A move the GM can make. The engine picks one when a move calls for a GM move."""
+
+    id: Id
+    name: str
+    severity: Literal["soft", "hard"]
+    text: str = ""
+    requires: Condition | None = Field(
+        default=None, description="The move is only picked while this condition holds"
+    )
+    effects: list[Effect] = []
 
 
 # Moves
@@ -309,6 +411,9 @@ class Manifest(_Model):
         default=None, description="The scores a new character assigns, one per stat"
     )
     miss_effects: list[Effect] = Field(default=[], description="Applied on every rolled miss")
+    dying_move: Id | None = Field(
+        default=None, description="The move a player character makes on reaching 0 HP"
+    )
 
     @model_validator(mode="after")
     def _consistent(self) -> "Manifest":
@@ -381,3 +486,4 @@ class Pack(_Model):
     classes: dict[str, CharacterClass] = {}
     items: dict[str, Item] = {}
     tags: dict[str, Tag] = {}
+    gm_moves: dict[str, GmMoveDefinition] = {}

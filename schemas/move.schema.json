@@ -297,6 +297,43 @@
       "title": "MarkXp",
       "type": "object"
     },
+    "MoveTo": {
+      "additionalProperties": false,
+      "properties": {
+        "move_to": {
+          "$ref": "#/$defs/MoveToArgs"
+        }
+      },
+      "required": [
+        "move_to"
+      ],
+      "title": "MoveTo",
+      "type": "object"
+    },
+    "MoveToArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "location": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Location",
+          "type": "string"
+        },
+        "target": {
+          "default": "self",
+          "enum": [
+            "self",
+            "target"
+          ],
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "location"
+      ],
+      "title": "MoveToArgs",
+      "type": "object"
+    },
     "Option": {
       "additionalProperties": false,
       "properties": {
@@ -349,6 +386,12 @@
               },
               {
                 "$ref": "#/$defs/UseItem"
+              },
+              {
+                "$ref": "#/$defs/RevealSecret"
+              },
+              {
+                "$ref": "#/$defs/MoveTo"
               }
             ]
           },
@@ -415,6 +458,12 @@
               },
               {
                 "$ref": "#/$defs/UseItem"
+              },
+              {
+                "$ref": "#/$defs/RevealSecret"
+              },
+              {
+                "$ref": "#/$defs/MoveTo"
               }
             ]
           },
@@ -457,6 +506,21 @@
         "remove_tag"
       ],
       "title": "RemoveTag",
+      "type": "object"
+    },
+    "RevealSecret": {
+      "additionalProperties": false,
+      "properties": {
+        "reveal_secret": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Reveal Secret",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reveal_secret"
+      ],
+      "title": "RevealSecret",
       "type": "object"
     },
     "SpendHold": {
@@ -702,6 +766,12 @@
           },
           {
             "$ref": "#/$defs/UseItem"
+          },
+          {
+            "$ref": "#/$defs/RevealSecret"
+          },
+          {
+            "$ref": "#/$defs/MoveTo"
           }
         ]
       },

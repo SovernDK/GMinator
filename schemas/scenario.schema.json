@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "pattern": "^[a-z][a-z0-9_-]*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    },
+    "license": {
+      "title": "License",
+      "type": "string"
+    },
+    "attribution": {
+      "title": "Attribution",
+      "type": "string"
+    },
+    "system": {
+      "description": "The id of the system pack the scenario is played with",
+      "pattern": "^[a-z][a-z0-9_-]*$",
+      "title": "System",
+      "type": "string"
+    },
+    "start": {
+      "description": "The location the player character starts in",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "title": "Start",
+      "type": "string"
+    },
+    "intro": {
+      "default": "",
+      "title": "Intro",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "version",
+    "license",
+    "attribution",
+    "system",
+    "start"
+  ],
+  "title": "GMinator scenario manifest (scenario.yaml)",
+  "type": "object"
+}

@@ -2,20 +2,24 @@ import pytest
 
 from gminator.core.events import (
     CharacterCreated,
+    CharacterMoved,
     ChoiceMade,
     ClockCreated,
     DiceRolled,
     ForwardChanged,
+    GameStarted,
+    GmMoveMade,
     GmMoveTriggered,
     HoldChanged,
     ItemGained,
     MoveMade,
     QuestionsAsked,
+    SecretRevealed,
     XpMarked,
 )
 from gminator.core.game import Game
-from gminator.core.moves import ResolveError, resolve_move
-from gminator.packs.models import Item, Manifest, Move, Pack, Tag
+from gminator.core.moves import ResolveError, make_gm_move, resolve_move
+from gminator.packs.models import GmMoveDefinition, Item, Manifest, Move, Pack, Tag
 from support import ScriptedDecider, first_roll, seed_for
 
 MANIFEST = Manifest(
@@ -491,3 +495,71 @@ def test_using_an_item_spends_the_first_with_the_tag():
 def test_using_an_item_you_lack_is_rejected():
     with pytest.raises(ResolveError, match="ration"):
         resolve(new_game(), unrolled({"use_item": {"tag": "ration"}}))
+
+
+def test_secret_is_revealed():
+    resolution = resolve(new_game(), unrolled({"reveal_secret": "wererat"}))
+
+    assert SecretRevealed(secret_id="wererat") in resolution.events
+
+
+def test_move_to_takes_the_actor_by_default():
+    game = new_game()
+
+    resolve(game, unrolled({"move_to": {"location": "cellar"}}))
+
+    assert game.state.characters["hero"].location == "cellar"
+
+
+def test_move_to_can_take_the_target():
+    game = new_game()
+
+    resolve(
+        game,
+        unrolled({"move_to": {"location": "cellar", "target": "target"}}, target=True),
+        target_id="rat",
+    )
+
+    assert CharacterMoved(character_id="rat", location_id="cellar") in game.events
+    assert game.state.characters["hero"].location is None
+
+
+# GM moves
+
+
+def gm_move(*effects) -> GmMoveDefinition:
+    return GmMoveDefinition.model_validate(
+        {"id": "bite", "name": "Bite", "severity": "hard", "effects": list(effects)}
+    )
+
+
+def test_gm_move_is_recorded_before_its_effects_which_happen_to_the_pc():
+    game = new_game()
+
+    bite = gm_move({"take_damage": {"amount": "2"}})
+
+    resolution = make_gm_move(game, pack_with(), bite, "hero", ScriptedDecider())
+
+    assert resolution.events[0] == GmMoveMade(gm_move_id="bite")
+    assert hp(game, "hero") == 18
+
+
+def test_gm_move_can_come_from_a_character_as_its_target():
+    game = new_game()
+
+    bite = gm_move({"take_damage": {"amount": "target.damage"}})
+
+    make_gm_move(game, pack_with(), bite, "hero", ScriptedDecider(), target_id="rat")
+
+    assert hp(game, "hero") == 17
+
+
+def test_failed_gm_move_records_nothing():
+    game = new_game()
+
+    doom = gm_move({"advance_clock": {"clock": "doom"}})
+
+    with pytest.raises(ResolveError, match="doom"):
+        make_gm_move(game, pack_with(), doom, "hero", ScriptedDecider())
+
+    assert game.events == (GameStarted(seed=0), HERO, RAT)

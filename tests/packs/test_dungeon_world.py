@@ -81,6 +81,16 @@ def test_pack_has_every_basic_and_special_move(dungeon_world):
     assert categories["last_breath"] == categories["make_camp"] == "special"
 
 
+def test_pack_has_soft_and_hard_gm_moves(dungeon_world):
+    severities = {gm_move.severity for gm_move in dungeon_world.gm_moves.values()}
+
+    assert severities == {"soft", "hard"}
+
+
+def test_last_breath_is_the_dying_move(dungeon_world):
+    assert dungeon_world.manifest.dying_move == "last_breath"
+
+
 def test_classes_list_their_moves(dungeon_world):
     for class_id, moves in CLASS_MOVES.items():
         assert set(moves) <= set(dungeon_world.classes[class_id].moves)
@@ -182,12 +192,15 @@ def test_last_breath_miss_kills(dungeon_world):
     assert "dead" in game.state.characters["pc"].tags
 
 
-def test_last_breath_strong_cheats_death(dungeon_world):
-    game = start(dungeon_world, "fighter", "strong")
+@pytest.mark.parametrize(("band", "picks"), [("strong", []), ("partial", [[0]])])
+def test_last_breath_survivor_is_stable_at_one_hp(dungeon_world, band, picks):
+    game = start(dungeon_world, "fighter", band, extra=[HpChanged(character_id="pc", amount=-99)])
 
-    make(game, dungeon_world, "last_breath")
+    make(game, dungeon_world, "last_breath", ScriptedDecider(*picks))
 
-    assert "dead" not in game.state.characters["pc"].tags
+    pc = game.state.characters["pc"]
+    assert "dead" not in pc.tags
+    assert pc.hp == 1
 
 
 def test_make_camp_eats_a_ration_and_heals_half_max_hp(dungeon_world):

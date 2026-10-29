@@ -1,0 +1,1101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "AddForward": {
+      "additionalProperties": false,
+      "properties": {
+        "add_forward": {
+          "$ref": "#/$defs/ForwardArgs"
+        }
+      },
+      "required": [
+        "add_forward"
+      ],
+      "title": "AddForward",
+      "type": "object"
+    },
+    "AddTag": {
+      "additionalProperties": false,
+      "properties": {
+        "add_tag": {
+          "$ref": "#/$defs/TagArgs"
+        }
+      },
+      "required": [
+        "add_tag"
+      ],
+      "title": "AddTag",
+      "type": "object"
+    },
+    "AdvanceClock": {
+      "additionalProperties": false,
+      "properties": {
+        "advance_clock": {
+          "$ref": "#/$defs/ClockArgs"
+        }
+      },
+      "required": [
+        "advance_clock"
+      ],
+      "title": "AdvanceClock",
+      "type": "object"
+    },
+    "AllOf": {
+      "additionalProperties": false,
+      "properties": {
+        "all": {
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/AllOf"
+              },
+              {
+                "$ref": "#/$defs/AnyOf"
+              },
+              {
+                "$ref": "#/$defs/Not"
+              },
+              {
+                "$ref": "#/$defs/SecretRevealedIs"
+              },
+              {
+                "$ref": "#/$defs/ClockFull"
+              },
+              {
+                "$ref": "#/$defs/PcAt"
+              },
+              {
+                "$ref": "#/$defs/PcHasTag"
+              },
+              {
+                "$ref": "#/$defs/NpcHasTag"
+              },
+              {
+                "$ref": "#/$defs/NpcDead"
+              },
+              {
+                "$ref": "#/$defs/NpcWithPc"
+              }
+            ]
+          },
+          "minItems": 1,
+          "title": "All",
+          "type": "array"
+        }
+      },
+      "required": [
+        "all"
+      ],
+      "title": "AllOf",
+      "type": "object"
+    },
+    "AnyOf": {
+      "additionalProperties": false,
+      "properties": {
+        "any": {
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/AllOf"
+              },
+              {
+                "$ref": "#/$defs/AnyOf"
+              },
+              {
+                "$ref": "#/$defs/Not"
+              },
+              {
+                "$ref": "#/$defs/SecretRevealedIs"
+              },
+              {
+                "$ref": "#/$defs/ClockFull"
+              },
+              {
+                "$ref": "#/$defs/PcAt"
+              },
+              {
+                "$ref": "#/$defs/PcHasTag"
+              },
+              {
+                "$ref": "#/$defs/NpcHasTag"
+              },
+              {
+                "$ref": "#/$defs/NpcDead"
+              },
+              {
+                "$ref": "#/$defs/NpcWithPc"
+              }
+            ]
+          },
+          "minItems": 1,
+          "title": "Any",
+          "type": "array"
+        }
+      },
+      "required": [
+        "any"
+      ],
+      "title": "AnyOf",
+      "type": "object"
+    },
+    "AskArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "exclusiveMinimum": 0,
+          "title": "N",
+          "type": "integer"
+        },
+        "questions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Questions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "n",
+        "questions"
+      ],
+      "title": "AskArgs",
+      "type": "object"
+    },
+    "AskQuestions": {
+      "additionalProperties": false,
+      "properties": {
+        "ask_questions": {
+          "$ref": "#/$defs/AskArgs"
+        }
+      },
+      "required": [
+        "ask_questions"
+      ],
+      "title": "AskQuestions",
+      "type": "object"
+    },
+    "ChooseArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "exclusiveMinimum": 0,
+          "title": "N",
+          "type": "integer"
+        },
+        "options": {
+          "items": {
+            "$ref": "#/$defs/Option"
+          },
+          "title": "Options",
+          "type": "array"
+        }
+      },
+      "required": [
+        "n",
+        "options"
+      ],
+      "title": "ChooseArgs",
+      "type": "object"
+    },
+    "ChooseN": {
+      "additionalProperties": false,
+      "properties": {
+        "choose_n": {
+          "$ref": "#/$defs/ChooseArgs"
+        }
+      },
+      "required": [
+        "choose_n"
+      ],
+      "title": "ChooseN",
+      "type": "object"
+    },
+    "ClockArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "clock": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Clock",
+          "type": "string"
+        },
+        "amount": {
+          "default": 1,
+          "exclusiveMinimum": 0,
+          "title": "Amount",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "clock"
+      ],
+      "title": "ClockArgs",
+      "type": "object"
+    },
+    "ClockFull": {
+      "additionalProperties": false,
+      "properties": {
+        "clock_full": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Clock Full",
+          "type": "string"
+        }
+      },
+      "required": [
+        "clock_full"
+      ],
+      "title": "ClockFull",
+      "type": "object"
+    },
+    "DamageArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "description": "An expression, e.g. `stat.str` or `d6 + 1`",
+          "title": "Amount",
+          "type": [
+            "string",
+            "integer"
+          ]
+        },
+        "target": {
+          "default": "target",
+          "enum": [
+            "self",
+            "target"
+          ],
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount"
+      ],
+      "title": "DamageArgs",
+      "type": "object"
+    },
+    "DealDamage": {
+      "additionalProperties": false,
+      "properties": {
+        "deal_damage": {
+          "$ref": "#/$defs/DamageArgs"
+        }
+      },
+      "required": [
+        "deal_damage"
+      ],
+      "title": "DealDamage",
+      "type": "object"
+    },
+    "ForwardArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "title": "Amount",
+          "type": "integer"
+        },
+        "target": {
+          "default": "self",
+          "enum": [
+            "self",
+            "target"
+          ],
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount"
+      ],
+      "title": "ForwardArgs",
+      "type": "object"
+    },
+    "GainHold": {
+      "additionalProperties": false,
+      "properties": {
+        "gain_hold": {
+          "$ref": "#/$defs/GainHoldArgs"
+        }
+      },
+      "required": [
+        "gain_hold"
+      ],
+      "title": "GainHold",
+      "type": "object"
+    },
+    "GainHoldArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "exclusiveMinimum": 0,
+          "title": "Amount",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "amount"
+      ],
+      "title": "GainHoldArgs",
+      "type": "object"
+    },
+    "GmMove": {
+      "additionalProperties": false,
+      "properties": {
+        "gm_move": {
+          "enum": [
+            "soft",
+            "hard"
+          ],
+          "title": "Gm Move",
+          "type": "string"
+        }
+      },
+      "required": [
+        "gm_move"
+      ],
+      "title": "GmMove",
+      "type": "object"
+    },
+    "Heal": {
+      "additionalProperties": false,
+      "properties": {
+        "heal": {
+          "$ref": "#/$defs/HealArgs"
+        }
+      },
+      "required": [
+        "heal"
+      ],
+      "title": "Heal",
+      "type": "object"
+    },
+    "HealArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "description": "An expression, e.g. `stat.str` or `d6 + 1`",
+          "title": "Amount",
+          "type": [
+            "string",
+            "integer"
+          ]
+        },
+        "target": {
+          "default": "self",
+          "enum": [
+            "self",
+            "target"
+          ],
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount"
+      ],
+      "title": "HealArgs",
+      "type": "object"
+    },
+    "MarkXp": {
+      "additionalProperties": false,
+      "properties": {
+        "mark_xp": {
+          "exclusiveMinimum": 0,
+          "title": "Mark Xp",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "mark_xp"
+      ],
+      "title": "MarkXp",
+      "type": "object"
+    },
+    "MoveTo": {
+      "additionalProperties": false,
+      "properties": {
+        "move_to": {
+          "$ref": "#/$defs/MoveToArgs"
+        }
+      },
+      "required": [
+        "move_to"
+      ],
+      "title": "MoveTo",
+      "type": "object"
+    },
+    "MoveToArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "location": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Location",
+          "type": "string"
+        },
+        "target": {
+          "default": "self",
+          "enum": [
+            "self",
+            "target"
+          ],
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "location"
+      ],
+      "title": "MoveToArgs",
+      "type": "object"
+    },
+    "Not": {
+      "additionalProperties": false,
+      "properties": {
+        "not": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/AllOf"
+            },
+            {
+              "$ref": "#/$defs/AnyOf"
+            },
+            {
+              "$ref": "#/$defs/Not"
+            },
+            {
+              "$ref": "#/$defs/SecretRevealedIs"
+            },
+            {
+              "$ref": "#/$defs/ClockFull"
+            },
+            {
+              "$ref": "#/$defs/PcAt"
+            },
+            {
+              "$ref": "#/$defs/PcHasTag"
+            },
+            {
+              "$ref": "#/$defs/NpcHasTag"
+            },
+            {
+              "$ref": "#/$defs/NpcDead"
+            },
+            {
+              "$ref": "#/$defs/NpcWithPc"
+            }
+          ],
+          "title": "Not"
+        }
+      },
+      "required": [
+        "not"
+      ],
+      "title": "Not",
+      "type": "object"
+    },
+    "NpcDead": {
+      "additionalProperties": false,
+      "properties": {
+        "npc_dead": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Npc Dead",
+          "type": "string"
+        }
+      },
+      "required": [
+        "npc_dead"
+      ],
+      "title": "NpcDead",
+      "type": "object"
+    },
+    "NpcHasTag": {
+      "additionalProperties": false,
+      "properties": {
+        "npc_has_tag": {
+          "$ref": "#/$defs/NpcTagArgs"
+        }
+      },
+      "required": [
+        "npc_has_tag"
+      ],
+      "title": "NpcHasTag",
+      "type": "object"
+    },
+    "NpcTagArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "npc": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Npc",
+          "type": "string"
+        },
+        "tag": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Tag",
+          "type": "string"
+        }
+      },
+      "required": [
+        "npc",
+        "tag"
+      ],
+      "title": "NpcTagArgs",
+      "type": "object"
+    },
+    "NpcWithPc": {
+      "additionalProperties": false,
+      "properties": {
+        "npc_with_pc": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Npc With Pc",
+          "type": "string"
+        }
+      },
+      "required": [
+        "npc_with_pc"
+      ],
+      "title": "NpcWithPc",
+      "type": "object"
+    },
+    "Option": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "effects": {
+          "default": [],
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/DealDamage"
+              },
+              {
+                "$ref": "#/$defs/TakeDamage"
+              },
+              {
+                "$ref": "#/$defs/Heal"
+              },
+              {
+                "$ref": "#/$defs/ChooseN"
+              },
+              {
+                "$ref": "#/$defs/AskQuestions"
+              },
+              {
+                "$ref": "#/$defs/GainHold"
+              },
+              {
+                "$ref": "#/$defs/SpendHold"
+              },
+              {
+                "$ref": "#/$defs/AddTag"
+              },
+              {
+                "$ref": "#/$defs/RemoveTag"
+              },
+              {
+                "$ref": "#/$defs/AdvanceClock"
+              },
+              {
+                "$ref": "#/$defs/GmMove"
+              },
+              {
+                "$ref": "#/$defs/MarkXp"
+              },
+              {
+                "$ref": "#/$defs/AddForward"
+              },
+              {
+                "$ref": "#/$defs/UseItem"
+              },
+              {
+                "$ref": "#/$defs/RevealSecret"
+              },
+              {
+                "$ref": "#/$defs/MoveTo"
+              }
+            ]
+          },
+          "title": "Effects",
+          "type": "array"
+        }
+      },
+      "required": [
+        "label"
+      ],
+      "title": "Option",
+      "type": "object"
+    },
+    "Outcome": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "default": "",
+          "title": "Text",
+          "type": "string"
+        },
+        "effects": {
+          "default": [],
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/DealDamage"
+              },
+              {
+                "$ref": "#/$defs/TakeDamage"
+              },
+              {
+                "$ref": "#/$defs/Heal"
+              },
+              {
+                "$ref": "#/$defs/ChooseN"
+              },
+              {
+                "$ref": "#/$defs/AskQuestions"
+              },
+              {
+                "$ref": "#/$defs/GainHold"
+              },
+              {
+                "$ref": "#/$defs/SpendHold"
+              },
+              {
+                "$ref": "#/$defs/AddTag"
+              },
+              {
+                "$ref": "#/$defs/RemoveTag"
+              },
+              {
+                "$ref": "#/$defs/AdvanceClock"
+              },
+              {
+                "$ref": "#/$defs/GmMove"
+              },
+              {
+                "$ref": "#/$defs/MarkXp"
+              },
+              {
+                "$ref": "#/$defs/AddForward"
+              },
+              {
+                "$ref": "#/$defs/UseItem"
+              },
+              {
+                "$ref": "#/$defs/RevealSecret"
+              },
+              {
+                "$ref": "#/$defs/MoveTo"
+              }
+            ]
+          },
+          "title": "Effects",
+          "type": "array"
+        }
+      },
+      "title": "Outcome",
+      "type": "object"
+    },
+    "Outcomes": {
+      "additionalProperties": false,
+      "properties": {
+        "strong": {
+          "$ref": "#/$defs/Outcome"
+        },
+        "partial": {
+          "$ref": "#/$defs/Outcome"
+        },
+        "miss": {
+          "$ref": "#/$defs/Outcome"
+        }
+      },
+      "required": [
+        "strong",
+        "partial",
+        "miss"
+      ],
+      "title": "Outcomes",
+      "type": "object"
+    },
+    "PcAt": {
+      "additionalProperties": false,
+      "properties": {
+        "pc_at": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Pc At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pc_at"
+      ],
+      "title": "PcAt",
+      "type": "object"
+    },
+    "PcHasTag": {
+      "additionalProperties": false,
+      "properties": {
+        "pc_has_tag": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Pc Has Tag",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pc_has_tag"
+      ],
+      "title": "PcHasTag",
+      "type": "object"
+    },
+    "RemoveTag": {
+      "additionalProperties": false,
+      "properties": {
+        "remove_tag": {
+          "$ref": "#/$defs/TagArgs"
+        }
+      },
+      "required": [
+        "remove_tag"
+      ],
+      "title": "RemoveTag",
+      "type": "object"
+    },
+    "RevealSecret": {
+      "additionalProperties": false,
+      "properties": {
+        "reveal_secret": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Reveal Secret",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reveal_secret"
+      ],
+      "title": "RevealSecret",
+      "type": "object"
+    },
+    "SecretRevealedIs": {
+      "additionalProperties": false,
+      "properties": {
+        "secret_revealed": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Secret Revealed",
+          "type": "string"
+        }
+      },
+      "required": [
+        "secret_revealed"
+      ],
+      "title": "SecretRevealedIs",
+      "type": "object"
+    },
+    "SpendHold": {
+      "additionalProperties": false,
+      "properties": {
+        "spend_hold": {
+          "$ref": "#/$defs/SpendHoldArgs"
+        }
+      },
+      "required": [
+        "spend_hold"
+      ],
+      "title": "SpendHold",
+      "type": "object"
+    },
+    "SpendHoldArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "move": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Move",
+          "type": "string"
+        },
+        "amount": {
+          "default": 1,
+          "exclusiveMinimum": 0,
+          "title": "Amount",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "move"
+      ],
+      "title": "SpendHoldArgs",
+      "type": "object"
+    },
+    "TagArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "tag": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Tag",
+          "type": "string"
+        },
+        "target": {
+          "default": "self",
+          "enum": [
+            "self",
+            "target"
+          ],
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tag"
+      ],
+      "title": "TagArgs",
+      "type": "object"
+    },
+    "TakeDamage": {
+      "additionalProperties": false,
+      "properties": {
+        "take_damage": {
+          "$ref": "#/$defs/TakeDamageArgs"
+        }
+      },
+      "required": [
+        "take_damage"
+      ],
+      "title": "TakeDamage",
+      "type": "object"
+    },
+    "TakeDamageArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "description": "An expression, e.g. `stat.str` or `d6 + 1`",
+          "title": "Amount",
+          "type": [
+            "string",
+            "integer"
+          ]
+        }
+      },
+      "required": [
+        "amount"
+      ],
+      "title": "TakeDamageArgs",
+      "type": "object"
+    },
+    "UseItem": {
+      "additionalProperties": false,
+      "properties": {
+        "use_item": {
+          "$ref": "#/$defs/UseItemArgs"
+        }
+      },
+      "required": [
+        "use_item"
+      ],
+      "title": "UseItem",
+      "type": "object"
+    },
+    "UseItemArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "tag": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Tag",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tag"
+      ],
+      "title": "UseItemArgs",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "category": {
+      "enum": [
+        "basic",
+        "special",
+        "class"
+      ],
+      "title": "Category",
+      "type": "string"
+    },
+    "trigger": {
+      "title": "Trigger",
+      "type": "string"
+    },
+    "target": {
+      "default": false,
+      "description": "Whether the move is made against a target",
+      "title": "Target",
+      "type": "boolean"
+    },
+    "roll": {
+      "anyOf": [
+        {
+          "description": "An expression, e.g. `stat.str` or `d6 + 1`",
+          "type": [
+            "string",
+            "integer"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "The modifier added to the pack's roll, e.g. `stat.str`",
+      "title": "Roll"
+    },
+    "stat_options": {
+      "anyOf": [
+        {
+          "items": {
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Stats the player picks from; the roll refers to `stat.chosen`",
+      "title": "Stat Options"
+    },
+    "outcomes": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Outcomes"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "text": {
+      "default": "",
+      "title": "Text",
+      "type": "string"
+    },
+    "effects": {
+      "default": [],
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/DealDamage"
+          },
+          {
+            "$ref": "#/$defs/TakeDamage"
+          },
+          {
+            "$ref": "#/$defs/Heal"
+          },
+          {
+            "$ref": "#/$defs/ChooseN"
+          },
+          {
+            "$ref": "#/$defs/AskQuestions"
+          },
+          {
+            "$ref": "#/$defs/GainHold"
+          },
+          {
+            "$ref": "#/$defs/SpendHold"
+          },
+          {
+            "$ref": "#/$defs/AddTag"
+          },
+          {
+            "$ref": "#/$defs/RemoveTag"
+          },
+          {
+            "$ref": "#/$defs/AdvanceClock"
+          },
+          {
+            "$ref": "#/$defs/GmMove"
+          },
+          {
+            "$ref": "#/$defs/MarkXp"
+          },
+          {
+            "$ref": "#/$defs/AddForward"
+          },
+          {
+            "$ref": "#/$defs/UseItem"
+          },
+          {
+            "$ref": "#/$defs/RevealSecret"
+          },
+          {
+            "$ref": "#/$defs/MoveTo"
+          }
+        ]
+      },
+      "title": "Effects",
+      "type": "array"
+    },
+    "requires": {
+      "anyOf": [
+        {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/AllOf"
+            },
+            {
+              "$ref": "#/$defs/AnyOf"
+            },
+            {
+              "$ref": "#/$defs/Not"
+            },
+            {
+              "$ref": "#/$defs/SecretRevealedIs"
+            },
+            {
+              "$ref": "#/$defs/ClockFull"
+            },
+            {
+              "$ref": "#/$defs/PcAt"
+            },
+            {
+              "$ref": "#/$defs/PcHasTag"
+            },
+            {
+              "$ref": "#/$defs/NpcHasTag"
+            },
+            {
+              "$ref": "#/$defs/NpcDead"
+            },
+            {
+              "$ref": "#/$defs/NpcWithPc"
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "The move can only be made while this condition holds",
+      "title": "Requires"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "category",
+    "trigger"
+  ],
+  "title": "GMinator scenario move (moves/*.yaml)",
+  "type": "object"
+}

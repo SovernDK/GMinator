@@ -52,6 +52,16 @@ Vocabulary is defined in [CONTEXT.md](CONTEXT.md). Key decisions are recorded in
   - Passive class moves: Armored, Signature Weapon (Fighter); Poisoner, Flexible Morals (Thief)
   - Backstab's option to deal damage without rolling
   - Levelling up at Make Camp
+- Left out of M3 (the no-AI game), for the narrator or later milestones:
+  - Questions from Discern Realities and Spout Lore are recorded but get no answers until the narrator (M4)
+  - NPCs act only through GM moves; there is no NPC turn or NPC-initiated movement beyond `move_to` effects
+  - Character creation in the CLI is a quick start (scores in stat order, first gear options); real creation is M6
+  - Save and resume from the command line (the event log already saves and replays)
+- Left out of M4 (the AI layer), for the evals or later milestones:
+  - The fact check catches scenario and pack names only; names the model invents outright pass
+  - Discern Realities and Spout Lore questions still get no answers
+  - Narration quality (numbers repeated from the facts, odd move choices) is for the M5 evals, as are per-task models and settings
+  - The CLI runs without AI unless `--provider` is given; first-run detection of Ollama is M7
 - Embedded inference backend (llama.cpp), standalone binaries
 - Other languages
 

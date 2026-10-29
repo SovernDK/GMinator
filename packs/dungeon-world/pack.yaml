@@ -21,3 +21,5 @@ score_array: [16, 15, 13, 12, 9, 8]
 # Whenever you roll a 6-, mark XP.
 miss_effects:
   - mark_xp: 1
+# When your HP drops to 0, you take your Last Breath.
+dying_move: last_breath

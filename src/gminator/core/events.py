@@ -135,6 +135,29 @@ class GmMoveTriggered(_Event):
     severity: Literal["soft", "hard"]
 
 
+class GmMoveMade(_Event):
+    """The engine picked this GM move; its effects follow as their own events."""
+
+    type: Literal["gm_move_made"] = "gm_move_made"
+    gm_move_id: str
+
+
+class CharacterMoved(_Event):
+    type: Literal["character_moved"] = "character_moved"
+    character_id: str
+    location_id: str
+
+
+class SecretRevealed(_Event):
+    type: Literal["secret_revealed"] = "secret_revealed"
+    secret_id: str
+
+
+class GameEnded(_Event):
+    type: Literal["game_ended"] = "game_ended"
+    ending_id: str
+
+
 Event = Annotated[
     GameStarted
     | CharacterCreated
@@ -152,7 +175,11 @@ Event = Annotated[
     | MoveMade
     | ChoiceMade
     | QuestionsAsked
-    | GmMoveTriggered,
+    | GmMoveTriggered
+    | GmMoveMade
+    | CharacterMoved
+    | SecretRevealed
+    | GameEnded,
     Field(discriminator="type"),
 ]
 

@@ -2,13 +2,16 @@ import pytest
 
 from gminator.core.events import (
     CharacterCreated,
+    CharacterMoved,
     ChoiceMade,
     ClockAdvanced,
     ClockCreated,
     DiceRolled,
     DieRoll,
     ForwardChanged,
+    GameEnded,
     GameStarted,
+    GmMoveMade,
     GmMoveTriggered,
     HoldChanged,
     HpChanged,
@@ -16,6 +19,7 @@ from gminator.core.events import (
     ItemUsed,
     MoveMade,
     QuestionsAsked,
+    SecretRevealed,
     TagAdded,
     TagRemoved,
     XpMarked,
@@ -157,6 +161,7 @@ def test_character_ids_are_unique():
         ForwardChanged(character_id="ghost", amount=1),
         ItemGained(character_id="ghost", item_id="dagger"),
         ItemUsed(character_id="ghost", item_id="dagger"),
+        CharacterMoved(character_id="ghost", location_id="cellar"),
     ],
     ids=lambda event: event.type,
 )
@@ -340,6 +345,7 @@ def test_item_without_uses_cannot_be_used(item_id):
         ChoiceMade(character_id="pc", move_id="volley", chosen=["Take several shots"]),
         QuestionsAsked(character_id="pc", questions=["What is about to happen?"]),
         GmMoveTriggered(severity="soft"),
+        GmMoveMade(gm_move_id="show_signs"),
     ],
     ids=lambda event: event.type,
 )
@@ -347,3 +353,50 @@ def test_records_of_what_happened_do_not_change_state(event):
     before = replay([START, FIGHTER])
 
     assert apply(before, event) == before
+
+
+def test_character_starts_nowhere_and_moves_between_locations():
+    state = replay(
+        [
+            START,
+            FIGHTER,
+            CharacterMoved(character_id="pc", location_id="cellar"),
+            CharacterMoved(character_id="pc", location_id="tunnel"),
+        ]
+    )
+
+    assert replay([START, FIGHTER]).characters["pc"].location is None
+    assert state.characters["pc"].location == "tunnel"
+
+
+def test_revealed_secrets_are_kept_once_in_the_order_revealed():
+    state = replay(
+        [
+            START,
+            SecretRevealed(secret_id="wererat"),
+            SecretRevealed(secret_id="ledger"),
+            SecretRevealed(secret_id="wererat"),
+        ]
+    )
+
+    assert replay([START]).revealed == ()
+    assert state.revealed == ("wererat", "ledger")
+
+
+def test_game_ends_with_its_ending():
+    assert replay([START]).ending is None
+    assert replay([START, GameEnded(ending_id="fled")]).ending == "fled"
+
+
+@pytest.mark.parametrize(
+    "event",
+    [
+        HpChanged(character_id="pc", amount=-1),
+        DiceRolled(expression="d6", dice=[DieRoll(sides=6, value=2)], total=2),
+        GameEnded(ending_id="fled"),
+    ],
+    ids=lambda event: event.type,
+)
+def test_nothing_happens_after_the_game_ends(event):
+    with pytest.raises(ReplayError, match="ended"):
+        replay([START, FIGHTER, GameEnded(ending_id="killed"), event])

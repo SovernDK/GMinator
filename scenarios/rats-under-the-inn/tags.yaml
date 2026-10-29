@@ -1,0 +1,3 @@
+# yaml-language-server: $schema=../../schemas/tags.schema.json
+- {id: convinced, description: "Convinced of the truth, and ready to act on it."}
+- {id: bargained, description: Bound by a bargain struck in the dark.}

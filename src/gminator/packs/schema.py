@@ -1,4 +1,5 @@
-"""JSON Schemas for pack files, generated from the pack models for editor autocomplete.
+"""JSON Schemas for pack and scenario files, generated from their models for editor
+autocomplete.
 
 Regenerate the committed schemas with: uv run python -m gminator.packs.schema
 """
@@ -10,7 +11,16 @@ from typing import Any
 
 from pydantic import TypeAdapter
 
-from gminator.packs.models import CharacterClass, Item, Manifest, Move, Tag
+from gminator.packs.models import CharacterClass, GmMoveDefinition, Item, Manifest, Move, Tag
+from gminator.scenario.models import (
+    Ending,
+    Front,
+    Location,
+    Npc,
+    ScenarioManifest,
+    ScenarioMove,
+    Secret,
+)
 
 _SOURCES: dict[str, tuple[str, Any]] = {
     "pack.schema.json": ("GMinator pack manifest (pack.yaml)", Manifest),
@@ -18,6 +28,14 @@ _SOURCES: dict[str, tuple[str, Any]] = {
     "gear.schema.json": ("GMinator pack gear (gear.yaml)", list[Item]),
     "move.schema.json": ("GMinator move (moves/*.yaml)", Move),
     "class.schema.json": ("GMinator class (classes/*.yaml)", CharacterClass),
+    "gm_moves.schema.json": ("GMinator pack GM moves (gm_moves.yaml)", list[GmMoveDefinition]),
+    "scenario.schema.json": ("GMinator scenario manifest (scenario.yaml)", ScenarioManifest),
+    "locations.schema.json": ("GMinator scenario locations (locations.yaml)", list[Location]),
+    "npcs.schema.json": ("GMinator scenario NPCs (npcs.yaml)", list[Npc]),
+    "secrets.schema.json": ("GMinator scenario secrets (secrets.yaml)", list[Secret]),
+    "fronts.schema.json": ("GMinator scenario fronts (fronts.yaml)", list[Front]),
+    "endings.schema.json": ("GMinator scenario endings (endings.yaml)", list[Ending]),
+    "scenario_move.schema.json": ("GMinator scenario move (moves/*.yaml)", ScenarioMove),
 }
 SCHEMA_FILES = list(_SOURCES)
 

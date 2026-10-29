@@ -7,6 +7,8 @@ roll: 0
 outcomes:
   strong:
     text: You've cheated death. You're no longer dying, but you're still in a bad way.
+    effects:
+      - heal: {amount: 1}
   partial:
     text: Death offers you a bargain.
     effects:
@@ -14,6 +16,8 @@ outcomes:
           n: 1
           options:
             - label: Take Death's bargain and stabilize
+              effects:
+                - heal: {amount: 1}
             - label: Refuse, and pass beyond the Black Gates
               effects:
                 - add_tag: {tag: dead}

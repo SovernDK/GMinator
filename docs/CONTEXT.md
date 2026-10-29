@@ -22,10 +22,10 @@ Shared terms used across code, docs and packs. When a term here and the code dis
 ## GM
 
 - **GM move:** the GM's response, chosen by the **engine** and not the AI. A **soft** move sets up a threat; a **hard** move delivers it.
-- **GM move selector:** the engine component that picks a GM move from the scenario's fronts, dangers and the pack's GM moves.
+- **GM move selector:** the engine component that picks a GM move from the scenario's fronts, dangers and the pack's GM moves. The candidates are every danger move and pack GM move of the asked-for severity whose condition holds; one is picked with a recorded die.
 - **Front:** a group of related **dangers** with **grim portents** and an **impending doom**.
 - **Danger:** a threat within a front, with its own type, impulse and moves.
-- **Grim portent:** a step on a danger's path, usually tracked as a clock segment.
+- **Grim portent:** a step on a danger's path. Each danger has a clock with one segment per portent; a full clock means the danger has run its course.
 - **Impending doom:** what happens if a front runs its course.
 
 ## Content
@@ -34,6 +34,9 @@ Shared terms used across code, docs and packs. When a term here and the code dis
 - **Scenario (scenario pack):** a folder of YAML defining one adventure: locations, NPCs, fronts, items, clues, secrets, start and end conditions. It declares which system pack it uses.
 - **Location:** a node in the scenario graph, with exits, tags, description seeds, hazards and NPCs present.
 - **NPC profile:** an NPC's stat block plus role-play data: drive, voice, attitude, knowledge, secrets.
+- **Condition:** a check against the state, written in YAML like an effect (`secret_revealed`, `pc_at`, `npc_dead`, `all`/`any`/`not`, …). Endings, scenario moves and GM moves use conditions.
+- **Ending:** a way the scenario can end, with the condition that ends it. After every turn the engine checks the endings in order; the first that holds ends the story.
+- **Scenario move:** a move defined by a scenario rather than the system pack, available only while its `requires` condition holds (`Search the cache` only in the cache).
 - **Secret:** a fact that is hidden until the engine reveals it through a `reveal_secret` effect. Unrevealed secrets never appear in an AI prompt.
 - **Entity graph (ontology):** the typed entities and relations of scenario and world state (`NPC knows Secret`, `Location connects Location`). It is the structured source of facts for prompts.
 
@@ -43,7 +46,7 @@ Shared terms used across code, docs and packs. When a term here and the code dis
 - **Event:** an immutable record of one state change. The **event log** is the source of truth.
 - **Snapshot:** cached state at a point in the log, used for fast loading.
 - **Seeded RNG:** dice randomness from a seed stored in the log, so replays are exact.
-- **Turn controller:** runs one turn: input → classify → confirm → resolve → narrate → display.
+- **Turn controller:** runs one turn: input → classify → confirm → resolve → narrate → display. A turn includes the GM moves it calls for, the dying move if the player character drops to 0 HP, and the ending check, and is recorded whole or not at all. Without AI it is the `Session`, driven by slash commands; the `Table` puts the AI in front of it, turning free text into a confirmed slash command and narrating the result.
 
 ## AI
 
@@ -54,12 +57,13 @@ Shared terms used across code, docs and packs. When a term here and the code dis
   - **NPC voice:** dialogue in character, based on the NPC profile.
 - **Intent kind:** `move | travel | talk | look | inventory | ooc | unclear`.
 - **ContextBuilder:** assembles the small factual context for each AI call from state, the entity graph and recent events. It is where vector retrieval will plug in later.
-- **Fact check:** a post-check that flags narration naming items or NPCs that don't exist in state. It regenerates once, then falls back to the template.
+- **Fact check:** a post-check that flags narration naming an NPC, place or item of the scenario or pack that the prompt never gave the model. Streamed text that fails is **retracted**; the model is asked once more, and a second failure leaves the template alone. Names the scenario has never heard of are beyond it.
+- **Retract:** the marker in a streamed narration that throws away the text streamed so far.
 - **Template fallback:** engine-generated text used when the AI is unavailable or fails.
 - **Evals:** the offline evaluation suite that scores models on the three AI tasks. It is used to pick models; it is not part of unit tests.
 
 ## Interface
 
-- **Slash command:** an explicit command (`/go`, `/sheet`, `/save`) that bypasses the AI.
+- **Slash command:** an explicit command (`/go`, `/move`, `/sheet`, …) that bypasses the AI.
 - **Confirmation strip:** the TUI prompt where the player accepts, changes or cancels the suggested move.
 - **Story log:** the main TUI pane showing narration, dialogue and roll results.

@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=../../schemas/endings.schema.json
+# Checked in order after every turn; the first that holds ends the story.
+- id: died
+  title: Beyond the Black Gates
+  text: >-
+    Your last breath is spent in the dark under the Drowned Rat. The rats will have you, and
+    then the inn.
+  when: {pc_has_tag: dead}
+- id: swarm_won
+  title: The Swarm Wins
+  text: >-
+    The swarm boils up through the cellar floor and out into the rain. By morning there is no
+    house in the village without rats.
+  when:
+    any:
+      - {clock_full: infestation}
+      - {clock_full: smuggler}
+- id: corwin_killed
+  title: Corwin Is Dead
+  text: >-
+    Corwin dies with a rat's snarl on a man's face. Without his whistle the swarm scatters
+    into the caves, leaderless, for now.
+  when: {npc_dead: corwin}
+- id: exposed
+  title: Corwin Exposed
+  text: >-
+    Maud hears the truth and goes white, then red. By dawn the village is at the cellar door
+    with torches, and Corwin is running for the river.
+  when: {npc_has_tag: {npc: maud, tag: convinced}}
+- id: deal
+  title: A Deal in the Dark
+  text: >-
+    Corwin counts out your share in silver and promises to take his rats elsewhere. You
+    almost believe him.
+  when: {npc_has_tag: {npc: corwin, tag: bargained}}
+- id: fled
+  title: Down the River
+  text: >-
+    You squeeze out through the crack, cut a smuggler's boat loose and let the river take you
+    away from the Drowned Rat and its rats.
+  when: {pc_at: river_exit}

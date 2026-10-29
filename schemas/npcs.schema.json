@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "Npc": {
+      "additionalProperties": false,
+      "description": "An NPC's stat block plus the role-play data the narrator works from.",
+      "properties": {
+        "id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "location": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Location",
+          "type": "string"
+        },
+        "max_hp": {
+          "exclusiveMinimum": 0,
+          "title": "Max Hp",
+          "type": "integer"
+        },
+        "armor": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Armor",
+          "type": "integer"
+        },
+        "damage": {
+          "anyOf": [
+            {
+              "description": "An expression, e.g. `stat.str` or `d6 + 1`",
+              "type": [
+                "string",
+                "integer"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Damage"
+        },
+        "drive": {
+          "default": "",
+          "title": "Drive",
+          "type": "string"
+        },
+        "voice": {
+          "default": "",
+          "title": "Voice",
+          "type": "string"
+        },
+        "attitude": {
+          "default": "",
+          "title": "Attitude",
+          "type": "string"
+        },
+        "knows": {
+          "default": [],
+          "description": "Secrets this NPC knows",
+          "items": {
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "title": "Knows",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "location",
+        "max_hp"
+      ],
+      "title": "Npc",
+      "type": "object"
+    }
+  },
+  "items": {
+    "$ref": "#/$defs/Npc"
+  },
+  "type": "array",
+  "title": "GMinator scenario NPCs (npcs.yaml)"
+}

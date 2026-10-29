@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=../../schemas/fronts.schema.json
+- id: undercellar
+  name: The Undercellar
+  impending_doom: The inn is overrun, and the village is infested.
+  dangers:
+    - id: smuggler
+      name: Corwin's racket
+      type: ambitious organisation (wererat)
+      impulse: to grow rich and stay hidden
+      npc: corwin
+      portents:
+        - A delivery goes missing, and Corwin is out of sorts.
+        - Corwin silences a witness.
+        - Corwin floods the inn with rats to cover his escape.
+      moves:
+        - id: corwin_watches
+          name: Corwin watches
+          severity: soft
+          text: Corwin watches you over his cup, smiling a little too long.
+          requires: {npc_with_pc: corwin}
+        - id: corwin_lashes_out
+          name: Corwin lashes out
+          severity: hard
+          text: Corwin's hand snaps out, and his nails are claws.
+          requires: {npc_with_pc: corwin}
+          effects:
+            - take_damage: {amount: target.damage}
+        - id: corwin_covers_his_tracks
+          name: Corwin covers his tracks
+          severity: hard
+          text: Somewhere in the dark, crates are moved and a door is barred.
+          requires: {not: {npc_dead: corwin}}
+          effects:
+            - advance_clock: {clock: smuggler}
+    - id: infestation
+      name: The swarm
+      type: horde
+      impulse: to feed and multiply
+      npc: swarm
+      portents:
+        - Rats in the pantry.
+        - A child in the village is bitten.
+        - The swarm turns on its master.
+        - The swarm boils up into the village.
+      moves:
+        - id: claws_in_the_walls
+          name: Claws in the walls
+          severity: soft
+          text: Claws skitter behind the walls, keeping pace with you.
+          requires: {not: {npc_dead: swarm}}
+        - id: rats_pour_out
+          name: Rats pour out
+          severity: hard
+          text: Rats pour out of every crack and over you.
+          requires:
+            all:
+              - {not: {pc_at: common_room}}
+              - {not: {npc_dead: swarm}}
+          effects:
+            - take_damage: {amount: target.damage}
+            - advance_clock: {clock: infestation}
+        - id: the_swarm_breeds
+          name: The swarm breeds
+          severity: hard
+          text: Deeper in the dark, the swarm grows.
+          requires: {not: {npc_dead: swarm}}
+          effects:
+            - advance_clock: {clock: infestation}

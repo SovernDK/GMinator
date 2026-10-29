@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../../schemas/gm_moves.schema.json
+# The general GM moves. Scenarios add moves for their own dangers.
+- id: show_signs
+  name: Show signs of an approaching threat
+  severity: soft
+  text: Something stirs at the edge of your senses. Trouble is coming.
+- id: reveal_unwelcome_truth
+  name: Reveal an unwelcome truth
+  severity: soft
+  text: You realise something you would rather not have known.
+- id: offer_opportunity
+  name: Offer an opportunity, with or without cost
+  severity: soft
+  text: An opening appears, if you are willing to pay for it.
+- id: tell_consequences
+  name: Tell them the requirements or consequences and ask
+  severity: soft
+  text: You can do it, but it will cost you. Do you?
+- id: deal_damage
+  name: Deal damage
+  severity: hard
+  text: Something strikes you before you can react.
+  effects:
+    - take_damage: {amount: d6}
+- id: put_in_a_spot
+  name: Put someone in a spot
+  severity: hard
+  text: The ground shifts under you, and suddenly you are cornered.

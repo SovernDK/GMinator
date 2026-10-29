@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=../../schemas/scenario.schema.json
+id: rats-under-the-inn
+name: Rats Under the Inn
+version: 0.1.0
+license: CC-BY-4.0
+attribution: Rats Under the Inn, written for GMinator by Damian Kwolek.
+system: dungeon-world
+start: common_room
+intro: >-
+  Rain hammers the shutters of the Drowned Rat. Maud, the innkeeper, has offered you a month
+  of board to clear the giant rats out of her cellar. Her business partner, Corwin, smiles
+  into his cup and says it is only a few rats. The stable hand, Pip, will not meet your eye.

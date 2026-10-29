@@ -1,0 +1,338 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "AllOf": {
+      "additionalProperties": false,
+      "properties": {
+        "all": {
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/AllOf"
+              },
+              {
+                "$ref": "#/$defs/AnyOf"
+              },
+              {
+                "$ref": "#/$defs/Not"
+              },
+              {
+                "$ref": "#/$defs/SecretRevealedIs"
+              },
+              {
+                "$ref": "#/$defs/ClockFull"
+              },
+              {
+                "$ref": "#/$defs/PcAt"
+              },
+              {
+                "$ref": "#/$defs/PcHasTag"
+              },
+              {
+                "$ref": "#/$defs/NpcHasTag"
+              },
+              {
+                "$ref": "#/$defs/NpcDead"
+              },
+              {
+                "$ref": "#/$defs/NpcWithPc"
+              }
+            ]
+          },
+          "minItems": 1,
+          "title": "All",
+          "type": "array"
+        }
+      },
+      "required": [
+        "all"
+      ],
+      "title": "AllOf",
+      "type": "object"
+    },
+    "AnyOf": {
+      "additionalProperties": false,
+      "properties": {
+        "any": {
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/AllOf"
+              },
+              {
+                "$ref": "#/$defs/AnyOf"
+              },
+              {
+                "$ref": "#/$defs/Not"
+              },
+              {
+                "$ref": "#/$defs/SecretRevealedIs"
+              },
+              {
+                "$ref": "#/$defs/ClockFull"
+              },
+              {
+                "$ref": "#/$defs/PcAt"
+              },
+              {
+                "$ref": "#/$defs/PcHasTag"
+              },
+              {
+                "$ref": "#/$defs/NpcHasTag"
+              },
+              {
+                "$ref": "#/$defs/NpcDead"
+              },
+              {
+                "$ref": "#/$defs/NpcWithPc"
+              }
+            ]
+          },
+          "minItems": 1,
+          "title": "Any",
+          "type": "array"
+        }
+      },
+      "required": [
+        "any"
+      ],
+      "title": "AnyOf",
+      "type": "object"
+    },
+    "ClockFull": {
+      "additionalProperties": false,
+      "properties": {
+        "clock_full": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Clock Full",
+          "type": "string"
+        }
+      },
+      "required": [
+        "clock_full"
+      ],
+      "title": "ClockFull",
+      "type": "object"
+    },
+    "Ending": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "when": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/AllOf"
+            },
+            {
+              "$ref": "#/$defs/AnyOf"
+            },
+            {
+              "$ref": "#/$defs/Not"
+            },
+            {
+              "$ref": "#/$defs/SecretRevealedIs"
+            },
+            {
+              "$ref": "#/$defs/ClockFull"
+            },
+            {
+              "$ref": "#/$defs/PcAt"
+            },
+            {
+              "$ref": "#/$defs/PcHasTag"
+            },
+            {
+              "$ref": "#/$defs/NpcHasTag"
+            },
+            {
+              "$ref": "#/$defs/NpcDead"
+            },
+            {
+              "$ref": "#/$defs/NpcWithPc"
+            }
+          ],
+          "title": "When"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "text",
+        "when"
+      ],
+      "title": "Ending",
+      "type": "object"
+    },
+    "Not": {
+      "additionalProperties": false,
+      "properties": {
+        "not": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/AllOf"
+            },
+            {
+              "$ref": "#/$defs/AnyOf"
+            },
+            {
+              "$ref": "#/$defs/Not"
+            },
+            {
+              "$ref": "#/$defs/SecretRevealedIs"
+            },
+            {
+              "$ref": "#/$defs/ClockFull"
+            },
+            {
+              "$ref": "#/$defs/PcAt"
+            },
+            {
+              "$ref": "#/$defs/PcHasTag"
+            },
+            {
+              "$ref": "#/$defs/NpcHasTag"
+            },
+            {
+              "$ref": "#/$defs/NpcDead"
+            },
+            {
+              "$ref": "#/$defs/NpcWithPc"
+            }
+          ],
+          "title": "Not"
+        }
+      },
+      "required": [
+        "not"
+      ],
+      "title": "Not",
+      "type": "object"
+    },
+    "NpcDead": {
+      "additionalProperties": false,
+      "properties": {
+        "npc_dead": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Npc Dead",
+          "type": "string"
+        }
+      },
+      "required": [
+        "npc_dead"
+      ],
+      "title": "NpcDead",
+      "type": "object"
+    },
+    "NpcHasTag": {
+      "additionalProperties": false,
+      "properties": {
+        "npc_has_tag": {
+          "$ref": "#/$defs/NpcTagArgs"
+        }
+      },
+      "required": [
+        "npc_has_tag"
+      ],
+      "title": "NpcHasTag",
+      "type": "object"
+    },
+    "NpcTagArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "npc": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Npc",
+          "type": "string"
+        },
+        "tag": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Tag",
+          "type": "string"
+        }
+      },
+      "required": [
+        "npc",
+        "tag"
+      ],
+      "title": "NpcTagArgs",
+      "type": "object"
+    },
+    "NpcWithPc": {
+      "additionalProperties": false,
+      "properties": {
+        "npc_with_pc": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Npc With Pc",
+          "type": "string"
+        }
+      },
+      "required": [
+        "npc_with_pc"
+      ],
+      "title": "NpcWithPc",
+      "type": "object"
+    },
+    "PcAt": {
+      "additionalProperties": false,
+      "properties": {
+        "pc_at": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Pc At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pc_at"
+      ],
+      "title": "PcAt",
+      "type": "object"
+    },
+    "PcHasTag": {
+      "additionalProperties": false,
+      "properties": {
+        "pc_has_tag": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Pc Has Tag",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pc_has_tag"
+      ],
+      "title": "PcHasTag",
+      "type": "object"
+    },
+    "SecretRevealedIs": {
+      "additionalProperties": false,
+      "properties": {
+        "secret_revealed": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Secret Revealed",
+          "type": "string"
+        }
+      },
+      "required": [
+        "secret_revealed"
+      ],
+      "title": "SecretRevealedIs",
+      "type": "object"
+    }
+  },
+  "items": {
+    "$ref": "#/$defs/Ending"
+  },
+  "type": "array",
+  "title": "GMinator scenario endings (endings.yaml)"
+}

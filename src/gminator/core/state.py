@@ -6,13 +6,16 @@ from pydantic import BaseModel, ConfigDict
 
 from gminator.core.events import (
     CharacterCreated,
+    CharacterMoved,
     ChoiceMade,
     ClockAdvanced,
     ClockCreated,
     DiceRolled,
     Event,
     ForwardChanged,
+    GameEnded,
     GameStarted,
+    GmMoveMade,
     GmMoveTriggered,
     HoldChanged,
     HpChanged,
@@ -20,6 +23,7 @@ from gminator.core.events import (
     ItemUsed,
     MoveMade,
     QuestionsAsked,
+    SecretRevealed,
     TagAdded,
     TagRemoved,
     XpMarked,
@@ -53,6 +57,7 @@ class Character(_State):
     hold: dict[str, int] = {}
     forward: int = 0
     inventory: tuple[Possession, ...] = ()
+    location: str | None = None
 
 
 class Clock(_State):
@@ -66,6 +71,8 @@ class GameState(_State):
     rng_position: int = 0
     characters: dict[str, Character] = {}
     clocks: dict[str, Clock] = {}
+    revealed: tuple[str, ...] = ()
+    ending: str | None = None
 
 
 def replay(events: Iterable[Event]) -> GameState:
@@ -80,6 +87,8 @@ def replay(events: Iterable[Event]) -> GameState:
 
 
 def apply(state: GameState, event: Event) -> GameState:
+    if state.ending is not None:
+        raise ReplayError(f"the game has ended ({state.ending})")
     match event:
         case GameStarted():
             raise ReplayError("the game has already started")
@@ -157,7 +166,15 @@ def apply(state: GameState, event: Event) -> GameState:
                 raise ReplayError(f"no clock {event.clock_id!r}")
             filled = min(clock.filled + event.amount, clock.segments)
             return _with_clock(state, event.clock_id, clock.model_copy(update={"filled": filled}))
-        case MoveMade() | ChoiceMade() | QuestionsAsked() | GmMoveTriggered():
+        case CharacterMoved():
+            return _update(state, event.character_id, location=event.location_id)
+        case SecretRevealed():
+            if event.secret_id in state.revealed:
+                return state
+            return state.model_copy(update={"revealed": (*state.revealed, event.secret_id)})
+        case GameEnded():
+            return state.model_copy(update={"ending": event.ending_id})
+        case MoveMade() | ChoiceMade() | QuestionsAsked() | GmMoveTriggered() | GmMoveMade():
             return state
 
 

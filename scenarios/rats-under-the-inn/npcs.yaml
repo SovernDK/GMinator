@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=../../schemas/npcs.schema.json
+- id: maud
+  name: Maud
+  description: The innkeeper, broad and tired, with flour on her sleeves.
+  location: common_room
+  max_hp: 6
+  drive: Keep the inn afloat, whatever it takes.
+  voice: Brisk and warm, until money comes up.
+  attitude: friendly
+  knows: [inn_smuggling]
+- id: corwin
+  name: Corwin
+  description: Maud's business partner, thin and well dressed, with very small teeth.
+  location: common_room
+  max_hp: 12
+  armor: 1
+  damage: d8
+  drive: Get rich, stay hidden, and get out before the swarm turns.
+  voice: Soft, amused, always one joke away from a threat.
+  attitude: ambiguous
+  knows: [inn_smuggling, corwin_is_wererat]
+- id: pip
+  name: Pip
+  description: The stable hand, a skinny boy with a bandaged hand.
+  location: common_room
+  max_hp: 3
+  drive: Stay out of Corwin's sight.
+  voice: Mumbled, quick, always glancing at the door.
+  attitude: frightened
+  knows: [pip_saw_corwin]
+- id: giant_rats
+  name: The giant rats
+  description: A pack of rats the size of dogs.
+  location: cellar
+  max_hp: 7
+  damage: d6
+  drive: Eat.
+  attitude: hostile
+- id: swarm
+  name: The swarm
+  description: Thousands of rats moving as one.
+  location: nest
+  max_hp: 16
+  damage: d6
+  drive: Feed and multiply.
+  attitude: hostile

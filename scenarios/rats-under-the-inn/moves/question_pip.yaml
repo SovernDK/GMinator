@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=../../../schemas/scenario_move.schema.json
+id: question_pip
+name: Question Pip
+category: special
+trigger: When you coax out of Pip what he has seen at night
+requires: {npc_with_pc: pip}
+roll: stat.cha
+outcomes:
+  strong:
+    text: Pip whispers it all, then begs you not to tell anyone it was him.
+    effects:
+      - reveal_secret: pip_saw_corwin
+  partial:
+    text: Pip tells you, but too loudly. Someone may have heard.
+    effects:
+      - reveal_secret: pip_saw_corwin
+      - gm_move: soft
+  miss:
+    text: The GM makes a move.
+    effects:
+      - gm_move: hard
