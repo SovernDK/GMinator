@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../../../schemas/class.schema.json
+id: fighter
+name: Fighter
+description: A master of arms and armor.
+damage: d10
+max_hp: 10 + score.con
+moves: [bend_bars_lift_gates]
+starting_gear: [dungeon_rations]
+gear_choices:
+  - label: Choose your weapon
+    options: [[short_sword], [spear]]
+  - label: Choose your defenses
+    options: [[chainmail, adventuring_gear], [scale_armor]]
+  - label: Choose two
+    n: 2
+    options:
+      - [healing_potion, healing_potion]
+      - [shield]
+      - [antitoxin, dungeon_rations, poultices_and_herbs]

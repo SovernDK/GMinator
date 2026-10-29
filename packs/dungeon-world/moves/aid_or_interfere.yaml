@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=../../../schemas/move.schema.json
+id: aid_or_interfere
+name: Aid or Interfere
+category: basic
+trigger: When you help or hinder someone
+target: true
+# Dungeon World rolls +Bond here; bonds are not in the MVP, so the roll has no modifier.
+roll: 0
+outcomes:
+  strong:
+    text: They take +1 or -2, your choice.
+    effects:
+      - choose_n: &aid
+          n: 1
+          options:
+            - label: Aid, they take +1
+              effects:
+                - add_forward: {amount: 1, target: target}
+            - label: Interfere, they take -2
+              effects:
+                - add_forward: {amount: -2, target: target}
+  partial:
+    text: They take +1 or -2, but you also expose yourself to danger, retribution, or cost.
+    effects:
+      - choose_n: *aid
+      - gm_move: soft
+  miss:
+    text: The GM makes a move.
+    effects:
+      - gm_move: hard

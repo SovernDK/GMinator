@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=../../schemas/pack.schema.json
+id: dungeon-world
+name: Dungeon World
+version: 0.1.0
+license: CC-BY-3.0
+attribution: >-
+  Adapted from the Dungeon World SRD by Sage LaTorra and Adam Koebel,
+  licensed under CC BY 3.0.
+stats: [str, dex, con, int, wis, cha]
+roll: 2d6
+bands: {strong: 10, partial: 7}
+modifiers:
+  - {up_to: 3, modifier: -3}
+  - {up_to: 5, modifier: -2}
+  - {up_to: 8, modifier: -1}
+  - {up_to: 12, modifier: 0}
+  - {up_to: 15, modifier: 1}
+  - {up_to: 17, modifier: 2}
+  - {up_to: 18, modifier: 3}
+score_array: [16, 15, 13, 12, 9, 8]
+# Whenever you roll a 6-, mark XP.
+miss_effects:
+  - mark_xp: 1

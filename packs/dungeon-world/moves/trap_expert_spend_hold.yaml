@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=../../../schemas/move.schema.json
+id: trap_expert_spend_hold
+name: Trap Expert (spend hold)
+category: class
+trigger: As you walk through an area you surveyed with Trap Expert
+text: You spend 1 hold to ask a question.
+effects:
+  - spend_hold: {move: trap_expert}
+  - ask_questions:
+      n: 1
+      questions:
+        - Is there a trap here and if so, what activates it?
+        - What does the trap do when activated?
+        - What else is hidden here?

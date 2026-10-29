@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "GearChoice": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "n": {
+          "default": 1,
+          "exclusiveMinimum": 0,
+          "title": "N",
+          "type": "integer"
+        },
+        "options": {
+          "description": "Each option is a list of item ids",
+          "items": {
+            "items": {
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "minItems": 1,
+          "title": "Options",
+          "type": "array"
+        }
+      },
+      "required": [
+        "label",
+        "options"
+      ],
+      "title": "GearChoice",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "description": {
+      "default": "",
+      "title": "Description",
+      "type": "string"
+    },
+    "damage": {
+      "description": "An expression, e.g. `stat.str` or `d6 + 1`",
+      "title": "Damage",
+      "type": [
+        "string",
+        "integer"
+      ]
+    },
+    "max_hp": {
+      "description": "May refer to `score.<stat>` and `stat.<stat>`",
+      "title": "Max Hp",
+      "type": [
+        "string",
+        "integer"
+      ]
+    },
+    "moves": {
+      "default": [],
+      "items": {
+        "pattern": "^[a-z][a-z0-9_]*$",
+        "type": "string"
+      },
+      "title": "Moves",
+      "type": "array"
+    },
+    "starting_gear": {
+      "default": [],
+      "items": {
+        "pattern": "^[a-z][a-z0-9_]*$",
+        "type": "string"
+      },
+      "title": "Starting Gear",
+      "type": "array"
+    },
+    "gear_choices": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/GearChoice"
+      },
+      "title": "Gear Choices",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "damage",
+    "max_hp"
+  ],
+  "title": "GMinator class (classes/*.yaml)",
+  "type": "object"
+}

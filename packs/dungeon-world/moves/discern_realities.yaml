@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=../../../schemas/move.schema.json
+id: discern_realities
+name: Discern Realities
+category: basic
+trigger: When you closely study a situation or person
+roll: stat.wis
+outcomes:
+  strong:
+    text: Ask the GM 3 questions. Take +1 forward when acting on the answers.
+    effects:
+      - ask_questions: &questions
+          n: 3
+          questions:
+            - What happened here recently?
+            - What is about to happen?
+            - What should I be on the lookout for?
+            - What here is useful or valuable to me?
+            - Who's really in control here?
+            - What here is not what it appears to be?
+  partial:
+    text: Ask the GM 1 question. Take +1 forward when acting on the answer.
+    effects:
+      - ask_questions:
+          <<: *questions
+          n: 1
+  miss:
+    text: The GM makes a move.
+    effects:
+      - gm_move: hard

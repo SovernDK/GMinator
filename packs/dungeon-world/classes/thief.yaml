@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=../../../schemas/class.schema.json
+id: thief
+name: Thief
+description: Quick fingers, quicker wits.
+damage: d8
+max_hp: 6 + score.con
+moves: [tricks_of_the_trade, trap_expert, trap_expert_spend_hold, backstab]
+starting_gear: [dungeon_rations, leather_armor, poison]
+gear_choices:
+  - label: Choose your arms
+    options: [[dagger, short_sword], [rapier]]
+  - label: Choose a ranged weapon
+    options: [[throwing_daggers], [ragged_bow, bundle_of_arrows]]
+  - label: Choose one
+    options: [[adventuring_gear], [healing_potion]]

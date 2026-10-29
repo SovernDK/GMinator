@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../../schemas/tags.schema.json
+- {id: hand, description: "Useful for attacking something within your reach, no further."}
+- {id: close, description: "Useful for attacking something at arm's reach plus a foot or two."}
+- {id: reach, description: "Useful for attacking something several feet away, maybe as far as ten."}
+- {id: near, description: "Useful for attacking if you can see the whites of their eyes."}
+- {id: far, description: "Useful for attacking something in shouting distance."}
+- {id: thrown, description: "Throw it at someone to hurt them."}
+- {id: ammo, description: "Counts as ammunition for appropriate ranged weapons."}
+- {id: precise, description: "Rewards precision over brute force."}
+- {id: worn, description: "To use it, you have to be wearing it."}
+- {id: clumsy, description: "It's unwieldy; take -1 ongoing while using it."}
+- {id: ration, description: "Edible, more or less."}
+- {id: dead, description: "This character has passed beyond the Black Gates."}

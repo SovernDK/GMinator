@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../../schemas/move.schema.json
+id: defend_spend_hold
+name: Defend (spend hold)
+category: basic
+trigger: When you or the thing you defend is attacked while you hold Defend
+target: true
+text: You spend 1 hold.
+effects:
+  - spend_hold: {move: defend}
+  - choose_n:
+      n: 1
+      options:
+        - label: Redirect an attack from the thing you defend to yourself
+        - label: Halve the attack's effect or damage
+        - label: Open up the attacker to an ally, giving them +1 forward against it
+        - label: Deal damage to the attacker equal to your level
+          effects:
+            - deal_damage: {amount: self.level}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "Tag": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "description"
+      ],
+      "title": "Tag",
+      "type": "object"
+    }
+  },
+  "items": {
+    "$ref": "#/$defs/Tag"
+  },
+  "type": "array",
+  "title": "GMinator pack tags (tags.yaml)"
+}

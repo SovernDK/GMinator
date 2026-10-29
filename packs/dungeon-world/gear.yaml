@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../schemas/gear.schema.json
+- {id: dungeon_rations, name: Dungeon rations, uses: 5, weight: 1, tags: [ration]}
+- {id: adventuring_gear, name: Adventuring gear, uses: 5, weight: 1}
+- {id: healing_potion, name: Healing potion, uses: 1}
+- {id: antitoxin, name: Antitoxin, uses: 1}
+- {id: poultices_and_herbs, name: Poultices and herbs, uses: 2, weight: 1}
+- {id: poison, name: Poison, uses: 3}
+- {id: leather_armor, name: Leather armor, armor: 1, weight: 1, tags: [worn]}
+- {id: chainmail, name: Chainmail, armor: 1, weight: 1, tags: [worn]}
+- {id: scale_armor, name: Scale armor, armor: 2, weight: 3, tags: [worn, clumsy]}
+- {id: shield, name: Shield, armor: 1, weight: 2}
+- {id: dagger, name: Dagger, weight: 1, tags: [hand]}
+- {id: short_sword, name: Short sword, weight: 1, tags: [close]}
+- {id: rapier, name: Rapier, weight: 1, tags: [close, precise]}
+- {id: spear, name: Spear, weight: 1, tags: [reach, thrown, near]}
+- {id: throwing_daggers, name: Throwing daggers, tags: [thrown, near]}
+- {id: ragged_bow, name: Ragged bow, weight: 2, tags: [near]}
+- {id: bundle_of_arrows, name: Bundle of arrows, uses: 3, weight: 1, tags: [ammo]}

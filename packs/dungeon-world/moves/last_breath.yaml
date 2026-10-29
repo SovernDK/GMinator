@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=../../../schemas/move.schema.json
+id: last_breath
+name: Last Breath
+category: special
+trigger: When you're dying
+roll: 0
+outcomes:
+  strong:
+    text: You've cheated death. You're no longer dying, but you're still in a bad way.
+  partial:
+    text: Death offers you a bargain.
+    effects:
+      - choose_n:
+          n: 1
+          options:
+            - label: Take Death's bargain and stabilize
+            - label: Refuse, and pass beyond the Black Gates
+              effects:
+                - add_tag: {tag: dead}
+  miss:
+    text: Your time has come. You pass beyond the Black Gates.
+    effects:
+      - add_tag: {tag: dead}

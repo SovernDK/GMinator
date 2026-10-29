@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=../../../schemas/move.schema.json
+id: make_camp
+name: Make Camp
+category: special
+trigger: When you settle in to rest
+text: >-
+  You consume a ration and, if somewhere dangerous, set a watch. After a few hours of
+  uninterrupted sleep you heal damage equal to half your max HP.
+effects:
+  - use_item: {tag: ration}
+  - heal: {amount: self.max_hp / 2}

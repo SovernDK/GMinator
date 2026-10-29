@@ -1,0 +1,16 @@
+{
+  "format": "gminator-save",
+  "version": 1,
+  "events": [
+    {"type": "game_started", "seed": 2026},
+    {"type": "character_created", "character_id": "pc", "name": "Brakka", "stats": {"str": 2, "dex": 0}, "max_hp": 18},
+    {"type": "clock_created", "clock_id": "swarm", "label": "The swarm grows", "segments": 4},
+    {"type": "dice_rolled", "expression": "2d6 + stat.str", "dice": [{"sides": 6, "value": 2}, {"sides": 6, "value": 1}], "total": 5},
+    {"type": "xp_marked", "character_id": "pc", "amount": 1},
+    {"type": "clock_advanced", "clock_id": "swarm", "amount": 1},
+    {"type": "dice_rolled", "expression": "d6", "dice": [{"sides": 6, "value": 4}], "total": 4},
+    {"type": "hp_changed", "character_id": "pc", "amount": -4},
+    {"type": "dice_rolled", "expression": "2d6 + stat.str", "dice": [{"sides": 6, "value": 5}, {"sides": 6, "value": 6}], "total": 13},
+    {"type": "clock_advanced", "clock_id": "swarm", "amount": 2}
+  ]
+}

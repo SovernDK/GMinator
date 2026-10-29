@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../../../schemas/move.schema.json
+id: tricks_of_the_trade
+name: Tricks of the Trade
+category: class
+trigger: When you pick locks or pockets or disable traps
+roll: stat.dex
+outcomes:
+  strong:
+    text: You do it, no problem.
+  partial:
+    text: >-
+      You still do it, but the GM will offer you two options between suspicion,
+      danger, or cost.
+    effects:
+      - gm_move: soft
+  miss:
+    text: The GM makes a move.
+    effects:
+      - gm_move: hard
