@@ -51,6 +51,7 @@ Shared terms used across code, docs and packs. When a term here and the code dis
 ## AI
 
 - **LLMProvider:** the interface to a language model backend. Implementations: Ollama, OpenAI-compatible, Fake (for tests).
+  Each task can have its own provider, and so its own model.
 - **AI tasks:** the three jobs the AI may do.
   - **Classify:** player text → `{kind, move_id?, stat?, target?}`.
   - **Narrate:** prose for an outcome the engine has already decided.
@@ -61,9 +62,14 @@ Shared terms used across code, docs and packs. When a term here and the code dis
 - **Retract:** the marker in a streamed narration that throws away the text streamed so far.
 - **Template fallback:** engine-generated text used when the AI is unavailable or fails.
 - **Evals:** the offline evaluation suite that scores models on the three AI tasks. It is used to pick models; it is not part of unit tests.
+  - **Eval case:** one question for a model: a **scene** (a quick-start character in a new game plus the slash commands that get somewhere), what the player says, and what a good answer looks like.
+  - **Check:** one deterministic test of an answer (`intent`, `fact_check`, `no_rules_talk`, `length`, …). A case passes when all its checks pass; no model judges another.
+  - **Quality bar:** the share of cases each task must pass, and the time budget, that a model must meet to be chosen.
 
 ## Interface
 
 - **Slash command:** an explicit command (`/go`, `/move`, `/sheet`, …) that bypasses the AI.
-- **Confirmation strip:** the TUI prompt where the player accepts, changes or cancels the suggested move.
+- **Confirmation strip:** the TUI prompt where the player accepts or cancels the suggested move.
 - **Story log:** the main TUI pane showing narration, dialogue and roll results.
+- **Choice modal:** the TUI dialog where the player picks the options a move offers (`choose_n`).
+- **Save:** the event log written to disk after every turn. Continuing a save replays it into a new `Session`; reaching an ending removes it.

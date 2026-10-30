@@ -56,12 +56,12 @@ class Session:
             self._portents[danger.id] = danger.portents
         self._commands: dict[str, Callable[[list[str], Decider], list[str]]] = {
             "help": lambda args, decider: [t("command.help")],
-            "look": lambda args, decider: self._look(),
+            "look": lambda args, decider: self.look(),
             "go": self._go,
             "moves": lambda args, decider: self._moves(),
             "move": self._move,
-            "sheet": lambda args, decider: self._sheet(),
-            "clocks": lambda args, decider: self._clocks(),
+            "sheet": lambda args, decider: self.sheet(),
+            "clocks": lambda args, decider: self.clocks(),
             "secrets": lambda args, decider: self._secrets(),
         }
 
@@ -77,6 +77,12 @@ class Session:
             game.record(event)
         return cls(game, pack, scenario, created.character_id)
 
+    @classmethod
+    def resume(cls, pack: Pack, scenario: Scenario, events: Sequence[Event]) -> "Session":
+        """A saved game. The player character is the first one created, as `begin` records."""
+        created = next(e for e in events if isinstance(e, CharacterCreated))
+        return cls(Game(events), pack, scenario, created.character_id)
+
     @property
     def state(self) -> GameState:
         return self.game.state
@@ -87,7 +93,7 @@ class Session:
 
     def opening(self) -> list[str]:
         intro = self.scenario.manifest.intro
-        return [intro, *self._look()] if intro else self._look()
+        return [intro, *self.look()] if intro else self.look()
 
     def handle(self, line: str, decider: Decider) -> list[str]:
         line = line.strip()
@@ -111,7 +117,7 @@ class Session:
             lambda game: game.record(CharacterMoved(character_id=self.pc_id, location_id=place)),
             decider,
         )
-        return lines if self.state.ending else [*lines, *self._look()]
+        return lines if self.state.ending else [*lines, *self.look()]
 
     def _move(self, args: list[str], decider: Decider) -> list[str]:
         if not args:
@@ -199,7 +205,7 @@ class Session:
 
     # Commands that only tell
 
-    def _look(self) -> list[str]:
+    def look(self) -> list[str]:
         location = self.scenario.locations[self._pc_location()]
         graph = build_graph(self.scenario, self.state, self.pc_id)
         lines = [t("look.location", name=location.name)]
@@ -229,7 +235,7 @@ class Session:
             ),
         ]
 
-    def _sheet(self) -> list[str]:
+    def sheet(self) -> list[str]:
         pc = self.state.characters[self.pc_id]
         cls = self.rules.classes.get(pc.class_id) if pc.class_id else None
         stats = ", ".join(f"{name} {value:+d}" for name, value in pc.stats.items())
@@ -261,7 +267,7 @@ class Session:
         lines.append(t("sheet.inventory", items=", ".join(items) or t("sheet.nothing")))
         return lines
 
-    def _clocks(self) -> list[str]:
+    def clocks(self) -> list[str]:
         lines = []
         for danger_id, portents in self._portents.items():
             clock = self.state.clocks[danger_id]

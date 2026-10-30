@@ -7,9 +7,12 @@ from importlib.metadata import version
 import pytest
 
 import gminator
+from gminator.ai.provider import Providers
 from gminator.cli import PromptConfirmer, PromptDecider, main
 from gminator.play.text import t
+from gminator.tui.app import GameApp
 from llm_server import llm_server
+from support import write_files
 
 
 def test_package_version_matches_installed_metadata():
@@ -37,8 +40,32 @@ def test_module_is_runnable_with_python_m():
 
 def play(monkeypatch, capsys, *args: str, typed: str) -> str:
     monkeypatch.setattr("sys.stdin", io.StringIO(typed))
-    main(["play", *args])
+    main(["play", "--plain", *args])
     return capsys.readouterr().out
+
+
+def launched(monkeypatch, *args: str) -> GameApp:
+    apps: list[GameApp] = []
+    monkeypatch.setattr(GameApp, "run", lambda self: apps.append(self))
+    main(["play", *args])
+    return apps[0]
+
+
+def test_play_opens_the_game_in_the_terminal_interface(monkeypatch, tmp_path):
+    app = launched(monkeypatch, "--seed", "3", "--save", str(tmp_path / "game.json"))
+
+    assert app.scenario.manifest.name == "Rats Under the Inn"
+    assert app.seed == 3
+    assert app.save_path == tmp_path / "game.json"
+    assert app.providers is None
+
+
+def test_the_terminal_interface_gets_the_narrator(monkeypatch, tmp_path, unused_url):
+    args = ["--provider", "ollama", "--url", unused_url, "--save", str(tmp_path / "game.json")]
+
+    app = launched(monkeypatch, *args)
+
+    assert isinstance(app.providers, Providers)
 
 
 def test_play_opens_the_scenario_and_runs_commands(monkeypatch, capsys):
@@ -150,3 +177,82 @@ def test_prompt_confirmer_takes_enter_or_yes_and_anything_else_as_no(monkeypatch
 
     assert answers == [True, True, True, False, False]
     assert "Go to The cellar?" in capsys.readouterr().out
+
+
+def test_each_task_can_use_its_own_model(monkeypatch, capsys, ollama):
+    ollama.reply_json(classified(kind="travel", target="cellar"))
+    ollama.reply(*stream("Damp stairs creak underfoot."))
+    args = ["--provider", "ollama", "--url", ollama.url, "--model", "tiny"]
+    args += ["--narrate-model", "big"]
+
+    play(monkeypatch, capsys, *args, typed="I go down to the cellar\n\n/quit\n")
+
+    assert [body["model"] for _, body, _ in ollama.requests] == ["tiny", "big"]
+
+
+# Evals
+
+CASES = {
+    "classify.yaml": """\
+        - id: down
+          said: I go down to the cellar
+          expect: {kind: travel, target: cellar}
+        """,
+    "voice.yaml": """\
+        - id: ask_maud
+          npc: maud
+          said: Hello
+        """,
+}
+
+BAR = {
+    "bar.toml": """\
+        [pass_rate]
+        classify = 0.8
+        narrate = 0.8
+        voice = 0.8
+
+        [seconds]
+        first_text = 60.0
+        turn = 60.0
+        """
+}
+
+
+def test_eval_scores_each_model_against_the_bar(tmp_path, capsys, ollama):
+    write_files(tmp_path / "cases", CASES)
+    write_files(tmp_path, BAR)
+    ollama.reply_json(classified(kind="travel", target="cellar"))
+    ollama.reply_json(classified(kind="look"))
+    args = ["eval", "--url", ollama.url, "--model", "good", "--model", "bad"]
+    args += ["--task", "classify", "--cases", str(tmp_path / "cases")]
+    args += ["--bar", str(tmp_path / "bar.toml"), "--out", str(tmp_path / "results.json")]
+
+    main(args)
+
+    output = capsys.readouterr().out
+    good, bad = output.split("\nbad\n")
+    assert "good" in good
+    assert "meets the bar" in good
+    assert "does not meet the bar" in bad
+    assert "failed: down" in bad
+    assert [body["model"] for _, body, _ in ollama.requests] == ["good", "bad"]
+    saved = json.loads((tmp_path / "results.json").read_text())
+    assert [result["passed"] for result in saved["good"]] == [True]
+    assert [result["passed"] for result in saved["bad"]] == [False]
+
+
+def test_eval_refuses_cases_that_cannot_be_set_up(tmp_path, capsys, unused_url):
+    write_files(
+        tmp_path / "cases",
+        {"voice.yaml": "- {id: ask_swarm, npc: swarm, said: hi}\n"},
+    )
+    write_files(tmp_path, BAR)
+    args = ["eval", "--url", unused_url, "--cases", str(tmp_path / "cases")]
+    args += ["--bar", str(tmp_path / "bar.toml")]
+
+    with pytest.raises(SystemExit) as exit_info:
+        main(args)
+
+    assert exit_info.value.code == 1
+    assert "voice case ask_swarm: swarm is not here" in capsys.readouterr().err

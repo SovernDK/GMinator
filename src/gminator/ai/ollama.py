@@ -50,6 +50,7 @@ class OllamaProvider:
             "model": self.model,
             "messages": [{"role": m.role, "content": m.content} for m in messages],
             "stream": stream,
+            "think": False,
         }
         if temperature is not None:
             body["options"] = {"temperature": temperature}

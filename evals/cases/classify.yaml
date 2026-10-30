@@ -1,0 +1,154 @@
+# Classify: the player's words in a scene, and the intents that count as right.
+# A scene is a quick-start character in a new game plus the slash commands that get there.
+
+# In the common room, at the start: Maud, Corwin and Pip are here; the cellar is the way on.
+- id: start_go_down
+  said: I head down through the trapdoor
+  expect: {kind: travel, target: cellar}
+- id: start_look
+  said: What does this place look like?
+  expect:
+    - {kind: look}
+    - {kind: move, move_id: discern_realities}
+- id: start_inventory
+  said: Let me check what's in my pack
+  expect: {kind: inventory}
+- id: start_how_hurt
+  said: How badly hurt am I right now?
+  expect: {kind: inventory}
+- id: start_save_game
+  said: How do I save the game?
+  expect: {kind: ooc}
+- id: start_out_of_character
+  said: lol this is fun, brb getting a coffee
+  expect: {kind: ooc}
+- id: start_gibberish
+  said: asdf qwerty
+  expect:
+    - {kind: unclear}
+    - {kind: ooc}
+- id: start_talk_maud
+  said: Maud, how long have the rats been a problem?
+  expect: {kind: talk, target: maud}
+- id: start_talk_corwin
+  said: Corwin, you seem awfully calm about all this.
+  expect: {kind: talk, target: corwin}
+- id: start_question_pip
+  said: I kneel down next to Pip and gently coax him into telling me what he's seen at night
+  expect: {kind: move, move_id: question_pip}
+- id: start_study_corwin
+  said: I watch Corwin closely, looking for anything off about him
+  expect: {kind: move, move_id: discern_realities}
+- id: start_punch_corwin
+  said: I punch Corwin in the face
+  expect: {kind: move, move_id: hack_and_slash, target: corwin}
+- id: start_bribe_corwin
+  said: I slide five gold across the table and tell Corwin it's his if he tells me the truth
+  expect: {kind: move, move_id: parley, target: corwin}
+- id: start_lore_rats
+  said: What do I know about giant rats from my travels?
+  expect: {kind: move, move_id: spout_lore}
+- id: start_rest
+  said: I settle down by the fire and rest for the night
+  expect: {kind: move, move_id: make_camp}
+- id: start_help_maud
+  said: I help Maud drag the heavy kegs away from the trapdoor
+  expect:
+    - {kind: move, move_id: aid_or_interfere, target: maud}
+    - {kind: move, move_id: bend_bars_lift_gates}
+
+# In the cellar: the giant rats are here.
+- id: cellar_attack_rats
+  scene: &cellar {commands: [/go cellar]}
+  said: I hack at the giant rats with my sword
+  expect: {kind: move, move_id: hack_and_slash, target: giant_rats}
+- id: cellar_dodge
+  scene: *cellar
+  said: A rat lunges at my throat and I throw myself out of the way
+  expect:
+    - {kind: move, move_id: defy_danger, stat: dex}
+- id: cellar_hold_the_trapdoor
+  scene: *cellar
+  said: I stand in front of the trapdoor so none of the rats get upstairs
+  expect: {kind: move, move_id: defend}
+- id: cellar_smash_barricade
+  scene: *cellar
+  said: I tear apart the rotten barricade of crates with my bare hands
+  expect: {kind: move, move_id: bend_bars_lift_gates}
+- id: cellar_back_up
+  scene: *cellar
+  said: I climb back up to the common room
+  expect: {kind: travel, target: common_room}
+- id: cellar_through_the_wall
+  scene: *cellar
+  said: I squeeze through the hole in the back wall
+  expect: {kind: travel, target: broken_wall}
+- id: cellar_thief_throw
+  scene: &thief_cellar {class_id: thief, commands: [/go cellar]}
+  said: I throw a dagger at the biggest rat from across the room
+  expect: {kind: move, move_id: volley, target: giant_rats}
+- id: cellar_thief_backstab
+  scene: *thief_cellar
+  said: While the rats are busy feeding, I creep up behind one and stab it in the back
+  expect: {kind: move, move_id: backstab, target: giant_rats}
+
+# Deeper in: the broken wall, the cache and the flooded gallery.
+- id: wall_thief_traps
+  scene: {class_id: thief, commands: [/go cellar, /go broken_wall]}
+  said: I take a moment to check the tunnel ahead for traps and tripwires
+  expect:
+    - {kind: move, move_id: trap_expert}
+- id: wall_to_the_cache
+  scene: &wall {commands: [/go cellar, /go broken_wall]}
+  said: I follow the side passage into the dry cave
+  expect: {kind: travel, target: cache}
+- id: wall_to_the_water
+  scene: *wall
+  said: I wade toward the sound of running water
+  expect: {kind: travel, target: gallery}
+- id: cache_search
+  scene: &cache {commands: [/go cellar, /go broken_wall, /go cache]}
+  said: I go through the crates and the papers on the desk
+  expect: {kind: move, move_id: search_the_cache}
+- id: cache_thief_lock
+  scene: {class_id: thief, commands: [/go cellar, /go broken_wall, /go cache]}
+  said: I pick the lock on the little writing desk
+  expect: {kind: move, move_id: tricks_of_the_trade}
+- id: gallery_wrench_free
+  scene: &gallery {commands: [/go cellar, /go broken_wall, /go gallery]}
+  said: Something grabs my leg under the water and I wrench myself free with brute strength
+  expect: {kind: move, move_id: defy_danger, stat: str}
+- id: gallery_to_the_river
+  scene: *gallery
+  said: I follow the sound of the river out of here
+  expect: {kind: travel, target: river_exit}
+- id: gallery_to_the_nest
+  scene: *gallery
+  said: I head toward the squeaking, into the nest
+  expect: {kind: travel, target: nest}
+
+# The rat nest: the swarm is here.
+- id: nest_attack_swarm
+  scene: &nest {commands: [/go cellar, /go broken_wall, /go gallery, /go nest]}
+  said: I charge into the swarm swinging my sword
+  expect: {kind: move, move_id: hack_and_slash, target: swarm}
+- id: nest_keep_calm
+  scene: *nest
+  said: Rats crawl all over me and I force myself to stay calm and not panic
+  expect:
+    - {kind: move, move_id: defy_danger, stat: wis}
+    - {kind: move, move_id: defy_danger, stat: con}
+
+# Back in the common room, knowing what Corwin is.
+- id: exposed_denounce
+  scene: &knowing
+    class_id: thief
+    commands:
+      [/go cellar, /go broken_wall, /go cache, /move search_the_cache, /go broken_wall,
+       /go cellar, /go common_room]
+  said: Maud, look at this ledger. Your partner is a wererat, and he's using you!
+  expect: {kind: move, move_id: denounce_corwin, target: maud}
+- id: exposed_deal
+  scene: *knowing
+  said: Corwin, I'll keep quiet about what you are, for a share of your profits
+  expect: {kind: move, move_id: strike_a_deal, target: corwin}

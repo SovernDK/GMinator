@@ -55,13 +55,25 @@ Vocabulary is defined in [CONTEXT.md](CONTEXT.md). Key decisions are recorded in
 - Left out of M3 (the no-AI game), for the narrator or later milestones:
   - Questions from Discern Realities and Spout Lore are recorded but get no answers until the narrator (M4)
   - NPCs act only through GM moves; there is no NPC turn or NPC-initiated movement beyond `move_to` effects
-  - Character creation in the CLI is a quick start (scores in stat order, first gear options); real creation is M6
-  - Save and resume from the command line (the event log already saves and replays)
+  - Character creation in the CLI is a quick start (scores in stat order, first gear options); real creation is M6 (done in the TUI; `--plain` keeps the quick start)
+  - Save and resume from the command line (the event log already saves and replays); done in M6 for the TUI
 - Left out of M4 (the AI layer), for the evals or later milestones:
   - The fact check catches scenario and pack names only; names the model invents outright pass
   - Discern Realities and Spout Lore questions still get no answers
   - Narration quality (numbers repeated from the facts, odd move choices) is for the M5 evals, as are per-task models and settings
+- Left out of M5 (the evals), for later:
+  - The quality bar is set but not met. `granite4.1:3b` is the model for every task for now; it fails the bar on classify (56% of cases against 80%) and on turn time (10.2 s against 10 s). Prompt work and other 3–4B models are left for later ([evals/README.md](../evals/README.md#results))
+  - `qwen3.5:2b` (nvfp4, on Ollama 0.40.2) timed out on schema-forced classify and has no valid result
+  - Times were measured on an Apple M1 GPU, not on the CPU-only 8 GB reference machine
+  - Per-task settings other than the model (temperature, sentence caps); a config file for per-task models (flags only for now)
+  - Scoring is deterministic only; there is no model-as-judge for prose quality
   - The CLI runs without AI unless `--provider` is given; first-run detection of Ollama is M7
+- Left out of M6 (the TUI), for later:
+  - The confirmation strip accepts or cancels; there is no `[Tab] other move` to pick a different move from it (type the slash command instead)
+  - One save slot; the game saves after every turn and drops the save at an ending. No save list, undo or replay view
+  - The story log is not restored on resume: a resumed game opens on `/look`, and the narrator starts without the last session's recent events
+  - Character creation has no look, alignment, bonds or race choices (none are in the M2 pack)
+  - Not yet played end to end on the CPU-only reference machine with a model
 - Embedded inference backend (llama.cpp), standalone binaries
 - Other languages
 
@@ -139,8 +151,8 @@ Every milestone is **test-first** and ends in something that can be demoed.
 | **M2** | Pack system + DW pack | Pydantic pack models, YAML loader with file/line errors, JSON Schema export, effect set, DW basic moves + Last Breath + Make Camp, Fighter, Thief, gear, tags | A test resolves every DW basic move from YAML; a new move added in YAML alone works |
 | **M3** | Scenario + GM | Scenario model and entity graph, fronts and clocks, GM move selector, NPC stat blocks, end conditions, `reveal_secret` and `move_to` effects, the *Rats Under the Inn* scenario; slash commands + templated text | The scenario plays to every ending with **no AI** |
 | **M4** | AI layer | `LLMProvider` (Ollama, OpenAI-compatible, fake), classify/narrate/NPC tasks with schema output, `ContextBuilder`, secret gating, fact check + regeneration + fallback, streaming | A full playthrough with the fake provider; manual play on Ollama |
-| **M5** | Evaluations | Harness, ~30 cases per task, scoring, model comparison (`granite4.1:3b`, `qwen3.5:2b`, others in the 2–4B range), per-task model config | A model chosen; the quality bar set and met |
-| **M6** | TUI | Textual layout, confirmation strip, modals, title screen, DW character creation, streaming display | The scenario plays end to end in the TUI |
+| **M5** | Evaluations | Harness, ~30 cases per task, scoring, model comparison (`granite4.1:3b`, `qwen3.5:2b`, others in the 2–4B range), per-task model config | A model chosen; the quality bar set and met (bar set, not yet met; see §2 Out) |
+| **M6** | TUI | Textual layout, confirmation strip, modals, title screen, DW character creation, streaming display | The scenario plays end to end in the TUI (done: `tests/tui/test_app.py`) |
 | **M7** | Ship | First-run Ollama check and model pull, `uvx` packaging, pack/scenario authoring guide | Shipping gate passes (see below) |
 
 ### Definition of done — two gates, in order

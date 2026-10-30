@@ -1,0 +1,10 @@
+# The quality bar a model must meet to be chosen. See evals/README.md.
+
+[pass_rate]
+classify = 0.8
+narrate = 0.8
+voice = 0.8
+
+[seconds]
+first_text = 2.0
+turn = 10.0

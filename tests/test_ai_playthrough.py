@@ -55,8 +55,10 @@ def play(pack, scenario, seed: int, class_id: str, said: list[str]) -> tuple[Tab
 
 
 def prompts(table: Table) -> str:
-    assert isinstance(table.provider, FakeProvider)
-    return "\n".join(m.content for r in table.provider.requests for m in r.messages)
+    assert table.providers is not None
+    provider = table.providers.classify
+    assert isinstance(provider, FakeProvider)
+    return "\n".join(m.content for r in provider.requests for m in r.messages)
 
 
 def assert_no_unrevealed_secret_was_told(table: Table, scenario) -> None:

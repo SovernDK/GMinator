@@ -9,6 +9,7 @@ dist/
 .coverage
 htmlcov/
 .DS_Store
+BUGS.md
 
 # Local saves and logs produced while playing
 saves/

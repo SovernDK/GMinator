@@ -25,6 +25,7 @@ def test_complete_posts_the_chat_and_returns_the_reply(server):
     assert path == "/api/chat"
     assert body["model"] == "granite4.1:3b"
     assert body["stream"] is False
+    assert body["think"] is False
     assert body["messages"] == [
         {"role": "system", "content": "Be brief."},
         {"role": "user", "content": "Hello?"},

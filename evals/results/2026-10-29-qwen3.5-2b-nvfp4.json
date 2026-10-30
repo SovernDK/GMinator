@@ -1,0 +1,1443 @@
+{
+  "qwen3.5:2b-nvfp4": [
+    {
+      "task": "classify",
+      "case_id": "start_go_down",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: timed out",
+      "seconds": 120.00916225000401,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_look",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: timed out",
+      "seconds": 120.00997437500337,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_inventory",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: timed out",
+      "seconds": 120.0046274579945,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_how_hurt",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: timed out",
+      "seconds": 120.00572087499313,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_save_game",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"ooc\"}",
+      "seconds": 107.85859808301029,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_out_of_character",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: timed out",
+      "seconds": 120.00401483300084,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_gibberish",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: timed out",
+      "seconds": 120.00423441700696,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_talk_maud",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"talk\",\"target\":\"maud\"}",
+      "seconds": 72.94300250000379,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_talk_corwin",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: timed out",
+      "seconds": 120.00278199999593,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_question_pip",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"talk\",\"target\":\"pip\"}",
+      "seconds": 45.13706287500099,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_study_corwin",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"look\"}",
+      "seconds": 108.65164374999586,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_punch_corwin",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: timed out",
+      "seconds": 120.00190424999164,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_bribe_corwin",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: timed out",
+      "seconds": 120.0139088750002,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_lore_rats",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: timed out",
+      "seconds": 120.00544233400433,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_rest",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: timed out",
+      "seconds": 120.0060595840041,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_help_maud",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: Remote end closed connection without response",
+      "seconds": 83.31285479100188,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_attack_rats",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0025003330083563924,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_dodge",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0007430830009980127,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_hold_the_trapdoor",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0006650830036960542,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_smash_barricade",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0008872090111253783,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_back_up",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0010306250042049214,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_through_the_wall",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0008184580074157566,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_thief_throw",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0006568329990841448,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_thief_backstab",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0006468330102507025,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "wall_thief_traps",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0007569590088678524,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "wall_to_the_cache",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0007414169958792627,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "wall_to_the_water",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.001121375011280179,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cache_search",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0013125420082360506,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cache_thief_lock",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.002351708011701703,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "gallery_wrench_free",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.001446334004867822,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "gallery_to_the_river",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0010365000052843243,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "gallery_to_the_nest",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0012796249939128757,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "nest_attack_swarm",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0012562089978018776,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "nest_keep_calm",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0016519170021638274,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "exposed_denounce",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0009654169989516959,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "exposed_deal",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "intent": false
+      },
+      "output": "http://localhost:11434/api/chat: <urlopen error [Errno 61] Connection refused>",
+      "seconds": 0.0008107499888865277,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "go_down_to_the_cellar",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0018402080022497103,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "go_back_up",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0012651249999180436,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "go_through_the_wall",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00116695900214836,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "go_to_the_cache",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.001468417001888156,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "go_into_the_water",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0010720410064095631,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "go_into_the_nest",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0009188749972963706,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "go_out_to_the_river",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.001139125000918284,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "hack_the_rats_weak_hit",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0011987089965259656,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "hack_the_rats_strong_hit",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0009154169965768233,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "hack_the_rats_miss",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0010363750043325126,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "thief_throws_a_dagger",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0010975420009344816,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "thief_backstabs",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0008813750027911738,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "hack_at_the_swarm",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0010418750025564805,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "punch_corwin",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0009684590040706098,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "dodge_a_rat",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0010708330082707107,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "wrench_free_in_the_water",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0010190840112045407,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "endure_the_nest",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0010083749948535115,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "hold_the_trapdoor",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0009587910026311874,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "smash_the_barrels",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0008877910004230216,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "study_the_room",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0021674580057151616,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "remember_rat_lore",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0010537080088397488,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "lean_on_corwin",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0014475000061793253,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "help_maud",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0011662499891826883,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "rest_by_the_fire",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.000774750005803071,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "thief_checks_for_traps",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0007417919987346977,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "thief_picks_the_desk",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0008800420037005097,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "question_pip_strong_hit",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.000930041991523467,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "question_pip_miss",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.001067083008820191,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "search_the_cache_weak_hit",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0010694160009734333,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "denounce_corwin",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0012894999963464215,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "strike_a_deal",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "speaker": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0013187080039642751,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_whats_wrong",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0003928340011043474,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_the_pay",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00035149999894201756,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_who_is_he",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0003728340088855475,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_other_way_in",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00037812499795109034,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_meal_first",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0003387080068932846,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_nervous",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0003887920029228553,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_about_pip",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00040291700861416757,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_where_to_start",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00038308301009237766,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_trust_corwin",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0004028749972349033,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_not_worried",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00043341600394342095,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_business",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0004279589920770377,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_cellar",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0004686250031227246,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_last_night",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00034949999826494604,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_come_along",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00033679199987091124,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_dislike",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0003486660134512931,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_rat_lore",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0003279170050518587,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_hand",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00044604099821299314,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_dont_be_scared",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00037833399255760014,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_anything_strange",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00035450000723358244,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_corwin",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00036612499388866127,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_which_way",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00042874999053310603,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_coin",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00037658300425391644,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_tell_again",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00036587500653695315,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_tell_maud",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00037970799894537777,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_whistling",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00040316600643564016,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_i_know",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0005111250065965578,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_call_them_off",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0007494589954148978,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_hears_it",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": false,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0006331670010695234,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_the_crates",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.00041783299820963293,
+      "first_text": null
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_knowing",
+      "passed": false,
+      "checks": {
+        "answered": false,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": false,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "",
+      "seconds": 0.0003496249992167577,
+      "first_text": null
+    }
+  ]
+}

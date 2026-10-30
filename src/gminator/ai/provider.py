@@ -41,6 +41,20 @@ class LLMProvider(Protocol):
 
 
 @dataclass(frozen=True)
+class Providers:
+    """A provider for each AI task, so each task can have the model that does it best."""
+
+    classify: LLMProvider
+    narrate: LLMProvider
+    voice: LLMProvider
+
+    @classmethod
+    def one(cls, provider: LLMProvider) -> "Providers":
+        """The same provider for every task."""
+        return cls(provider, provider, provider)
+
+
+@dataclass(frozen=True)
 class Request:
     messages: Sequence[Message]
     schema: Schema | None = None

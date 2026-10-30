@@ -1,0 +1,1443 @@
+{
+  "granite4.1:3b": [
+    {
+      "task": "classify",
+      "case_id": "start_go_down",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"travel\",\"target\":\"cellar\"}",
+      "seconds": 6.610425790990121,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_look",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"look\"}",
+      "seconds": 1.9384286669956055,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_inventory",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"inventory\"}",
+      "seconds": 1.6304604999895673,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_how_hurt",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"look\"}",
+      "seconds": 1.8040285410097567,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_save_game",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"ooc\"}",
+      "seconds": 1.627307999995537,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_out_of_character",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"talk\",\"target\":\"pip\"}",
+      "seconds": 1.4124643750110408,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_gibberish",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"unclear\"}",
+      "seconds": 1.6545599999953993,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_talk_maud",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"talk\",\"target\":\"maud\"}",
+      "seconds": 1.3886514589976287,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_talk_corwin",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"talk\",\"target\":\"corwin\"}",
+      "seconds": 1.3566575830045622,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_question_pip",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"talk\",\"target\":\"pip\"}",
+      "seconds": 1.2600862919935025,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_study_corwin",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"look\"}",
+      "seconds": 1.7313272500032326,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_punch_corwin",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"hack_and_slash\",\"target\":\"corwin\"}",
+      "seconds": 1.8713241670047864,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_bribe_corwin",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"talk\",\"target\":\"pip\"}",
+      "seconds": 1.4018760839971947,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_lore_rats",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"ooc\"}",
+      "seconds": 1.330243583986885,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_rest",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"make_camp\"}",
+      "seconds": 1.6305206669931067,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "start_help_maud",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"aid_or_interfere\",\"target\":\"maud\"}",
+      "seconds": 1.8200615409878083,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_attack_rats",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"hack_and_slash\",\"target\":\"giant_rats\"}",
+      "seconds": 3.9947207499935757,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_dodge",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"hack_and_slash\",\"target\":\"giant_rats\"}",
+      "seconds": 1.92098083300516,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_hold_the_trapdoor",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"defend\"}",
+      "seconds": 2.056940416994621,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_smash_barricade",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"bend_bars_lift_gates\"}",
+      "seconds": 1.7939895000017714,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_back_up",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"travel\",\"target\":\"common_room\"}",
+      "seconds": 1.487972750008339,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_through_the_wall",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"bend_bars_lift_gates\"}",
+      "seconds": 1.7793974169908324,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_thief_throw",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"hack_and_slash\",\"target\":\"giant_rats\"}",
+      "seconds": 4.1222302919923095,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cellar_thief_backstab",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"backstab\",\"target\":\"giant_rats\"}",
+      "seconds": 1.8092333329987014,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "wall_thief_traps",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"trap_expert\"}",
+      "seconds": 3.9768248749896884,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "wall_to_the_cache",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"travel\",\"target\":\"gallery\"}",
+      "seconds": 3.109903958000359,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "wall_to_the_water",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"make_camp\"}",
+      "seconds": 1.5764991670002928,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cache_search",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"search_the_cache\"}",
+      "seconds": 3.7526259160076734,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "cache_thief_lock",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"travel\",\"target\":\"broken_wall\"}",
+      "seconds": 4.101239667012123,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "gallery_wrench_free",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"bend_bars_lift_gates\"}",
+      "seconds": 4.240163291993667,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "gallery_to_the_river",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"travel\",\"target\":\"river_exit\"}",
+      "seconds": 1.6001272080029594,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "gallery_to_the_nest",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"unclear\"}",
+      "seconds": 3.3214654159964994,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "nest_attack_swarm",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"hack_and_slash\",\"target\":\"swarm\"}",
+      "seconds": 3.7031019999994896,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "nest_keep_calm",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"talk\",\"target\":\"swarm\"}",
+      "seconds": 1.684910583004239,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "exposed_denounce",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "intent": false
+      },
+      "output": "{\"kind\":\"ooc\"}",
+      "seconds": 4.459249874998932,
+      "first_text": null
+    },
+    {
+      "task": "classify",
+      "case_id": "exposed_deal",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "intent": true
+      },
+      "output": "{\"kind\":\"move\",\"move_id\":\"strike_a_deal\",\"target\":\"corwin\"}",
+      "seconds": 1.732058124995092,
+      "first_text": null
+    },
+    {
+      "task": "narrate",
+      "case_id": "go_down_to_the_cellar",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You descend through the creaky trapdoor into the dank cellar. The air is cold and musty, thick with the scent of damp wood and something foul. Around you, barrels and sacks lie abandoned, their contents long pilfered by something large and hungry. Giant rats, their size suggesting they could easily snap a human finger, scuttle about in the shadows, their presence evident by the droppings scattered across the floor.",
+      "seconds": 5.540767375001451,
+      "first_text": 1.183200208004564
+    },
+    {
+      "task": "narrate",
+      "case_id": "go_back_up",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You tread carefully back toward the common room, the creaking boards echoing under your boots. The air is thick with the scent of damp stone and stale ale, and you pass by Maud the innkeeper, her hands stained with flour, and Corwin, his small teeth glinting in the low light. As you reach the common room, you notice Pip the stable hand, his bandaged hand tucked behind his back, watching you with a wary eye.",
+      "seconds": 6.157433166998089,
+      "first_text": 1.3600491249962943
+    },
+    {
+      "task": "narrate",
+      "case_id": "go_through_the_wall",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You push through the narrow passage, your shoulder brushing against the rough stone as you enter the smugglers' cache. The air here is damp and musty, carrying hints of brine and shadowed goods. Ahead, flickering torchlight reveals crates stacked haphazardly along the walls, their contents obscured by tattered cloaks and whispered secrets. No one is present to greet your arrival, only the echoing creak of old timbers and the distant murmur of unseen activity.",
+      "seconds": 6.036934582996764,
+      "first_text": 1.0547293330018874
+    },
+    {
+      "task": "narrate",
+      "case_id": "go_to_the_cache",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You find yourself in a dry side cave, the air heavy with the scent of damp wood and forgotten goods. Crates, their labels faded and marked for ports unknown to you, lie stacked haphazardly alongside a lantern hook and a small writing desk, its surface worn and inscribed with faded notes. No other souls are present in this dimly lit space, and the only sound is the gentle drip of water from the broken wall above, echoing through the cavern.",
+      "seconds": 5.645532707989332,
+      "first_text": 0.915939291997347
+    },
+    {
+      "task": "narrate",
+      "case_id": "go_into_the_water",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You step into the black water, your feet sinking to your knees, and a swift movement passes just beyond your legs. The distant roar of a river echoes through the flooded gallery, creating an eerie atmosphere around you. With your short sword at the ready and shield braced for impact, you navigate the murky path toward The hidden river exit, determined to find a way out of this submerged labyrinth.",
+      "seconds": 4.870337416999973,
+      "first_text": 1.0437619580043247
+    },
+    {
+      "task": "narrate",
+      "case_id": "go_into_the_nest",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You find yourself in a cavern filled with straw, bones, and shredded sacking, the floor heaving with countless rats. The swarm of rats moves as one, and you can hear the distant sound of a river from the flooded gallery just beyond this rat nest.",
+      "seconds": 3.706971750012599,
+      "first_text": 1.0370577090070583
+    },
+    {
+      "task": "narrate",
+      "case_id": "go_out_to_the_river",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You slip through the fissure in the stone, the air damp and cool beneath the village. A rowing boat, its oars still resting on the bank, beckons you toward the rushing water below. The only other presence here is the echo of the river's distant current, carrying you away from the shadowy perils that lurk in the depths of the Drowned Rat's domain.",
+      "seconds": 5.194999874991481,
+      "first_text": 1.0379704590013716
+    },
+    {
+      "task": "narrate",
+      "case_id": "hack_the_rats_weak_hit",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": false,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You hack at the rats with your sword, your short blade finding purchase in one of the massive creatures. The giant rats, now weakened, retaliate with a flurry of bites, but you manage to land a clean strike, dealing 8 damage. The fallen rat rolls away, and you feel a single point of damage as the encounter concludes. The cellar remains as grim and untidy as ever, with droppings scattered and a cold draught biting at your face.",
+      "seconds": 5.733533250007895,
+      "first_text": 0.9365385840064846
+    },
+    {
+      "task": "narrate",
+      "case_id": "hack_the_rats_strong_hit",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": false,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You swing your short sword with determination, bringing your sword down on the biggest giant rat. The creature, now reduced to 2 damage out of its original 7, recoils from the blow, its eyes wide with surprise. The cellar echoes with the sound of your strike, and the other rats scatter, their movements now more cautious in the presence of your combat prowess.",
+      "seconds": 4.463944374991115,
+      "first_text": 0.9963775829965016
+    },
+    {
+      "task": "narrate",
+      "case_id": "hack_the_rats_miss",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You swing your short sword wildly at the giant rats, but your attack misses their thick, armored bodies. The ground shifts beneath you, now leaving you completely cornered in the dank cellar, the rats surrounding you with a menacing growl.",
+      "seconds": 2.4871092079993105,
+      "first_text": 0.28735666700231377
+    },
+    {
+      "task": "narrate",
+      "case_id": "thief_throws_a_dagger",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You stride toward the nearest giant rat, dagger poised, and loosen your throw, the weapon arcing through the air toward its quarry. As the dagger finds its mark, you stumble slightly, the draughty cellar air catching at your cloak, forcing you to retreat a step to maintain balance and avoid any debris that might have fallen from the gnawed barrels. The rat convulses and falls, its life force sapped by your precise strike, yet the revelation lingers\u2014a forgotten scent of something darker lurking beneath the rotting floorboards, urging you to tread carefully as you navigate the common room or the broken wall ahead.",
+      "seconds": 7.701230459002545,
+      "first_text": 1.0329154589999234
+    },
+    {
+      "task": "narrate",
+      "case_id": "thief_backstabs",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You creep up behind a feeding rat, your dagger gleaming in the dim light. The creature turns its large eyes toward you, and you deliver a Backstab attack, striking weakly but managing to avoid getting into melee with the pack of giant rats that scurry away in fear.",
+      "seconds": 3.4084433329990134,
+      "first_text": 0.6842707080068067
+    },
+    {
+      "task": "narrate",
+      "case_id": "hack_at_the_swarm",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You step into the cavern, the floor trembling beneath the weight of countless rats. The swarm, a mass of writhing bodies, advances, its presence oppressive as you swing your short sword, meeting the challenge head-on.",
+      "seconds": 2.9688679999962915,
+      "first_text": 0.7944704590045149
+    },
+    {
+      "task": "narrate",
+      "case_id": "punch_corwin",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You step forward, your fist aimed at Corwin's face, and deliver a solid punch. The innkeeper stumbles back slightly, his small teeth gritted in surprise as you connect with your blow. Corwin's eyes widen momentarily, a brief flash of pain crossing his features before he regains his composure, coughing softly.",
+      "seconds": 3.806695374994888,
+      "first_text": 0.5431605000048876
+    },
+    {
+      "task": "narrate",
+      "case_id": "dodge_a_rat",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "fact_check": false,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You enter the cellar, immediately struck by the musty air and the unsettling sight of gnawed barrels and scattered droppings. Giant rats, their size rivaling small dogs, scurry about, and one lunges at you, forcing you to leap aside as you wield your short sword defensively.",
+      "seconds": 9.838377540989313,
+      "first_text": 0.9147941659903154
+    },
+    {
+      "task": "narrate",
+      "case_id": "wrench_free_in_the_water",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You find yourself knee-deep in black water, the surface of the gallery lapping at your ankles. A creature swims past your legs, its presence sending a shiver down your spine. The distant sound of a river echoes through the damp air, adding to the eerie atmosphere. Paths lead away: the broken wall ahead, the rat nest to your left, and the hidden river exit to your right.",
+      "seconds": 4.86384220799664,
+      "first_text": 0.8150763750018086
+    },
+    {
+      "task": "narrate",
+      "case_id": "endure_the_nest",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You find yourself enveloped in a dense swarm of rats, their bodies writhing over your legs and arms as you grit your teeth, determination etched on your face. The cavern floor heaves beneath you, and you can feel the damp, musty air thick with their presence, but you refuse to back down, your shield raised to protect yourself from the onslaught.",
+      "seconds": 4.717901666997932,
+      "first_text": 0.8786278329935158
+    },
+    {
+      "task": "narrate",
+      "case_id": "hold_the_trapdoor",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You stand over the trapdoor, your shield raised to block any advancing giant rats, as the cellar rumbles with the sound of gnawing barrels and the scent of droppings fills the dank air. The broken wall and the common room loom on either side, yet you remain vigilant, ready to spring into action if the rats manage to breach the trapdoor and threaten the upstairs passages.",
+      "seconds": 3.9155285000015283,
+      "first_text": 0.30704954199609347
+    },
+    {
+      "task": "narrate",
+      "case_id": "smash_the_barrels",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You enter the cellar, immediately struck by the musty air and the unsettling sight of gnawed barrels and scattered droppings. The draught is palpable, and you spot a pack of giant rats, their size dwarfing even the largest dogs, scurrying about the debris. Paths open to the common room and the broken wall, and you focus your effort on smashing apart the barrels obstructing the far wall, though it takes considerable time and effort.",
+      "seconds": 4.880097500004922,
+      "first_text": 0.2809379170066677
+    },
+    {
+      "task": "narrate",
+      "case_id": "study_the_room",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You notice a subtle dampness beneath the worn wooden floorboards, and the air carries a faint metallic tang that seems out of place in this otherwise cozy inn. Corwin\u2019s eyes flicker briefly before he averts them, and Maud mutters something about a \u201cweird smell\u201d under the bar.",
+      "seconds": 3.803033542004414,
+      "first_text": 0.4308750839991262
+    },
+    {
+      "task": "narrate",
+      "case_id": "remember_rat_lore",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You ask Spout Lore about giant rats, and Maud the innkeeper chuckles, her voice rough with age. She tells you they\u2019re nocturnal creatures that thrive in dark, damp places, often found scavenging in cellars and sewers. She mentions that their bites can carry diseases, and that they\u2019re known to attack in packs, making them particularly dangerous.",
+      "seconds": 4.813058792002266,
+      "first_text": 0.28105458299978636
+    },
+    {
+      "task": "narrate",
+      "case_id": "lean_on_corwin",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You enter the common room, the air thick with the scent of damp cloth and smoke. Maud, the innkeeper, looks up from her tending, her flour-dusted hands moving slowly. You approach Corwin, his small teeth set in a wary grin, and speak earnestly, promising a handsome reward for any truthful information you might receive.",
+      "seconds": 3.69891112500045,
+      "first_text": 0.5207853750034701
+    },
+    {
+      "task": "narrate",
+      "case_id": "help_maud",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You assist Maud in carefully moving the heavy kegs away from the trapdoor, your strong hands easing the burden on her tired shoulders. As you work, the air grows heavier with anticipation, and a flicker of unease crosses Maud's face, hinting at a secret beneath the surface of the common room.",
+      "seconds": 3.561086666988558,
+      "first_text": 0.6463534579961561
+    },
+    {
+      "task": "narrate",
+      "case_id": "rest_by_the_fire",
+      "passed": false,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": false,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You settle into a worn chair by the sullen fire, the crackling wood filling the common room with warmth. The air is thick with the scent of wet wool, and you feel the gentle hum of conversation and the low thrum of the trapdoor creaking shut in the cellar behind the bar. As you consume your Dungeon ration and slip into a restful sleep, your body heals, regaining 11 hit points as you dream of adventures yet to come.",
+      "seconds": 4.995412124990253,
+      "first_text": 0.4202523749991087
+    },
+    {
+      "task": "narrate",
+      "case_id": "thief_checks_for_traps",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You walk cautiously through the rough tunnel, your fingers grazing the old, scratched rubble. The air is damp and musty, carrying whispers of unseen dangers lurking in the shadows. With your hold from earlier, you ask a keen question, peering closely at the tunnel walls for any signs of traps.",
+      "seconds": 3.7385513330082176,
+      "first_text": 0.8063866660086205
+    },
+    {
+      "task": "narrate",
+      "case_id": "thief_picks_the_desk",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You approach the small writing desk, its surface worn and weathered. With a steady hand, you use your dagger to pick the lock, the clicks and turns of the mechanism echoing softly in the dim light from the lantern hook above. As the lock finally gives way, a drawer slowly opens, revealing a stash of papers and a handful of gold coins, hinting at the secrets and treasures hidden within the smugglers' cache.",
+      "seconds": 5.1274942090094555,
+      "first_text": 0.9249515420087846
+    },
+    {
+      "task": "narrate",
+      "case_id": "question_pip_strong_hit",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You gently ask Pip what he has seen at night, and his eyes flicker with a mix of fear and guilt as he lowers his hands. \"I saw Corwin,\" he stammers, voice barely above a whisper, \"going down the trapdoor, humming some strange tune, and dragging something out of the cellar.\"",
+      "seconds": 3.5531497079937253,
+      "first_text": 0.5301273329969263
+    },
+    {
+      "task": "narrate",
+      "case_id": "question_pip_miss",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You approach Pip, whose bandaged hand trembles slightly as he speaks. \"I saw a shadow move by the window, just a flicker of movement in the flickering firelight,\" he murmurs, his voice barely above a whisper.",
+      "seconds": 2.7244322079932317,
+      "first_text": 0.41057533299317583
+    },
+    {
+      "task": "narrate",
+      "case_id": "search_the_cache_weak_hit",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You push through the stacked crates and papers, your fingers brushing against dusty remnants of past dealings. The air is thick with the scent of mildew and forgotten treasures, and the only light comes from the flickering lantern hanging from its hook, casting long shadows across the cavern walls.",
+      "seconds": 3.8304739159939345,
+      "first_text": 1.2990521249885205
+    },
+    {
+      "task": "narrate",
+      "case_id": "denounce_corwin",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You enter The common room, the air thick with the scent of wet wool and aged ale. Maud, the innkeeper, looks up from her chores, her eyes wide with realization as you point out Corwin's true nature. The room falls silent, save for the low murmur of the fire and the distant creak of the trapdoor behind the bar.",
+      "seconds": 4.6455615000013495,
+      "first_text": 1.2090592079912312
+    },
+    {
+      "task": "narrate",
+      "case_id": "strike_a_deal",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "speaker": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You enter The common room, where low beams cast a warm glow, a fire crackles in the sullen hearth, and the scent of wet wool fills the air. A trapdoor behind the bar beckons you down into the cellar, and you see Maud the innkeeper, Corwin her business partner, and Pip the stable hand waiting for you.",
+      "seconds": 3.9068013750074897,
+      "first_text": 0.5478641670051729
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_whats_wrong",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Oh, it's just a regular cellar, really. A bit damp down there, but nothing too alarming. Corwin keeps an eye on it, you know.",
+      "seconds": 2.6452340420073597,
+      "first_text": 1.0492818329948932
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_the_pay",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "\"Well, if you clear out them rats, I promise we'll share the bounty fair and square. You'd get a room for the night, a meal fit for a hero, and maybe even a tip that's half the size of your share. It's a win-win, I tell ya!\"",
+      "seconds": 3.2619009589980124,
+      "first_text": 0.2610502500028815
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_who_is_he",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "That'd be Corwin, my business partner. He's always in his fine clothes, even when we're just hanging out in the inn. He's got a knack for finding the right words to keep the peace, even when things get rowdy.",
+      "seconds": 2.5058849579945672,
+      "first_text": 0.17736308299936354
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_other_way_in",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Maud: \"There's only the trapdoor back there, son. It's as secret as we make it.\"",
+      "seconds": 1.3507840000092983,
+      "first_text": 0.1685036250128178
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_meal_first",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Why, certainly, sir! Come on in, the water\u2019s nice and warm. I\u2019ve got stew simmering on the pot over there.",
+      "seconds": 1.60699454099813,
+      "first_text": 0.18172470798890572
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_nervous",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Oh, it\u2019s doing just fine, thank you! We\u2019ve had a few rough nights, but the money\u2019s rolling in now. How can I help you on your quest, stranger?",
+      "seconds": 2.054277292001643,
+      "first_text": 0.25863954199303407
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_about_pip",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Oh, he's just had a little tussle with one of the horses. His hand\u2019s all bandaged up, but he\u2019ll be fine.",
+      "seconds": 1.5753526670014253,
+      "first_text": 0.16949908300011884
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_where_to_start",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "\"First, you head down the trapdoor into the cellar. That's where the trouble starts, I can feel it. Corwin's always watching from up above, but the rats and shadows down there\u2014well, they don\u2019t mess around.\"",
+      "seconds": 2.446128541996586,
+      "first_text": 0.19409325000015087
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_trust_corwin",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "\"Corwin's been steady enough, though his teeth make him grumpy sometimes. We\u2019ve weathered worse storms together.\"",
+      "seconds": 1.2772652080020634,
+      "first_text": 0.15849091600102838
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_not_worried",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Oh, I'm more worried about the rumors of a swarm of vermin heading our way. You wouldn't want to be caught out in the open when they arrive, would you?",
+      "seconds": 2.589280542000779,
+      "first_text": 0.9138889169989852
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_business",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Well, I suppose you could say we're both in the business of keeping our noses clean while we skim a little from the top. She handles the front end, and I deal with the details that keep us both out of the swarm's sight.",
+      "seconds": 2.6382992919971002,
+      "first_text": 0.17041645899007563
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_cellar",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Oh, I've had a few trips down there, but I keep my nose to the grindstone and don't linger too long. The cellar's a wild place, but it's where we find our treasure. Just remember, the deeper you go, the tighter the swarm follows.",
+      "seconds": 2.815820874995552,
+      "first_text": 0.1778081249940442
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_last_night",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "I was back in my room, counting my spoons. You know how it is\u2014stay low, stay hidden.",
+      "seconds": 1.232010249994346,
+      "first_text": 0.16608679199998733
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_come_along",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Oh, I\u2019d love to join, but I\u2019m more interested in finding a shortcut to the exits before the swarm gets too bold. Besides, you\u2019d just distract them with your bulk while I slip away unnoticed.",
+      "seconds": 2.188902459005476,
+      "first_text": 0.17326750000938773
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_dislike",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Oh? And just why is that, hmm? Curious, isn't it?",
+      "seconds": 0.9424432920059189,
+      "first_text": 0.17991020799672697
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_rat_lore",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Oh, rats? They're everywhere, aren't they? Keeps the inn clean, though.",
+      "seconds": 1.0341033750009956,
+      "first_text": 0.1950330830004532
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_hand",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "It was caught in one of the carts when it broke. Corwin said it\u2019d heal if I kept it out of his reach.",
+      "seconds": 2.2191920000041137,
+      "first_text": 0.9486986660049297
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_dont_be_scared",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "I ain't no coward, but Corwin\u2019s got a way of making the air grow thick with fear. If you\u2019re here to help, show it with your actions, not just your words.",
+      "seconds": 2.0659676659997785,
+      "first_text": 0.17126833299698774
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_anything_strange",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "No sir, I keep to myself. Corwin's always around, watching our every move. Nothing I've seen that's out of the ordinary.",
+      "seconds": 1.66952720900008,
+      "first_text": 0.16991533400141634
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_corwin",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "No, he never treats me well. He\u2019s always looking over my shoulder, like I\u2019m about to spill something he doesn\u2019t want anyone to know.",
+      "seconds": 1.6631848749966593,
+      "first_text": 0.17272729199612513
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_which_way",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "They come up from the cellar, sir. Through that trapdoor behind the bar.",
+      "seconds": 0.9444139580009505,
+      "first_text": 0.17004429100779817
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_coin",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Thank ya, miss. I ain't got much else to give.",
+      "seconds": 0.9160568750085076,
+      "first_text": 0.16455400000268128
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_tell_again",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "I saw Corwin out there, you know. Whistling those rats down into the cellar like dogs. He was moving real quiet, just a few steps from the door.",
+      "seconds": 2.746884291002061,
+      "first_text": 1.0576640409999527
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_tell_maud",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "(enters quickly) Maud, I\u2026 I can\u2019t. It\u2019s too dangerous. Corwin\u2019ll know it was me if I say anything.",
+      "seconds": 1.7185610000015004,
+      "first_text": 0.2447600000014063
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_whistling",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Well, aren\u2019t you a sharp one? I just whistle for the rats, you know, to keep \u2019em out of the cellar. Mind your own business, or I\u2019ll have you whistling in the daylight next.",
+      "seconds": 2.6629888330062386,
+      "first_text": 0.5278512920049252
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_i_know",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You best keep your wits about you, lest the swarm decides to make a midnight snack out of you.",
+      "seconds": 2.4352121249976335,
+      "first_text": 1.3296730830043089
+    },
+    {
+      "task": "voice",
+      "case_id": "corwin_call_them_off",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "You best not tempt fate, hero. The swarm ain't as loyal as it should be, and I ain't about to let things get outta hand.",
+      "seconds": 1.8292332499986514,
+      "first_text": 0.18141362500318792
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_hears_it",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Corwin? A wererat? That\u2019s a curious tale, isn\u2019t it?",
+      "seconds": 1.6631199999974342,
+      "first_text": 0.8024841250007739
+    },
+    {
+      "task": "voice",
+      "case_id": "maud_the_crates",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Well, traveler, I've heard whispers that those crates hold more than just goods. Rumors say they might be carrying... well, let's just say things that don't belong in this town.",
+      "seconds": 2.093420667006285,
+      "first_text": 0.23022370800026692
+    },
+    {
+      "task": "voice",
+      "case_id": "pip_knowing",
+      "passed": true,
+      "checks": {
+        "answered": true,
+        "fact_check": true,
+        "no_rules_talk": true,
+        "length": true,
+        "mentions": true,
+        "forbidden": true
+      },
+      "output": "Corrin... he's... he's a wererat?",
+      "seconds": 1.4403457500011427,
+      "first_text": 0.8432866250077495
+    }
+  ]
+}

@@ -11,7 +11,7 @@ from typing import Protocol
 
 from gminator.ai.context import Context, ContextBuilder
 from gminator.ai.factcheck import FactCheck
-from gminator.ai.provider import LLMProvider, ProviderError
+from gminator.ai.provider import LLMProvider, ProviderError, Providers
 from gminator.ai.tasks import (
     Intent,
     MoveOption,
@@ -46,9 +46,13 @@ class Reply:
 
 
 class Table:
-    def __init__(self, session: Session, provider: LLMProvider | None) -> None:
+    def __init__(self, session: Session, provider: LLMProvider | Providers | None) -> None:
         self.session = session
-        self.provider = provider
+        self.providers = (
+            Providers.one(provider)
+            if provider is not None and not isinstance(provider, Providers)
+            else provider
+        )
         self._builder = ContextBuilder(session.scenario, session.rules, session.pc_id)
         self._check = FactCheck(session.scenario, session.rules)
         self._recent: list[str] = []
@@ -63,10 +67,10 @@ class Table:
 
     def handle(self, line: str, decider: Decider, confirmer: Confirmer) -> Reply:
         line = line.strip()
-        if line.startswith("/") or self.provider is None:
-            return self._play(line, decider)
+        if line.startswith("/") or self.providers is None:
+            return self.play(line, decider)
         try:
-            intent = classify(self.provider, self._context(), self._options(), line)
+            intent = classify(self.providers.classify, self.context(), self.options(), line)
         except ProviderError as error:
             return Reply([t("table.offline", reason=error)])
 
@@ -77,7 +81,7 @@ class Table:
                 question = t("table.confirm_go", place=self.session.scenario.locations[place].name)
                 command = f"/go {place}"
             case Intent(kind="talk", target=npc_id) if npc_id is not None:
-                return self._talk(npc_id, line)
+                return self.talk(npc_id, line)
             case Intent(kind="look"):
                 return Reply(self.session.handle("/look", decider))
             case Intent(kind="inventory"):
@@ -89,24 +93,24 @@ class Table:
 
         if not confirmer.confirm(question):
             return Reply([t("table.cancelled")])
-        return self._play(command, decider, said=line)
+        return self.play(command, decider, said=line)
 
-    def _play(self, command: str, decider: Decider, said: str = "") -> Reply:
+    def play(self, command: str, decider: Decider, said: str = "") -> Reply:
         """Plays a slash command; narrates it if it changed the game."""
         before = len(self.session.game.events)
         lines = self.session.handle(command, decider)
-        if self.provider is None or len(self.session.game.events) == before:
+        if self.providers is None or len(self.session.game.events) == before:
             return Reply(lines)
-        context = self._context()
+        context = self.context()
         self._recent += lines
-        prose = narrate(self.provider, self._check, context, lines, said)
+        prose = narrate(self.providers.narrate, self._check, context, lines, said)
         return Reply(lines, _kept(prose, self._remember_narration))
 
-    def _talk(self, npc_id: str, said: str) -> Reply:
-        assert self.provider is not None
+    def talk(self, npc_id: str, said: str) -> Reply:
+        assert self.providers is not None
         name = self.session.state.characters[npc_id].name
         profile = self._builder.profile(self.session.state, npc_id)
-        words = voice_npc(self.provider, self._check, self._context(), profile, said)
+        words = voice_npc(self.providers.voice, self._check, self.context(), profile, said)
 
         def remember(text: str) -> None:
             if text:
@@ -128,10 +132,10 @@ class Table:
     def _remember_narration(self, text: str) -> None:
         self._narration = text
 
-    def _context(self) -> Context:
+    def context(self) -> Context:
         return self._builder.build(self.session.state, self._recent, self._narration)
 
-    def _options(self) -> Options:
+    def options(self) -> Options:
         session = self.session
         state = session.state
         location = state.characters[session.pc_id].location

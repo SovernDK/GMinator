@@ -1,0 +1,172 @@
+# Narrate: a slash command played in a scene, and what good narration of its outcome says.
+# `mentions`: words of which the narration should use at least one.
+# `forbidden`: words it must not use, such as a secret the player has not uncovered yet.
+
+# Going places: the narration should describe where the player arrives.
+- id: go_down_to_the_cellar
+  command: /go cellar
+  said: I climb down through the trapdoor
+  mentions: [cellar, barrel, sack, dropping, draught, dark, rat]
+  forbidden: [wererat]
+- id: go_back_up
+  scene: &cellar {commands: [/go cellar]}
+  command: /go common_room
+  said: I head back upstairs
+  mentions: [fire, beam, wool, common room, inn, bar]
+  forbidden: [wererat]
+- id: go_through_the_wall
+  scene: *cellar
+  command: /go broken_wall
+  said: I squeeze through the hole in the wall
+  mentions: [wall, tunnel, rubble, scratch]
+  forbidden: [wererat]
+- id: go_to_the_cache
+  scene: &wall {commands: [/go cellar, /go broken_wall]}
+  command: /go cache
+  mentions: [crate, cave, desk, lantern]
+  forbidden: [wererat]
+- id: go_into_the_water
+  scene: *wall
+  command: /go gallery
+  said: I wade into the dark water
+  mentions: [water, river, swim, knee, black]
+  forbidden: [wererat]
+- id: go_into_the_nest
+  scene: &gallery {commands: [/go cellar, /go broken_wall, /go gallery]}
+  command: /go nest
+  mentions: [rat, straw, bone, nest, heave]
+  forbidden: [wererat]
+- id: go_out_to_the_river
+  scene: *gallery
+  command: /go river_exit
+  said: I follow the draught out to the river
+  mentions: [river, boat, crack, bank]
+
+# Fighting.
+- id: hack_the_rats_weak_hit
+  scene: *cellar
+  command: /move hack_and_slash giant_rats
+  said: I hack at the rats with my sword
+  mentions: [rat]
+- id: hack_the_rats_strong_hit
+  scene: {seed: 1, commands: [/go cellar]}
+  command: /move hack_and_slash giant_rats
+  said: I bring my sword down on the biggest rat
+  mentions: [rat]
+- id: hack_the_rats_miss
+  scene: {seed: 6, commands: [/go cellar]}
+  command: /move hack_and_slash giant_rats
+  said: I swing wildly at the rats
+  mentions: [rat]
+- id: thief_throws_a_dagger
+  scene: &thief_cellar {class_id: thief, commands: [/go cellar]}
+  command: /move volley giant_rats
+  said: I throw a dagger at the nearest rat
+  mentions: [rat, dagger, throw, blade]
+- id: thief_backstabs
+  scene: *thief_cellar
+  command: /move backstab giant_rats
+  said: I creep up behind a feeding rat and stab it
+  mentions: [rat]
+- id: hack_at_the_swarm
+  scene: &nest {commands: [/go cellar, /go broken_wall, /go gallery, /go nest]}
+  command: /move hack_and_slash swarm
+  said: I wade into the swarm swinging
+  mentions: [swarm, rat]
+- id: punch_corwin
+  command: /move hack_and_slash corwin
+  said: I punch Corwin in the face
+  mentions: [Corwin]
+  forbidden: [wererat]
+
+# Other basic moves.
+- id: dodge_a_rat
+  scene: *cellar
+  command: /move defy_danger dex
+  said: A rat lunges at me and I leap aside
+  mentions: [rat, leap, dodge, aside, roll, twist, jump]
+- id: wrench_free_in_the_water
+  scene: *gallery
+  command: /move defy_danger str
+  said: Something grabs my leg and I wrench free
+  mentions: [water, leg, free, grip, pull]
+  forbidden: [wererat]
+- id: endure_the_nest
+  scene: *nest
+  command: /move defy_danger con
+  said: I grit my teeth as the rats swarm over me
+  mentions: [rat, swarm]
+- id: hold_the_trapdoor
+  scene: *cellar
+  command: /move defend
+  said: I stand over the trapdoor so the rats can't get upstairs
+  mentions: [trapdoor, rat, stand, guard, hold]
+- id: smash_the_barrels
+  scene: *cellar
+  command: /move bend_bars_lift_gates
+  said: I smash apart the barrels blocking the far wall
+  mentions: [barrel, smash, wood, splinter, break]
+- id: study_the_room
+  command: /move discern_realities
+  said: I study the room for anything out of place
+  forbidden: [wererat, whistl]
+- id: remember_rat_lore
+  command: /move spout_lore
+  said: What do I know about giant rats?
+  forbidden: [wererat]
+- id: lean_on_corwin
+  command: /move parley corwin
+  said: I tell Corwin I'll pay well for the truth
+  mentions: [Corwin]
+  forbidden: [wererat]
+- id: help_maud
+  command: /move aid_or_interfere maud
+  said: I help Maud move the kegs off the trapdoor
+  mentions: [Maud]
+  forbidden: [wererat]
+- id: rest_by_the_fire
+  command: /move make_camp
+  said: I rest by the fire for the night
+  mentions: [rest, sleep, fire, night, eat, ration]
+  forbidden: [wererat]
+- id: thief_checks_for_traps
+  scene: {class_id: thief, commands: [/go cellar, /go broken_wall]}
+  command: /move trap_expert
+  said: I check the tunnel for traps
+  mentions: [trap, tunnel, wire, floor, stone]
+- id: thief_picks_the_desk
+  scene: {class_id: thief, commands: [/go cellar, /go broken_wall, /go cache]}
+  command: /move tricks_of_the_trade
+  said: I pick the lock on the writing desk
+  mentions: [lock, desk, pick]
+
+# The scenario's own moves.
+- id: question_pip_strong_hit
+  scene: {seed: 1}
+  command: /move question_pip
+  said: I gently ask Pip what he has seen at night
+  mentions: [Pip, Corwin, whisper, whistl]
+  forbidden: [wererat]
+- id: question_pip_miss
+  command: /move question_pip
+  said: I ask Pip what he has seen at night
+  forbidden: [wererat]
+- id: search_the_cache_weak_hit
+  scene: {commands: [/go cellar, /go broken_wall, /go cache]}
+  command: /move search_the_cache
+  said: I go through the crates and papers
+  mentions: [Corwin, crate, paper, ledger, noise, wererat]
+- id: denounce_corwin
+  scene: &knowing
+    class_id: thief
+    commands:
+      [/go cellar, /go broken_wall, /go cache, /move search_the_cache, /go broken_wall,
+       /go cellar, /go common_room]
+  command: /move denounce_corwin maud
+  said: Maud, your partner is a wererat, and here is the proof
+  mentions: [Maud, Corwin]
+- id: strike_a_deal
+  scene: *knowing
+  command: /move strike_a_deal corwin
+  said: Corwin, my silence for a share of your trade
+  mentions: [Corwin]

@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from gminator.ai.provider import FakeProvider, ProviderError
+from gminator.ai.provider import FakeProvider, ProviderError, Providers
 from gminator.ai.tasks import Retract
 from gminator.core.characters import create_character
 from gminator.core.events import HpChanged, MoveMade
@@ -128,6 +128,24 @@ def test_talking_to_someone_here_gets_their_answer_and_changes_nothing(dungeon_w
     voice = text_of(provider.requests[1])
     assert "Name: Corwin" in voice
     assert "Corwin, what's down there?" in voice
+
+
+def test_each_task_can_have_its_own_model(dungeon_world, scenario):
+    classifier = FakeProvider(
+        [intent("move", "defy_danger", "dex"), intent("talk", target="corwin")]
+    )
+    narrator = FakeProvider(["You vault the bar."])
+    voice = FakeProvider(["Only a few rats, friend."])
+    table = sit(dungeon_world, scenario, Providers(classifier, narrator, voice))
+
+    vaulted = table.handle("I vault over the bar", ScriptedDecider(), ScriptedConfirmer())
+    answered = table.handle("Corwin, what's down there?", ScriptedDecider(), ScriptedConfirmer())
+
+    assert told(vaulted) == "You vault the bar."
+    assert told(answered) == "Only a few rats, friend."
+    assert [r.schema is not None for r in classifier.requests] == [True, True]
+    assert "Hero makes Defy Danger" in text_of(narrator.requests[0])
+    assert "Name: Corwin" in text_of(voice.requests[0])
 
 
 @pytest.mark.parametrize("kind", ["ooc", "unclear"])

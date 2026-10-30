@@ -62,6 +62,12 @@ def create_character(
     return events
 
 
+def quick_start(pack: Pack, class_id: str, character_id: str, name: str) -> list[Event]:
+    """A character made without choices: the pack's scores go to its stats in order."""
+    scores = dict(zip(pack.manifest.stats, pack.manifest.score_array or [], strict=False))
+    return create_character(pack, class_id, character_id, name, scores)
+
+
 def _chosen_gear(choices: Sequence[GearChoice], picks: Sequence[Sequence[int]] | None) -> list[str]:
     if picks is None:
         picks = [range(choice.n) for choice in choices]

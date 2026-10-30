@@ -1,6 +1,6 @@
 import pytest
 
-from gminator.core.characters import CharacterError, create_character
+from gminator.core.characters import CharacterError, create_character, quick_start
 from gminator.core.events import CharacterCreated, ItemGained
 from gminator.core.game import Game
 
@@ -42,6 +42,18 @@ def test_fighter_is_created_from_scores(dungeon_world):
         max_hp=25,
         class_id="fighter",
         damage="d10",
+    )
+
+
+def test_a_quick_start_gives_the_scores_to_the_stats_in_the_pack_order(dungeon_world):
+    events = quick_start(dungeon_world, "thief", "pc", "Vex")
+
+    assert events == create_character(
+        dungeon_world,
+        "thief",
+        "pc",
+        "Vex",
+        {"str": 16, "dex": 15, "con": 13, "int": 12, "wis": 9, "cha": 8},
     )
 
 

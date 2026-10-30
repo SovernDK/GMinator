@@ -1,0 +1,150 @@
+# NPC voice: what the player character says to someone in a scene, and what a good answer
+# says. `mentions`: words of which the answer should use at least one. `forbidden`: words it
+# must not use, such as a secret the player has not uncovered yet.
+
+# Maud, at the start.
+- id: maud_whats_wrong
+  npc: maud
+  said: What's wrong with your cellar?
+  mentions: [rat, cellar]
+  forbidden: [wererat]
+- id: maud_the_pay
+  npc: maud
+  said: And what's in it for me if I clear them out?
+  forbidden: [wererat]
+- id: maud_who_is_he
+  npc: maud
+  said: Who's the well-dressed fellow next to you?
+  mentions: [Corwin, partner]
+  forbidden: [wererat]
+- id: maud_other_way_in
+  npc: maud
+  said: Is there any other way into the cellar?
+  forbidden: [wererat]
+- id: maud_meal_first
+  npc: maud
+  said: Can I get a hot meal before I go down there?
+  forbidden: [wererat]
+- id: maud_nervous
+  npc: maud
+  said: You look tired. Is the inn doing all right?
+  forbidden: [wererat]
+- id: maud_about_pip
+  npc: maud
+  said: What's the matter with the stable boy?
+  mentions: [Pip, boy, lad, he, him, his]
+  forbidden: [wererat]
+- id: maud_where_to_start
+  npc: maud
+  said: All right, I'll do it. Where do I start?
+  mentions: [cellar, trapdoor, down, bar]
+  forbidden: [wererat]
+- id: maud_trust_corwin
+  npc: maud
+  said: Do you trust your partner?
+  mentions: [Corwin, he, him]
+  forbidden: [wererat]
+
+# Corwin, at the start.
+- id: corwin_not_worried
+  npc: corwin
+  said: You don't seem very worried about the rats.
+  forbidden: [wererat]
+- id: corwin_business
+  npc: corwin
+  said: What exactly is your business with Maud?
+  mentions: [Maud, partner, business, inn]
+  forbidden: [wererat]
+- id: corwin_cellar
+  npc: corwin
+  said: Have you been down in the cellar yourself?
+  forbidden: [wererat]
+- id: corwin_last_night
+  npc: corwin
+  said: Where were you last night?
+  forbidden: [wererat]
+- id: corwin_come_along
+  npc: corwin
+  said: Why don't you come down with me and help?
+  forbidden: [wererat]
+- id: corwin_dislike
+  npc: corwin
+  said: I don't like you, Corwin.
+  forbidden: [wererat]
+- id: corwin_rat_lore
+  npc: corwin
+  said: You seem to know a lot about rats.
+  mentions: [rat]
+  forbidden: [wererat]
+
+# Pip, at the start.
+- id: pip_hand
+  npc: pip
+  said: What happened to your hand?
+  forbidden: [wererat]
+- id: pip_dont_be_scared
+  npc: pip
+  said: Don't be scared. I'm here to help.
+  forbidden: [wererat]
+- id: pip_anything_strange
+  npc: pip
+  said: Have you seen anything strange around here?
+  forbidden: [wererat]
+- id: pip_corwin
+  npc: pip
+  said: Does Corwin treat you well?
+  forbidden: [wererat]
+- id: pip_which_way
+  npc: pip
+  said: Which way do the rats come from?
+  forbidden: [wererat]
+- id: pip_coin
+  npc: pip
+  said: Here, have a copper for your trouble.
+  forbidden: [wererat]
+
+# Pip, once he has told what he saw.
+- id: pip_tell_again
+  scene: &pip_told {seed: 1, commands: [/move question_pip]}
+  npc: pip
+  said: Tell me again what you saw at night.
+  mentions: [Corwin, whistl, rat, night]
+  forbidden: [wererat]
+- id: pip_tell_maud
+  scene: *pip_told
+  npc: pip
+  said: Will you tell Maud what you saw?
+  forbidden: [wererat]
+- id: corwin_whistling
+  scene: *pip_told
+  npc: corwin
+  said: I hear you whistle for rats at night, Corwin.
+  forbidden: [wererat]
+
+# Back in the common room, knowing what Corwin is.
+- id: corwin_i_know
+  scene: &knowing
+    class_id: thief
+    commands:
+      [/go cellar, /go broken_wall, /go cache, /move search_the_cache, /go broken_wall,
+       /go cellar, /go common_room]
+  npc: corwin
+  said: I found the fur under your desk in the cave. I know what you are.
+- id: corwin_call_them_off
+  scene: *knowing
+  npc: corwin
+  said: Call off your rats, or I tell everyone.
+  mentions: [rat, swarm]
+- id: maud_hears_it
+  scene: *knowing
+  npc: maud
+  said: Maud, your partner is a wererat.
+  mentions: [Corwin, he, him]
+- id: maud_the_crates
+  scene: *knowing
+  npc: maud
+  said: There are crates stamped for other ports down in the caves. What do you know about them?
+- id: pip_knowing
+  scene: *knowing
+  npc: pip
+  said: Corwin can't hurt you any more, Pip. I know his secret.

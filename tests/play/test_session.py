@@ -248,3 +248,17 @@ def test_help_lists_the_commands(dungeon_world, scenario):
 
     for command in ("/look", "/go", "/moves", "/move", "/sheet", "/clocks", "/secrets"):
         assert command in output
+
+
+# Resuming
+
+
+def test_a_resumed_session_carries_on_where_the_log_left_off(dungeon_world, scenario):
+    session = begin(dungeon_world, scenario)
+    run(session, "/go cellar")
+
+    resumed = Session.resume(dungeon_world, scenario, session.game.events)
+
+    assert resumed.pc_id == "hero"
+    assert resumed.state == session.state
+    assert "The inn" in run(resumed, "/go inn")
