@@ -43,6 +43,18 @@ def test_a_stat_counts_only_when_one_is_expected():
     assert intent_check(with_str, [any_stat]).passed
 
 
+def test_where_a_move_goes_on_to_must_match():
+    on = Expected(kind="move", move_id="defy_danger", then="broken_wall")
+    stay = Expected(kind="move", move_id="defy_danger")
+
+    going = Intent(kind="move", move_id="defy_danger", then="broken_wall")
+    staying = Intent(kind="move", move_id="defy_danger")
+
+    assert intent_check(going, [on]).passed
+    assert intent_check(staying, [on]).passed is False
+    assert intent_check(going, [stay]).passed is False
+
+
 def test_any_of_several_expected_intents_passes():
     look = Expected(kind="look")
     study = Expected(kind="move", move_id="discern_realities")

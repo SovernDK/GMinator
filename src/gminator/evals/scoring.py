@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 from gminator.ai.context import sentences
+from gminator.ai.factcheck import rules_talk
 from gminator.ai.tasks import NARRATION_SENTENCES, NPC_SENTENCES, Intent
 from gminator.evals.cases import Expected
 
@@ -16,12 +17,6 @@ LENGTHS: dict[Speaker, range] = {
     "npc": range(1, NPC_SENTENCES + 1),
 }
 
-# Numbers and game terms: the panel shows the mechanics, the prose must not repeat them.
-_RULES_TALK = re.compile(
-    r"\d|\bHP\b|\bhit points?\b|\bdice\b|\bXP\b|\bexperience points?\b"
-    r"|\bstrong hit\b|\bpartial (hit|success)\b",
-    re.IGNORECASE,
-)
 # The narrator speaks to the player. An NPC may say anything in character, so is not checked.
 _SECOND_PERSON = re.compile(r"\byou(r|rs|rself)?\b", re.IGNORECASE)
 
@@ -49,7 +44,7 @@ def prose_checks(
     checks = [
         Check("answered", bool(told.strip())),
         Check("fact_check", not retracted),
-        Check("no_rules_talk", not _RULES_TALK.search(told)),
+        Check("no_rules_talk", not rules_talk(told)),
         Check("length", len(sentences(told)) in LENGTHS[speaker]),
     ]
     if speaker == "narrator":
@@ -66,6 +61,7 @@ def _matches(got: Intent, expected: Expected) -> bool:
         got.kind == expected.kind
         and got.move_id == expected.move_id
         and got.target == expected.target
+        and got.then == expected.then
         and (expected.stat is None or got.stat == expected.stat)
     )
 

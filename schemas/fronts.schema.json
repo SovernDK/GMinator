@@ -210,6 +210,22 @@
       "title": "ChooseN",
       "type": "object"
     },
+    "ClearObstacle": {
+      "additionalProperties": false,
+      "properties": {
+        "clear_obstacle": {
+          "const": "target",
+          "description": "Clears the obstacle the move is made against (target: obstacle)",
+          "title": "Clear Obstacle",
+          "type": "string"
+        }
+      },
+      "required": [
+        "clear_obstacle"
+      ],
+      "title": "ClearObstacle",
+      "type": "object"
+    },
     "ClockArgs": {
       "additionalProperties": false,
       "properties": {
@@ -572,6 +588,9 @@
               },
               {
                 "$ref": "#/$defs/MoveTo"
+              },
+              {
+                "$ref": "#/$defs/ClearObstacle"
               }
             ]
           },
@@ -846,6 +865,9 @@
               },
               {
                 "$ref": "#/$defs/MoveTo"
+              },
+              {
+                "$ref": "#/$defs/ClearObstacle"
               }
             ]
           },

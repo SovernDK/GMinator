@@ -27,6 +27,14 @@
           },
           "title": "Exits",
           "type": "array"
+        },
+        "obstacles": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Obstacle"
+          },
+          "title": "Obstacles",
+          "type": "array"
         }
       },
       "required": [
@@ -34,6 +42,46 @@
         "name"
       ],
       "title": "Location",
+      "type": "object"
+    },
+    "Obstacle": {
+      "additionalProperties": false,
+      "description": "Something in the way, until a move made against it clears it.",
+      "properties": {
+        "id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "blocks": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The exit that can't be used until the obstacle is cleared",
+          "title": "Blocks"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "title": "Obstacle",
       "type": "object"
     }
   },

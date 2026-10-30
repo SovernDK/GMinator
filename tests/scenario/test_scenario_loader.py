@@ -5,7 +5,7 @@ import pytest
 from gminator.packs.loader import PackError
 from gminator.scenario.loader import load_scenario
 from support import write_files
-from tiny_cellar import SECRETS, VALID
+from tiny_cellar import HOSTILE_RATS, SECRETS, VALID
 
 
 def problems(root: Path, files: dict[str, str], pack) -> list:
@@ -154,6 +154,33 @@ def test_danger_moves_may_refer_to_the_danger_npc_only_when_it_has_one(tmp_path,
     assert "target.damage" in problem.message
 
 
+def test_npcs_may_have_gm_moves_of_their_own_that_refer_to_them(tmp_path, dungeon_world):
+    files = {**VALID, "npcs.yaml": VALID["npcs.yaml"] + HOSTILE_RATS}
+
+    scenario = load_scenario(write_files(tmp_path, files), dungeon_world)
+
+    assert [m.id for m in scenario.npcs["rats"].moves] == ["rats_gnaw"]
+
+
+def test_npc_gm_moves_are_checked(tmp_path, dungeon_world):
+    npcs = VALID["npcs.yaml"] + HOSTILE_RATS.replace("target.damage", "target.claws")
+
+    problem = only_problem(tmp_path, {**VALID, "npcs.yaml": npcs}, dungeon_world)
+
+    assert problem.path.name == "npcs.yaml"
+    assert "target.claws" in problem.message
+
+
+@pytest.mark.parametrize("taken", ["rats_bite", "deal_damage"])
+def test_gm_move_ids_are_unique_across_the_pack_dangers_and_npcs(tmp_path, dungeon_world, taken):
+    npcs = VALID["npcs.yaml"] + HOSTILE_RATS.replace("rats_gnaw", taken)
+
+    problem = only_problem(tmp_path, {**VALID, "npcs.yaml": npcs}, dungeon_world)
+
+    assert problem.path.name == "npcs.yaml"
+    assert taken in problem.message
+
+
 def test_scenario_moves_cannot_replace_pack_moves(tmp_path, dungeon_world):
     files = changed("moves/unmask.yaml", "id: unmask", "id: parley")
 
@@ -189,3 +216,34 @@ def test_npc_damage_cannot_refer_to_anything(tmp_path, dungeon_world):
 
     assert (problem.path.name, problem.line) == ("npcs.yaml", 5)
     assert "self.level" in problem.message
+
+
+GRATE = "  obstacles:\n    - {id: grate, name: The grate, blocks: cellar}\n"
+
+
+def test_locations_may_have_obstacles_blocking_their_exits(tmp_path, dungeon_world):
+    files = changed("locations.yaml", "  exits: [cellar]\n", "  exits: [cellar]\n" + GRATE)
+
+    scenario = load_scenario(write_files(tmp_path, files), dungeon_world)
+
+    assert [o.blocks for o in scenario.locations["inn"].obstacles] == ["cellar"]
+    assert [o.id for o in scenario.obstacles()] == ["grate"]
+
+
+def test_an_obstacle_blocks_only_an_exit_of_its_location(tmp_path, dungeon_world):
+    grate = GRATE.replace("blocks: cellar", "blocks: attic")
+    files = changed("locations.yaml", "  exits: [cellar]\n", "  exits: [cellar]\n" + grate)
+
+    problem = only_problem(tmp_path, files, dungeon_world)
+
+    assert problem.path.name == "locations.yaml"
+    assert "attic" in problem.message
+
+
+def test_obstacle_ids_are_unique_across_the_scenario(tmp_path, dungeon_world):
+    grate = GRATE.replace("id: grate", "id: corwin")
+    files = changed("locations.yaml", "  exits: [cellar]\n", "  exits: [cellar]\n" + grate)
+
+    problem = only_problem(tmp_path, files, dungeon_world)
+
+    assert "corwin" in problem.message

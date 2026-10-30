@@ -3,6 +3,7 @@ id: defend
 name: Defend
 category: basic
 trigger: When you stand in defense of a person, item, or location under attack
+flags: [combat]
 roll: stat.con
 outcomes:
   strong:
@@ -14,6 +15,5 @@ outcomes:
     effects:
       - gain_hold: {amount: 1}
   miss:
-    text: The GM makes a move.
     effects:
       - gm_move: hard

@@ -1,5 +1,13 @@
+import pytest
+
 from gminator.ai.context import ContextBuilder
-from gminator.core.events import CharacterMoved, HpChanged, SecretRevealed, TagAdded
+from gminator.core.events import (
+    CharacterMoved,
+    HpChanged,
+    ObstacleCleared,
+    SecretRevealed,
+    TagAdded,
+)
 from tiny_cellar import VALID, load_tiny_cellar
 
 
@@ -20,10 +28,13 @@ def test_context_tells_who_is_here_and_no_one_else(builder, game):
     assert "Corwin" not in gone
 
 
-def test_context_marks_the_dead(builder, game):
+def test_context_tells_the_dead_as_remains(builder, game):
     game.record(HpChanged(character_id="corwin", amount=-99))
 
-    assert "Corwin (dead)" in builder.build(game.state).render()
+    text = builder.build(game.state).render()
+
+    assert "Also here: no one" in text
+    assert "Remains: the body of Corwin" in text
 
 
 def test_context_tells_the_pc_condition(builder, game):
@@ -34,7 +45,9 @@ def test_context_tells_the_pc_condition(builder, game):
 
     assert "Hero" in text
     assert "Fighter" in text
-    assert "20/25 HP" in text
+    assert "wounded" in text
+    assert "20" not in text
+    assert "HP" not in text
     assert "exposed" in text
     assert "Dungeon rations" in text
 
@@ -86,3 +99,28 @@ def test_npc_profile_keeps_what_the_npc_knows_secret_until_revealed(builder, gam
     game.record(SecretRevealed(secret_id="wererat"))
 
     assert "Corwin is a wererat." in builder.profile(game.state, "corwin")
+
+
+@pytest.mark.parametrize(
+    ("damage", "condition"), [(0, "unhurt"), (5, "wounded"), (13, "badly hurt"), (25, "down")]
+)
+def test_context_tells_how_hurt_the_pc_is_in_words(builder, game, damage, condition):
+    game.record(HpChanged(character_id="hero", amount=-damage))
+
+    assert f"Hero, Fighter; {condition}" in builder.build(game.state).render()
+
+
+def test_context_tells_what_is_in_the_way_until_it_is_cleared(dungeon_world, game, tmp_path):
+    locations = VALID["locations.yaml"].replace(
+        "  exits: [cellar]\n",
+        "  exits: [cellar]\n  obstacles:\n"
+        "    - {id: door, name: The oak door, description: Barred., blocks: cellar}\n",
+    )
+    scenario = load_tiny_cellar(tmp_path, dungeon_world, {**VALID, "locations.yaml": locations})
+    builder = ContextBuilder(scenario, scenario.ruleset(dungeon_world), "hero")
+
+    blocked = builder.build(game.state).render()
+    game.record(ObstacleCleared(obstacle_id="door"))
+
+    assert "In the way: The oak door: Barred. (blocks the way to The cellar)" in blocked
+    assert "oak door" not in builder.build(game.state).render()

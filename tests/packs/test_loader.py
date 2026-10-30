@@ -334,3 +334,65 @@ def test_dying_move_must_exist(tmp_path):
 
     assert problem.path.name == "pack.yaml"
     assert "last_gasp" in problem.message
+
+
+DODGE = """\
+id: dodge
+name: Dodge
+category: basic
+trigger: When you act despite danger
+roll: stat.chosen
+stat_options: [dex]
+outcomes:
+  strong: {}
+  partial: {}
+  miss: {}
+"""
+
+
+def test_danger_gate_loads(tmp_path):
+    gate = "danger: {move: dodge, default_stat: dex, exempt: [combat]}\n"
+    files = {**VALID, "pack.yaml": MANIFEST + gate, "moves/dodge.yaml": DODGE}
+
+    danger = load_pack(write_files(tmp_path, files)).manifest.danger
+
+    assert danger is not None
+    assert (danger.move, danger.default_stat, danger.exempt) == ("dodge", "dex", ["combat"])
+
+
+@pytest.mark.parametrize(
+    ("gate", "wrong"),
+    [
+        ("{move: leap, default_stat: dex}", "leap"),
+        ("{move: smash, default_stat: str}", "stat_options"),
+        ("{move: dodge, default_stat: str}", "'str'"),
+        ("{move: dodge, default_stat: dex, stat_by_flag: {travel: str}}", "'str'"),
+    ],
+)
+def test_danger_gate_must_be_a_move_that_rolls_its_stats(tmp_path, gate, wrong):
+    files = {**VALID, "pack.yaml": MANIFEST + f"danger: {gate}\n", "moves/dodge.yaml": DODGE}
+
+    problem = only_problem(tmp_path, files)
+
+    assert problem.path.name == "pack.yaml"
+    assert wrong in problem.message
+
+
+def test_only_a_move_against_an_obstacle_can_clear_one(tmp_path):
+    clears = "      - clear_obstacle: target\n"
+    smash = SMASH.replace("      - deal_damage: {amount: self.damage}\n", clears)
+    pry = smash.replace("target: true", "target: obstacle").replace("id: smash", "id: pry")
+    pry = pry.replace("      - deal_damage: {amount: self.damage + 1}\n", clears)
+
+    problem = only_problem(tmp_path, {**VALID, "moves/smash.yaml": smash, "moves/pry.yaml": pry})
+
+    assert (problem.path.name, problem.line) == ("smash.yaml", 13)
+    assert "obstacle" in problem.message
+
+
+def test_move_against_an_obstacle_cannot_refer_to_a_character_target(tmp_path):
+    smash = SMASH.replace("target: true", "target: obstacle")
+
+    problems = pack_problems(tmp_path, {**VALID, "moves/smash.yaml": smash})
+
+    assert all("target" in problem.message for problem in problems)

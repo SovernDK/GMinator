@@ -17,6 +17,7 @@ from gminator.core.events import (
     HpChanged,
     ItemUsed,
     MoveMade,
+    ObstacleCleared,
     QuestionsAsked,
     SecretRevealed,
     TagAdded,
@@ -32,6 +33,7 @@ from gminator.packs.models import (
     AdvanceClock,
     AskQuestions,
     ChooseN,
+    ClearObstacle,
     DealDamage,
     Effect,
     GainHold,
@@ -141,7 +143,8 @@ def _check_request(
         raise ResolveError(f"{move.name} needs a target")
     if not move.target and target_id is not None:
         raise ResolveError(f"{move.name} does not take a target")
-    if target_id is not None and target_id not in characters:
+    # Obstacles belong to the scenario, which checks them; characters are checked here.
+    if move.target is True and target_id not in characters:
         raise ResolveError(f"no character {target_id!r}")
     if move.stat_options is not None:
         if stat is None:
@@ -266,6 +269,9 @@ class _Run:
                 self._record(
                     CharacterMoved(character_id=self._who(args.target), location_id=args.location)
                 )
+            case ClearObstacle():
+                assert self._target is not None
+                self._record(ObstacleCleared(obstacle_id=self._target))
 
     def _hurt(self, character_id: str, amount: str) -> None:
         damage = self._roll(amount)
@@ -305,7 +311,7 @@ class _Run:
         if self._stat is not None:
             refs["stat.chosen"] = actor.stats.get(self._stat, 0)
         refs |= self._attributes("self", self._actor)
-        if self._target is not None:
+        if self._target in self._game.state.characters:
             refs |= self._attributes("target", self._target)
         return refs
 

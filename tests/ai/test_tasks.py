@@ -20,7 +20,7 @@ CONTEXT = Context(
     description="Warm and loud.",
     exits=["The cellar"],
     present=["Corwin"],
-    pc="Hero, Fighter; 25/25 HP",
+    pc="Hero, Fighter; unhurt",
     secrets=[],
     recent=[],
     narration="",
@@ -39,9 +39,20 @@ OPTIONS = Options(
     places={"cellar": "The cellar"},
 )
 
+WITH_A_GRATE = Options(
+    moves={
+        **OPTIONS.moves,
+        "bend_bars": MoveOption("Bend Bars: When you destroy an obstacle", targeted="obstacle"),
+    },
+    people=OPTIONS.people,
+    places=OPTIONS.places,
+    obstacles={"grate": "The grate"},
+)
 
-def intent(kind, move_id=None, stat=None, target=None) -> str:
-    return json.dumps({"kind": kind, "move_id": move_id, "stat": stat, "target": target})
+
+def intent(kind, move_id=None, stat=None, target=None, then=None) -> str:
+    answer = {"kind": kind, "move_id": move_id, "stat": stat, "target": target, "then": then}
+    return json.dumps(answer)
 
 
 def text_of(request) -> str:
@@ -133,6 +144,61 @@ def test_the_options_say_which_moves_offer_a_stat_or_a_target():
     assert "When you attack an enemy in melee (aimed at someone)" in request
 
 
+def test_classify_aims_obstacle_moves_at_obstacles_only():
+    provider = FakeProvider(
+        [intent("move", "bend_bars", target="corwin"), intent("move", "bend_bars", target="grate")]
+    )
+
+    result = classify(provider, CONTEXT, WITH_A_GRATE, "I bend the bars")
+
+    assert result == Intent(kind="move", move_id="bend_bars", target="grate")
+    request = text_of(provider.requests[0])
+    assert "When you destroy an obstacle (aimed at an obstacle)" in request
+    assert "Obstacles here:\n- grate: The grate" in request
+    assert "grate" in provider.requests[0].schema["properties"]["target"]["enum"]
+
+
+def test_classify_takes_where_a_move_goes_on_to():
+    provider = FakeProvider([intent("move", "bend_bars", target="grate", then="cellar")])
+
+    said = "I bend the bars and climb down to the cellar"
+    result = classify(provider, CONTEXT, WITH_A_GRATE, said)
+
+    assert result == Intent(kind="move", move_id="bend_bars", target="grate", then="cellar")
+    assert provider.requests[0].schema["properties"]["then"]["enum"] == ["cellar", None]
+
+
+def test_classify_drops_a_then_the_player_never_named():
+    reply = intent("move", "hack_and_slash", target="corwin", then="cellar")
+
+    result = classify(FakeProvider([reply]), CONTEXT, OPTIONS, "I attack Corwin")
+
+    assert result == Intent(kind="move", move_id="hack_and_slash", target="corwin")
+
+
+@pytest.mark.parametrize(
+    "said",
+    [
+        "I duck the rats and dive through the hole in the back wall",
+        "I dodge them and run for the Broken Wall!",
+        "I dodge, then broken_wall",
+    ],
+)
+def test_classify_keeps_a_then_named_by_any_word_of_the_place(said):
+    options = Options(moves=OPTIONS.moves, places={"broken_wall": "The broken wall"})
+    reply = intent("move", "defy_danger", "dex", then="broken_wall")
+
+    assert classify(FakeProvider([reply]), CONTEXT, options, said).then == "broken_wall"
+
+
+@pytest.mark.parametrize(
+    "reply",
+    [intent("move", "defy_danger", "dex", then="attic"), intent("look", then="cellar")],
+)
+def test_classify_drops_a_then_that_is_no_way_on_or_not_after_a_move(reply):
+    assert classify(FakeProvider([reply]), CONTEXT, OPTIONS, "Hm").then is None
+
+
 def test_classify_gives_up_as_unclear_after_two_bad_answers():
     provider = FakeProvider(["not json", intent("move", "summon_dragon")])
 
@@ -180,6 +246,20 @@ def test_narration_failing_twice_is_retracted_for_the_template(check):
     assert parts[-1] == Retract()
     assert parts.count(Retract()) == 2
     assert len(provider.requests) == 2
+
+
+@pytest.mark.parametrize(
+    "rules_talk",
+    ["You take 4 damage.", "Your HP drops.", "You roll the dice.", "Your DEX saves you."],
+)
+def test_narration_talking_about_the_rules_is_retracted_and_told_again(check, rules_talk):
+    provider = FakeProvider([rules_talk, "You stagger, but stay standing."])
+
+    parts = list(narrate(provider, check, CONTEXT, ["Hero is hurt."]))
+
+    retract = parts.index(Retract())
+    assert "".join(parts[retract + 1 :]) == "You stagger, but stay standing."
+    assert "Do not mention numbers" in text_of(provider.requests[1])
 
 
 def test_narration_is_empty_when_the_model_is_down(check):

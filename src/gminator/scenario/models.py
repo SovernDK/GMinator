@@ -32,11 +32,23 @@ class ScenarioManifest(_Model):
     intro: str = ""
 
 
+class Obstacle(_Model):
+    """Something in the way, until a move made against it clears it."""
+
+    id: Id
+    name: str
+    description: str = ""
+    blocks: Id | None = Field(
+        default=None, description="The exit that can't be used until the obstacle is cleared"
+    )
+
+
 class Location(_Model):
     id: Id
     name: str
     description: str = ""
     exits: list[Id] = Field(default=[], description="Locations reachable from here")
+    obstacles: list[Obstacle] = []
 
 
 class Npc(_Model):
@@ -51,8 +63,15 @@ class Npc(_Model):
     damage: Expr | None = None
     drive: str = ""
     voice: str = ""
-    attitude: str = ""
+    attitude: str = Field(
+        default="", description="How the NPC stands towards the PC; `hostile` is a danger nearby"
+    )
     knows: list[Id] = Field(default=[], description="Secrets this NPC knows")
+    moves: list[GmMoveDefinition] = Field(
+        default=[],
+        description="GM moves the NPC makes while alive and with the player character; "
+        "they refer to the NPC as `target`. A hostile NPC's moves come first",
+    )
 
 
 class Secret(_Model):
@@ -105,6 +124,10 @@ class Scenario(_Model):
     fronts: dict[str, Front] = {}
     moves: dict[str, ScenarioMove] = {}
     tags: dict[str, Tag] = {}
+
+    def obstacles(self) -> Iterator[Obstacle]:
+        for location in self.locations.values():
+            yield from location.obstacles
 
     def dangers(self) -> Iterator[Danger]:
         for front in self.fronts.values():

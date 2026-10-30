@@ -199,6 +199,12 @@ class MoveTo(_Model):
     move_to: MoveToArgs
 
 
+class ClearObstacle(_Model):
+    clear_obstacle: Literal["target"] = Field(
+        description="Clears the obstacle the move is made against (target: obstacle)"
+    )
+
+
 EFFECT_TYPES: tuple[type[_Model], ...] = (
     DealDamage,
     TakeDamage,
@@ -216,6 +222,7 @@ EFFECT_TYPES: tuple[type[_Model], ...] = (
     UseItem,
     RevealSecret,
     MoveTo,
+    ClearObstacle,
 )
 
 
@@ -350,7 +357,13 @@ class Move(_Model):
     name: str
     category: Literal["basic", "special", "class"]
     trigger: str
-    target: bool = Field(default=False, description="Whether the move is made against a target")
+    target: bool | Literal["obstacle"] = Field(
+        default=False,
+        description="Whether the move is made against a character (true) or an obstacle",
+    )
+    flags: list[Id] = Field(
+        default=[], description="Kinds of action the move is, e.g. `combat`; see the danger gate"
+    )
     roll: Expr | None = Field(
         default=None, description="The modifier added to the pack's roll, e.g. `stat.str`"
     )
@@ -395,6 +408,18 @@ class ModifierStep(_Model):
     modifier: int
 
 
+class DangerGate(_Model):
+    """Acting near a hostile NPC means acting despite danger: the engine makes this move
+    first, and a miss stops the action."""
+
+    move: Id = Field(description="The move made first, e.g. defy_danger; it needs stat_options")
+    default_stat: Id
+    stat_by_flag: dict[Id, Id] = Field(
+        default={}, description="The stat rolled for an action with this flag, if not the default"
+    )
+    exempt: list[Id] = Field(default=[], description="Flags of actions that are never gated")
+
+
 class Manifest(_Model):
     id: PackId
     name: str
@@ -413,6 +438,9 @@ class Manifest(_Model):
     miss_effects: list[Effect] = Field(default=[], description="Applied on every rolled miss")
     dying_move: Id | None = Field(
         default=None, description="The move a player character makes on reaching 0 HP"
+    )
+    danger: DangerGate | None = Field(
+        default=None, description="What acting near a hostile NPC takes; without it, nothing"
     )
 
     @model_validator(mode="after")

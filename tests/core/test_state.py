@@ -18,6 +18,7 @@ from gminator.core.events import (
     ItemGained,
     ItemUsed,
     MoveMade,
+    ObstacleCleared,
     QuestionsAsked,
     SecretRevealed,
     TagAdded,
@@ -381,6 +382,19 @@ def test_revealed_secrets_are_kept_once_in_the_order_revealed():
 
     assert replay([START]).revealed == ()
     assert state.revealed == ("wererat", "ledger")
+
+
+def test_cleared_obstacles_are_kept_once():
+    state = replay(
+        [
+            START,
+            ObstacleCleared(obstacle_id="grate"),
+            ObstacleCleared(obstacle_id="grate"),
+        ]
+    )
+
+    assert replay([START]).cleared == ()
+    assert state.cleared == ("grate",)
 
 
 def test_game_ends_with_its_ending():

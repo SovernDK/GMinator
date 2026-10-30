@@ -142,6 +142,10 @@ class Harness:
         table = Table(Session.begin(self.pack, self.scenario, scene.seed, character), provider)
         for command in scene.commands:
             self._play(table, command)
+            place = command.removeprefix("/go ")
+            if place != command and table.session.state.characters["pc"].location != place:
+                # A danger move in the way missed: another seed gets the scene there.
+                raise CaseError(f"{command} does not get there with seed {scene.seed}")
         return table
 
     def _play(self, table: Table, command: str, said: str = "") -> Reply:
@@ -161,8 +165,11 @@ class Harness:
                 yield f"{expected.move_id} is not a move here"
             if move and expected.stat and expected.stat not in move.stats:
                 yield f"{expected.move_id} does not take {expected.stat}"
-            if expected.target and expected.target not in {*options.people, *options.places}:
+            targets = {*options.people, *options.places, *options.obstacles}
+            if expected.target and expected.target not in targets:
                 yield f"{expected.target} is not here"
+            if expected.then and expected.then not in options.places:
+                yield f"{expected.then} is not a way on from here"
 
     def _check_narrate(self, case: NarrateCase) -> Iterator[str]:
         self._play(self._sit(case.scene, None), case.command)

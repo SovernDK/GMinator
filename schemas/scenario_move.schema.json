@@ -210,6 +210,22 @@
       "title": "ChooseN",
       "type": "object"
     },
+    "ClearObstacle": {
+      "additionalProperties": false,
+      "properties": {
+        "clear_obstacle": {
+          "const": "target",
+          "description": "Clears the obstacle the move is made against (target: obstacle)",
+          "title": "Clear Obstacle",
+          "type": "string"
+        }
+      },
+      "required": [
+        "clear_obstacle"
+      ],
+      "title": "ClearObstacle",
+      "type": "object"
+    },
     "ClockArgs": {
       "additionalProperties": false,
       "properties": {
@@ -614,6 +630,9 @@
               },
               {
                 "$ref": "#/$defs/MoveTo"
+              },
+              {
+                "$ref": "#/$defs/ClearObstacle"
               }
             ]
           },
@@ -686,6 +705,9 @@
               },
               {
                 "$ref": "#/$defs/MoveTo"
+              },
+              {
+                "$ref": "#/$defs/ClearObstacle"
               }
             ]
           },
@@ -933,10 +955,28 @@
       "type": "string"
     },
     "target": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "const": "obstacle",
+          "type": "string"
+        }
+      ],
       "default": false,
-      "description": "Whether the move is made against a target",
-      "title": "Target",
-      "type": "boolean"
+      "description": "Whether the move is made against a character (true) or an obstacle",
+      "title": "Target"
+    },
+    "flags": {
+      "default": [],
+      "description": "Kinds of action the move is, e.g. `combat`; see the danger gate",
+      "items": {
+        "pattern": "^[a-z][a-z0-9_]*$",
+        "type": "string"
+      },
+      "title": "Flags",
+      "type": "array"
     },
     "roll": {
       "anyOf": [
@@ -1039,6 +1079,9 @@
           },
           {
             "$ref": "#/$defs/MoveTo"
+          },
+          {
+            "$ref": "#/$defs/ClearObstacle"
           }
         ]
       },

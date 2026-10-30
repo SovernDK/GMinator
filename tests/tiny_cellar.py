@@ -37,6 +37,23 @@ NPCS = """\
   knows: [wererat]
 """
 
+HOSTILE_RATS = """\
+- id: rats
+  name: The rats
+  location: cellar
+  max_hp: 7
+  damage: d6
+  attitude: hostile
+  moves:
+    - id: rats_gnaw
+      name: The rats gnaw
+      severity: hard
+      text: Teeth sink into your leg.
+      effects:
+        - take_damage: {amount: target.damage}
+"""
+"""Rats in the cellar that fight back: add to NPCS."""
+
 SECRETS = """\
 - id: wererat
   text: Corwin is a wererat.

@@ -6,12 +6,13 @@ from gminator.core.events import (
     ClockAdvanced,
     DiceRolled,
     GmMoveMade,
+    HpChanged,
 )
 from gminator.core.game import Game
 from gminator.scenario.gm import gm_move_candidates, make_scenario_gm_move
 from gminator.scenario.story import opening_events
 from support import ScriptedDecider
-from tiny_cellar import load_tiny_cellar
+from tiny_cellar import HOSTILE_RATS, NPCS, VALID, load_tiny_cellar
 
 HERO = CharacterCreated(character_id="hero", name="Hero", stats={}, max_hp=10)
 TO_CELLAR = CharacterMoved(character_id="hero", location_id="cellar")
@@ -86,3 +87,46 @@ def test_without_candidates_the_gm_makes_no_move(tmp_path, dungeon_world):
 
     assert make_scenario_gm_move(game, pack, scenario, "hero", "hard", ScriptedDecider()) is None
     assert game.events == before
+
+
+@pytest.fixture
+def ratty(tmp_path, dungeon_world):
+    return load_tiny_cellar(tmp_path, dungeon_world, {**VALID, "npcs.yaml": NPCS + HOSTILE_RATS})
+
+
+def test_a_hostile_npc_here_makes_the_gm_move_when_it_has_one(ratty, dungeon_world):
+    game = opened(ratty, TO_CELLAR)
+
+    candidates = gm_move_candidates(ratty, dungeon_world, game.state, "hero", "hard")
+
+    assert [(c.gm_move.id, c.source_id) for c in candidates] == [("rats_gnaw", "rats")]
+
+
+def test_without_a_move_from_a_hostile_npc_here_any_candidate_will_do(ratty, dungeon_world):
+    game = opened(ratty, TO_CELLAR)
+
+    assert "show_signs" in candidate_ids(ratty, dungeon_world, game, "soft")
+
+
+def test_an_npc_makes_its_moves_only_while_alive_and_with_the_pc(ratty, dungeon_world):
+    away = opened(ratty)
+    dead = opened(ratty, TO_CELLAR, HpChanged(character_id="rats", amount=-99))
+
+    assert "rats_gnaw" not in candidate_ids(ratty, dungeon_world, away, "hard")
+    assert candidate_ids(ratty, dungeon_world, dead, "hard") == [
+        "rats_bite",
+        "deal_damage",
+        "put_in_a_spot",
+    ]
+
+
+def test_an_npc_move_comes_from_the_npc(ratty, dungeon_world):
+    game = opened(ratty, TO_CELLAR)
+
+    resolution = make_scenario_gm_move(
+        game, dungeon_world, ratty, "hero", "hard", ScriptedDecider()
+    )
+
+    damage = next(e for e in resolution.events if isinstance(e, DiceRolled))
+    assert damage.expression == "target.damage"
+    assert game.state.characters["hero"].hp == 10 - damage.total

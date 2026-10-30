@@ -155,6 +155,10 @@ Every milestone is **test-first** and ends in something that can be demoed.
 | **M6** | TUI | Textual layout, confirmation strip, modals, title screen, DW character creation, streaming display | The scenario plays end to end in the TUI (done: `tests/tui/test_app.py`) |
 | **M7** | Ship | First-run Ollama check and model pull, `uvx` packaging, pack/scenario authoring guide | Shipping gate passes (see below) |
 
+### After manual testing (from `BUGS.md`)
+- **Done:** engine-side danger gate with move flags (ADR-0007); obstacles as scenario state, cleared by moves against them; `then` on a move intent for going on afterwards; the dead become remains; narration without numbers (the story for the narrator, HP in words, a rules-talk check); NPC moves, with a hostile NPC here making the GM move first; GM moves told as fiction, by the narrator when it is on; `then` only when the player names the place.
+- **Open:** whether speech needs `/say` and whether speech is gated, to be decided from the speech classify evals; fiction-only actions (taking things from the pack, picking things up), which are neither moves nor commands yet; hostility as state.
+
 ### Definition of done — two gates, in order
 1. **Gameplay gate (M0–M6):** on the reference machine (CPU only, 8 GB RAM), a player creates a Fighter or Thief, plays the scenario to any ending, and saves, quits and resumes. The AI never changes state, the evals score above the bar, a turn is under 10 s with first text under 2 s, and a pack author can add a move with YAML only.
 2. **Shipping gate (M7), tested only after gate 1 passes:** a fresh machine installs with `uvx gminator`, the model is pulled on first run, and the authoring guide is enough to write a new move and a small scenario.

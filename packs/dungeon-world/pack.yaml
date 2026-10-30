@@ -23,3 +23,10 @@ miss_effects:
   - mark_xp: 1
 # When your HP drops to 0, you take your Last Breath.
 dying_move: last_breath
+# Acting while a hostile NPC is near is acting despite an imminent threat: Defy Danger first.
+# Fighting them is not.
+danger:
+  move: defy_danger
+  default_stat: dex
+  stat_by_flag: {travel: dex}
+  exempt: [combat]

@@ -53,9 +53,7 @@
   expect: {kind: move, move_id: make_camp}
 - id: start_help_maud
   said: I help Maud drag the heavy kegs away from the trapdoor
-  expect:
-    - {kind: move, move_id: aid_or_interfere, target: maud}
-    - {kind: move, move_id: bend_bars_lift_gates}
+  expect: {kind: move, move_id: aid_or_interfere, target: maud}
 
 # In the cellar: the giant rats are here.
 - id: cellar_attack_rats
@@ -71,10 +69,6 @@
   scene: *cellar
   said: I stand in front of the trapdoor so none of the rats get upstairs
   expect: {kind: move, move_id: defend}
-- id: cellar_smash_barricade
-  scene: *cellar
-  said: I tear apart the rotten barricade of crates with my bare hands
-  expect: {kind: move, move_id: bend_bars_lift_gates}
 - id: cellar_back_up
   scene: *cellar
   said: I climb back up to the common room
@@ -87,6 +81,16 @@
   scene: &thief_cellar {class_id: thief, commands: [/go cellar]}
   said: I throw a dagger at the biggest rat from across the room
   expect: {kind: move, move_id: volley, target: giant_rats}
+- id: cellar_hack_and_hold
+  scene: *cellar
+  said: I hack at the nearest rat and hold my ground
+  expect: {kind: move, move_id: hack_and_slash, target: giant_rats}
+- id: cellar_dodge_then_wall
+  scene: *cellar
+  said: I duck under the lunging rats and dive through the hole in the back wall
+  expect:
+    - {kind: move, move_id: defy_danger, stat: dex, then: broken_wall}
+    - {kind: travel, target: broken_wall}
 - id: cellar_thief_backstab
   scene: *thief_cellar
   said: While the rats are busy feeding, I creep up behind one and stab it in the back
@@ -98,6 +102,10 @@
   said: I take a moment to check the tunnel ahead for traps and tripwires
   expect:
     - {kind: move, move_id: trap_expert}
+- id: wall_thief_traps_then_cache
+  scene: {class_id: thief, commands: [/go cellar, /go broken_wall]}
+  said: I check the side passage for traps, then slip into the smugglers' cache
+  expect: {kind: move, move_id: trap_expert, then: cache}
 - id: wall_to_the_cache
   scene: &wall {commands: [/go cellar, /go broken_wall]}
   said: I follow the side passage into the dry cave
@@ -126,6 +134,20 @@
   scene: *gallery
   said: I head toward the squeaking, into the nest
   expect: {kind: travel, target: nest}
+- id: gallery_bend_the_grate
+  scene: *gallery
+  said: I grab the rusted bars of the grate and wrench them apart
+  expect: {kind: move, move_id: bend_bars_lift_gates, target: rusted_grate}
+- id: gallery_bend_the_grate_then_culvert
+  scene: *gallery
+  said: I tear the grate out of the rock and crawl into the culvert behind it
+  expect: {kind: move, move_id: bend_bars_lift_gates, target: rusted_grate, then: culvert}
+- id: gallery_culvert_blocked
+  scene: *gallery
+  said: I try to squeeze between the bars into the old culvert
+  expect:
+    - {kind: travel, target: culvert}
+    - {kind: move, move_id: bend_bars_lift_gates, target: rusted_grate, then: culvert}
 
 # The rat nest: the swarm is here.
 - id: nest_attack_swarm
@@ -152,3 +174,90 @@
   scene: *knowing
   said: Corwin, I'll keep quiet about what you are, for a share of your profits
   expect: {kind: move, move_id: strike_a_deal, target: corwin}
+
+# Speech without markers: no quotes, no "I say", speech mixed with action, speech that is a
+# move, and words that only look like speech. They measure how well a model tells talk from
+# action, for deciding whether speech should need its own command.
+- id: speech_bare_no_quotes
+  said: where were you last night corwin
+  expect: {kind: talk, target: corwin}
+- id: speech_by_role
+  said: hey innkeeper how long have the rats been here
+  expect: {kind: talk, target: maud}
+- id: speech_by_description
+  said: kid, did you see who did that to your hand
+  expect:
+    - {kind: talk, target: pip}
+    - {kind: move, move_id: question_pip}
+- id: speech_quoted
+  said: '"Maud, have you seen anything strange down there?"'
+  expect: {kind: talk, target: maud}
+- id: speech_whispered
+  said: (whispering) Pip, is Corwin watching us?
+  expect:
+    - {kind: talk, target: pip}
+    - {kind: move, move_id: question_pip}
+- id: speech_reported
+  said: I tell Maud the rats are coming through the cellar wall
+  expect: {kind: talk, target: maud}
+- id: speech_reported_order
+  said: I order Pip to fetch me a lantern
+  expect: {kind: talk, target: pip}
+- id: speech_after_action
+  said: I slam my mug on the table and ask Corwin where he goes at night
+  expect: {kind: talk, target: corwin}
+- id: speech_after_a_sentence_of_action
+  said: I lean on the bar. Maud, another ale, please
+  expect: {kind: talk, target: maud}
+- id: speech_to_everyone
+  said: Good evening, everyone
+  expect:
+    - {kind: talk, target: maud}
+    - {kind: talk, target: corwin}
+    - {kind: talk, target: pip}
+    - {kind: unclear}
+- id: speech_threat_is_parley
+  said: Tell me what you're hiding, Corwin, or the whole village hears about your cellar
+  expect:
+    - {kind: move, move_id: parley, target: corwin}
+    - {kind: talk, target: corwin}
+- id: speech_offer_is_parley
+  said: Pip, a silver coin is yours if you tell me what you've seen at night
+  expect:
+    - {kind: move, move_id: parley, target: pip}
+    - {kind: move, move_id: question_pip}
+- id: speech_question_to_the_gm
+  said: Is Maud lying to me?
+  expect: {kind: move, move_id: discern_realities}
+- id: speech_question_about_someone
+  said: What do I know about men like Corwin?
+  expect: {kind: move, move_id: spout_lore}
+- id: speech_that_is_travel
+  said: Right, let's go down to the cellar
+  expect: {kind: travel, target: cellar}
+- id: speech_that_is_inventory
+  said: Okay, what have I got in my pack again?
+  expect: {kind: inventory}
+- id: speech_to_rats
+  scene: *cellar
+  said: Get back, you filthy vermin!
+  expect:
+    - {kind: move, move_id: defy_danger}
+    - {kind: unclear}
+- id: speech_to_someone_not_here
+  scene: *cellar
+  said: Maud! There are rats the size of dogs down here!
+  expect: {kind: unclear}
+- id: speech_to_no_one
+  scene: *cellar
+  said: Hello? Is anyone down here?
+  expect:
+    - {kind: look}
+    - {kind: unclear}
+    - {kind: move, move_id: discern_realities}
+- id: speech_to_the_dark
+  scene: *gallery
+  said: I know you're down here, Corwin. Come out
+  expect:
+    - {kind: unclear}
+    - {kind: move, move_id: discern_realities}

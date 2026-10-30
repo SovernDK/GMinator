@@ -129,6 +129,22 @@
       "title": "ChooseN",
       "type": "object"
     },
+    "ClearObstacle": {
+      "additionalProperties": false,
+      "properties": {
+        "clear_obstacle": {
+          "const": "target",
+          "description": "Clears the obstacle the move is made against (target: obstacle)",
+          "title": "Clear Obstacle",
+          "type": "string"
+        }
+      },
+      "required": [
+        "clear_obstacle"
+      ],
+      "title": "ClearObstacle",
+      "type": "object"
+    },
     "ClockArgs": {
       "additionalProperties": false,
       "properties": {
@@ -175,6 +191,51 @@
         "amount"
       ],
       "title": "DamageArgs",
+      "type": "object"
+    },
+    "DangerGate": {
+      "additionalProperties": false,
+      "description": "Acting near a hostile NPC means acting despite danger: the engine makes this move\nfirst, and a miss stops the action.",
+      "properties": {
+        "move": {
+          "description": "The move made first, e.g. defy_danger; it needs stat_options",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Move",
+          "type": "string"
+        },
+        "default_stat": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Default Stat",
+          "type": "string"
+        },
+        "stat_by_flag": {
+          "default": {},
+          "description": "The stat rolled for an action with this flag, if not the default",
+          "patternProperties": {
+            "^[a-z][a-z0-9_]*$": {
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "type": "string"
+            }
+          },
+          "title": "Stat By Flag",
+          "type": "object"
+        },
+        "exempt": {
+          "default": [],
+          "description": "Flags of actions that are never gated",
+          "items": {
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "title": "Exempt",
+          "type": "array"
+        }
+      },
+      "required": [
+        "move",
+        "default_stat"
+      ],
+      "title": "DangerGate",
       "type": "object"
     },
     "DealDamage": {
@@ -428,6 +489,9 @@
               },
               {
                 "$ref": "#/$defs/MoveTo"
+              },
+              {
+                "$ref": "#/$defs/ClearObstacle"
               }
             ]
           },
@@ -712,6 +776,9 @@
           },
           {
             "$ref": "#/$defs/MoveTo"
+          },
+          {
+            "$ref": "#/$defs/ClearObstacle"
           }
         ]
       },
@@ -731,6 +798,18 @@
       "default": null,
       "description": "The move a player character makes on reaching 0 HP",
       "title": "Dying Move"
+    },
+    "danger": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DangerGate"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "What acting near a hostile NPC takes; without it, nothing"
     }
   },
   "required": [

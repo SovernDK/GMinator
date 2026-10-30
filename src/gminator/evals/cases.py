@@ -17,12 +17,14 @@ class _Model(BaseModel):
 
 
 class Expected(_Model):
-    """An intent a classify case accepts. A stat counts only if one is given."""
+    """An intent a classify case accepts. A stat counts only if one is given; a place to go
+    on to must match, so a case without one wants none."""
 
     kind: Kind
     move_id: str | None = None
     stat: str | None = None
     target: str | None = None
+    then: str | None = None
 
 
 class Scene(_Model):

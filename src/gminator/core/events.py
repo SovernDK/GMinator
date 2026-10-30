@@ -148,6 +148,11 @@ class CharacterMoved(_Event):
     location_id: str
 
 
+class ObstacleCleared(_Event):
+    type: Literal["obstacle_cleared"] = "obstacle_cleared"
+    obstacle_id: str
+
+
 class SecretRevealed(_Event):
     type: Literal["secret_revealed"] = "secret_revealed"
     secret_id: str
@@ -178,6 +183,7 @@ Event = Annotated[
     | GmMoveTriggered
     | GmMoveMade
     | CharacterMoved
+    | ObstacleCleared
     | SecretRevealed
     | GameEnded,
     Field(discriminator="type"),

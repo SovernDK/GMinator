@@ -27,7 +27,18 @@
   name: The flooded gallery
   description: >-
     Black water to the knee. Something swims past your legs. Far off, the sound of a river.
-  exits: [broken_wall, nest, river_exit]
+  exits: [broken_wall, nest, river_exit, culvert]
+  obstacles:
+    - id: rusted_grate
+      name: The rusted grate
+      description: Thick iron bars across a side culvert, rusted solid into the rock.
+      blocks: culvert
+- id: culvert
+  name: The old culvert
+  description: >-
+    A narrow brick drain, older than the inn. The water here is still, and the walls are
+    scratched with tally marks.
+  exits: [gallery]
 - id: nest
   name: The rat nest
   description: >-

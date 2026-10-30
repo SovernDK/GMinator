@@ -5,11 +5,11 @@ import pytest
 from gminator.ai.provider import FakeProvider, ProviderError, Providers
 from gminator.ai.tasks import Retract
 from gminator.core.characters import create_character
-from gminator.core.events import HpChanged, MoveMade
+from gminator.core.events import CharacterMoved, HpChanged, MoveMade
 from gminator.play.session import Session
 from gminator.play.table import Reply, Table
 from support import ScriptedConfirmer, ScriptedDecider, seed_for
-from tiny_cellar import load_tiny_cellar
+from tiny_cellar import NPCS, VALID, load_tiny_cellar
 
 SCORES = {"str": 16, "con": 15, "dex": 13, "wis": 12, "int": 9, "cha": 8}
 
@@ -24,8 +24,9 @@ def sit(pack, scenario, provider, seed=0) -> Table:
     return Table(Session.begin(pack, scenario, seed, hero), provider)
 
 
-def intent(kind, move_id=None, stat=None, target=None) -> str:
-    return json.dumps({"kind": kind, "move_id": move_id, "stat": stat, "target": target})
+def intent(kind, move_id=None, stat=None, target=None, then=None) -> str:
+    answer = {"kind": kind, "move_id": move_id, "stat": stat, "target": target, "then": then}
+    return json.dumps(answer)
 
 
 def told(reply: Reply) -> str:
@@ -57,7 +58,7 @@ def test_a_move_in_free_text_is_confirmed_made_and_narrated(dungeon_world, scena
     assert "Hero makes Defy Danger" in "\n".join(reply.lines)
     assert told(reply) == "You vault the bar."
     narration = text_of(provider.requests[1])
-    assert "Hero makes Defy Danger" in narration
+    assert "Hero tries Defy Danger, and it goes well." in narration
     assert "I vault over the bar" in narration
 
 
@@ -144,7 +145,7 @@ def test_each_task_can_have_its_own_model(dungeon_world, scenario):
     assert told(vaulted) == "You vault the bar."
     assert told(answered) == "Only a few rats, friend."
     assert [r.schema is not None for r in classifier.requests] == [True, True]
-    assert "Hero makes Defy Danger" in text_of(narrator.requests[0])
+    assert "Hero tries Defy Danger" in text_of(narrator.requests[0])
     assert "Name: Corwin" in text_of(voice.requests[0])
 
 
@@ -303,3 +304,129 @@ def test_a_target_is_dropped_from_a_move_not_made_against_anyone(dungeon_world, 
     assert [e.move_id for e in table.session.game.events if isinstance(e, MoveMade)] == [
         "defy_danger"
     ]
+
+
+# Danger, obstacles and going on
+
+
+LOCATIONS = """\
+- id: inn
+  name: The inn
+  exits: [cellar]
+- id: cellar
+  name: The cellar
+  exits: [inn, pit]
+  obstacles:
+    - {id: grate, name: The grate, blocks: pit}
+- id: pit
+  name: The pit
+  exits: [cellar]
+"""
+
+RATS = "- {id: rats, name: The rats, location: cellar, max_hp: 7, attitude: hostile}\n"
+
+
+@pytest.fixture
+def cellar(tmp_path, dungeon_world):
+    files = {**VALID, "locations.yaml": LOCATIONS, "npcs.yaml": NPCS + RATS}
+    return load_tiny_cellar(tmp_path, dungeon_world, files)
+
+
+def in_the_cellar(pack, scenario, provider, seed=0) -> Table:
+    table = sit(pack, scenario, provider, seed)
+    table.session.game.record(CharacterMoved(character_id="hero", location_id="cellar"))
+    return table
+
+
+def test_the_confirmation_names_the_danger_move_first(dungeon_world, cellar):
+    provider = FakeProvider([intent("travel", target="inn"), "You slip past."])
+    table = in_the_cellar(dungeon_world, cellar, provider)
+    confirmer = ScriptedConfirmer()
+
+    table.handle("I run for the stairs", ScriptedDecider(), confirmer)
+
+    assert confirmer.questions[0] == "The rats: you Defy Danger +DEX first. Go to The inn?"
+
+
+def test_fighting_needs_no_danger_move(dungeon_world, cellar):
+    provider = FakeProvider([intent("move", "hack_and_slash", target="rats"), "Steel flashes."])
+    table = in_the_cellar(dungeon_world, cellar, provider)
+    confirmer = ScriptedConfirmer()
+
+    table.handle("I hack at the rats", ScriptedDecider(), confirmer)
+
+    assert "Defy Danger" not in confirmer.questions[0]
+
+
+def test_a_move_against_an_obstacle_then_going_on_is_one_command(dungeon_world, cellar):
+    reply = intent("move", "bend_bars_lift_gates", target="grate", then="pit")
+    provider = FakeProvider([reply, "Iron screams."])
+    table = in_the_cellar(dungeon_world, cellar, provider, seed_for("strong", 1))
+    table.session.game.record(HpChanged(character_id="rats", amount=-99))
+    confirmer = ScriptedConfirmer()
+
+    assert table.options().obstacles == {"grate": "The grate"}
+    table.handle("I tear the grate open and drop into the pit", ScriptedDecider(), confirmer)
+
+    assert confirmer.questions[0] == (
+        "Make Bend Bars, Lift Gates against The grate, then go to The pit?"
+    )
+    assert table.session.state.characters["hero"].location == "pit"
+
+
+def test_the_narrator_is_told_the_story_without_numbers(dungeon_world, scenario):
+    provider = FakeProvider(
+        [intent("move", "hack_and_slash", target="corwin"), "Steel.", intent("look"), "x"]
+    )
+    table = sit(dungeon_world, scenario, provider, seed_for("partial", 2))
+
+    reply = table.handle("I attack Corwin", ScriptedDecider(), ScriptedConfirmer())
+    list(reply.narration)
+
+    assert any(c.isdigit() for c in "".join(reply.lines))
+    narration = text_of(provider.requests[1])
+    facts = narration[narration.index("What just happened") :]
+    assert not any(c.isdigit() for c in facts)
+    assert not any(c.isdigit() for c in "".join(table.context().recent))
+
+
+# GM moves are told by the narrator
+
+SPOT = "The ground shifts under you, and suddenly you are cornered."
+
+
+def at_a_miss(pack, scenario, narrator: list) -> tuple[Table, Reply]:
+    """A Defy Danger that misses and brings the one hard GM move the pack has."""
+    pack = pack.model_copy(update={"gm_moves": {"put_in_a_spot": pack.gm_moves["put_in_a_spot"]}})
+    provider = FakeProvider([intent("move", "defy_danger", "dex"), *narrator])
+    table = sit(pack, scenario, provider, seed_for("miss", 1))
+    return table, table.handle("I leap the bar", ScriptedDecider(), ScriptedConfirmer())
+
+
+def test_with_the_narrator_a_gm_move_is_told_not_shown(dungeon_world, scenario):
+    table, reply = at_a_miss(dungeon_world, scenario, ["You land badly, boxed in."])
+
+    assert SPOT not in reply.lines
+    assert told(reply) == "You land badly, boxed in."
+    assert SPOT in text_of(table.providers.narrate.requests[1])
+
+
+@pytest.mark.parametrize(
+    "narrator",
+    [[ProviderError("down")], ["The dragon roars. You see 3 HP.", "Corwin has 2 HP."]],
+)
+def test_a_gm_move_the_narrator_cannot_tell_is_shown_after_all(dungeon_world, scenario, narrator):
+    _, reply = at_a_miss(dungeon_world, scenario, narrator)
+
+    assert told(reply) == SPOT
+
+
+def test_without_the_narrator_a_gm_move_is_shown(dungeon_world, scenario):
+    pack = dungeon_world.model_copy(
+        update={"gm_moves": {"put_in_a_spot": dungeon_world.gm_moves["put_in_a_spot"]}}
+    )
+    table = sit(pack, scenario, None, seed_for("miss", 1))
+
+    reply = table.handle("/move defy_danger dex", ScriptedDecider(), ScriptedConfirmer())
+
+    assert SPOT in reply.lines

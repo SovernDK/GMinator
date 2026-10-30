@@ -5,13 +5,14 @@ from collections.abc import Iterator
 from pathlib import Path
 
 from gminator.packs.loader import Checker, Loader, Located, PackError, Problem, references, unique
-from gminator.packs.models import Pack, Tag
+from gminator.packs.models import GmMoveDefinition, Pack, Tag
 from gminator.scenario.models import (
     Danger,
     Ending,
     Front,
     Location,
     Npc,
+    Obstacle,
     Scenario,
     ScenarioManifest,
     ScenarioMove,
@@ -41,7 +42,10 @@ def load_scenario(root: Path, pack: Pack) -> Scenario:
     secrets_by_id = unique(secrets, "secret", problems)
     fronts_by_id = unique(fronts, "front", problems)
     dangers_by_id = unique(_dangers(fronts), "danger", problems)
-    problems += _shared_ids(locations_by_id, npcs_by_id, secrets_by_id, fronts_by_id, dangers_by_id)
+    obstacles_by_id = unique(_obstacles(locations), "obstacle", problems)
+    problems += _shared_ids(
+        locations_by_id, npcs_by_id, secrets_by_id, fronts_by_id, dangers_by_id, obstacles_by_id
+    )
     endings_by_id = unique(endings, "ending", problems)
     tags_by_id = unique(tags, "tag", problems)
     moves_by_id = unique([m for m in moves if m], "move", problems)
@@ -60,10 +64,18 @@ def load_scenario(root: Path, pack: Pack) -> Scenario:
     for located in locations_by_id.values():
         for index, exit_id in enumerate(located.model.exits):
             problems += checker.known(located, ("exits", index), "location", exit_id)
+        for index, obstacle in enumerate(located.model.obstacles):
+            if obstacle.blocks is not None and obstacle.blocks not in located.model.exits:
+                problems.append(
+                    located.problem(
+                        ("obstacles", index, "blocks"), f"{obstacle.blocks!r} is not an exit here"
+                    )
+                )
     for located in npcs_by_id.values():
         problems += _check_npc(located, checker)
     for located in dangers_by_id.values():
         problems += _check_danger(located, checker)
+    problems += _unique_gm_moves(pack, [*dangers_by_id.values(), *npcs_by_id.values()])
     for located in endings_by_id.values():
         problems += checker.condition(located, ("when",), located.model.when)
     for located in moves_by_id.values():
@@ -95,8 +107,35 @@ def _dangers(fronts: list[Located[Front]]) -> list[Located[Danger]]:
     ]
 
 
+def _obstacles(locations: list[Located[Location]]) -> list[Located[Obstacle]]:
+    return [
+        Located(obstacle, location.path, location.node, (*location.loc, "obstacles", index))
+        for location in locations
+        for index, obstacle in enumerate(location.model.obstacles)
+    ]
+
+
+def _gm_moves(located: Located[Danger] | Located[Npc]) -> list[Located[GmMoveDefinition]]:
+    """The GM moves of a danger or an NPC, each located for reporting problems."""
+    return [
+        Located(gm_move, located.path, located.node, (*located.loc, "moves", index))
+        for index, gm_move in enumerate(located.model.moves)
+    ]
+
+
+def _unique_gm_moves(pack: Pack, owners: list[Located]) -> Iterator[Problem]:
+    """GM moves are told apart by id, so no two may share one, wherever they come from."""
+    seen = set(pack.gm_moves)
+    for owner in owners:
+        for located in _gm_moves(owner):
+            if located.model.id in seen:
+                yield located.problem(("id",), f"GM move {located.model.id!r} is already used")
+            seen.add(located.model.id)
+
+
 def _shared_ids(*kinds: dict[str, Located]) -> Iterator[Problem]:
-    """Locations, NPCs, secrets, fronts and dangers are all entities, so share one id space."""
+    """Locations, NPCs, secrets, fronts, dangers and obstacles are all entities, so share one
+    id space."""
     seen: set[str] = set()
     for by_id in kinds:
         for key, located in by_id.items():
@@ -123,15 +162,16 @@ def _check_npc(located: Located[Npc], checker: Checker) -> Iterator[Problem]:
         yield from checker.known(located, ("knows", index), "secret", secret_id)
     if npc.damage is not None:
         yield from references(located, ("damage",), npc.damage, set())
+    for gm_move in _gm_moves(located):
+        yield from checker.gm_move(gm_move, target=True)
 
 
 def _check_danger(located: Located[Danger], checker: Checker) -> Iterator[Problem]:
     danger = located.model
     if danger.npc is not None:
         yield from checker.known(located, ("npc",), "NPC", danger.npc)
-    for index, gm_move in enumerate(danger.moves):
-        at = Located(gm_move, located.path, located.node, (*located.loc, "moves", index))
-        yield from checker.gm_move(at, target=danger.npc is not None)
+    for gm_move in _gm_moves(located):
+        yield from checker.gm_move(gm_move, target=danger.npc is not None)
 
 
 def _check_move(located: Located[ScenarioMove], pack: Pack, checker: Checker) -> Iterator[Problem]:

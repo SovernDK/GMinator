@@ -22,6 +22,7 @@ from gminator.core.events import (
     ItemGained,
     ItemUsed,
     MoveMade,
+    ObstacleCleared,
     QuestionsAsked,
     SecretRevealed,
     TagAdded,
@@ -72,6 +73,8 @@ class GameState(_State):
     characters: dict[str, Character] = {}
     clocks: dict[str, Clock] = {}
     revealed: tuple[str, ...] = ()
+    cleared: tuple[str, ...] = ()
+    """The obstacles cleared out of the way."""
     ending: str | None = None
 
 
@@ -172,6 +175,10 @@ def apply(state: GameState, event: Event) -> GameState:
             if event.secret_id in state.revealed:
                 return state
             return state.model_copy(update={"revealed": (*state.revealed, event.secret_id)})
+        case ObstacleCleared():
+            if event.obstacle_id in state.cleared:
+                return state
+            return state.model_copy(update={"cleared": (*state.cleared, event.obstacle_id)})
         case GameEnded():
             return state.model_copy(update={"ending": event.ending_id})
         case MoveMade() | ChoiceMade() | QuestionsAsked() | GmMoveTriggered() | GmMoveMade():

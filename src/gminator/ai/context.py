@@ -7,7 +7,7 @@ prompt can carry a secret the engine has not revealed.
 
 import re
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from gminator.core.conditions import is_dead
 from gminator.core.state import GameState
@@ -29,13 +29,19 @@ class Context:
     secrets: list[str]
     recent: list[str]
     narration: str
+    in_the_way: list[str] = field(default_factory=list)
+    remains: list[str] = field(default_factory=list)
 
     def render(self) -> str:
         lines = [f"Location: {self.location}"]
         if self.description:
             lines.append(self.description)
         lines.append(f"Ways on: {', '.join(self.exits) or 'none'}")
+        if self.in_the_way:
+            lines.append(f"In the way: {'; '.join(self.in_the_way)}")
         lines.append(f"Also here: {'; '.join(self.present) or 'no one'}")
+        if self.remains:
+            lines.append(f"Remains: {', '.join(self.remains)}")
         lines.append(f"Player character: {self.pc}")
         if self.secrets:
             lines += ["Known secrets:", *(f"- {secret}" for secret in self.secrets)]
@@ -58,19 +64,37 @@ class ContextBuilder:
         assert pc.location is not None
         location = self.scenario.locations[pc.location]
 
-        present = []
+        present, remains = [], []
         for entity in graph.subjects("at", location.id):
             if entity.id == self.pc_id:
                 continue
+            if is_dead(state.characters[entity.id]):
+                remains.append(f"the body of {entity.name}")
+                continue
             npc = self.scenario.npcs.get(entity.id)
-            name = f"{entity.name} (dead)" if is_dead(state.characters[entity.id]) else entity.name
+            name = entity.name
             present.append(f"{name}: {npc.description}" if npc and npc.description else name)
+
+        in_the_way = []
+        for obstacle in location.obstacles:
+            if obstacle.id in state.cleared:
+                continue
+            text = (
+                f"{obstacle.name}: {obstacle.description}"
+                if obstacle.description
+                else obstacle.name
+            )
+            if obstacle.blocks is not None:
+                text += f" (blocks the way to {self.scenario.locations[obstacle.blocks].name})"
+            in_the_way.append(text)
 
         return Context(
             location=location.name,
             description=location.description,
             exits=[e.name for e in graph.objects(location.id, "connects")],
+            in_the_way=in_the_way,
             present=present,
+            remains=remains,
             pc=self._describe_pc(state),
             secrets=[e.name for e in graph.entities("secret")],
             recent=list(recent)[-RECENT_FACTS:],
@@ -99,7 +123,7 @@ class ContextBuilder:
     def _describe_pc(self, state: GameState) -> str:
         pc = state.characters[self.pc_id]
         cls = self.rules.classes.get(pc.class_id) if pc.class_id else None
-        parts = [f"{pc.name}, {cls.name}" if cls else pc.name, f"{pc.hp}/{pc.max_hp} HP"]
+        parts = [f"{pc.name}, {cls.name}" if cls else pc.name, _condition(pc.hp, pc.max_hp)]
         if pc.tags:
             parts.append(f"tags: {', '.join(pc.tags)}")
         items = [
@@ -109,6 +133,15 @@ class ContextBuilder:
         if items:
             parts.append(f"carrying: {', '.join(items)}")
         return "; ".join(parts)
+
+
+def _condition(hp: int, max_hp: int) -> str:
+    """How hurt a character is, in words: the numbers are the engine's to show."""
+    if hp >= max_hp:
+        return "unhurt"
+    if hp == 0:
+        return "down"
+    return "wounded" if hp * 2 > max_hp else "badly hurt"
 
 
 def sentences(text: str) -> list[str]:

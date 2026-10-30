@@ -12,6 +12,7 @@ from gminator.core.events import (
     GmMoveTriggered,
     HpChanged,
     MoveMade,
+    ObstacleCleared,
     QuestionsAsked,
     XpMarked,
 )
@@ -36,7 +37,7 @@ BASIC_MOVES = {
     "aid_or_interfere": (None, True),
 }
 CLASS_MOVES = {
-    "fighter": {"bend_bars_lift_gates": ("str", False)},
+    "fighter": {"bend_bars_lift_gates": ("str", "obstacle")},
     "thief": {
         "tricks_of_the_trade": ("dex", False),
         "trap_expert": ("dex", False),
@@ -62,7 +63,7 @@ def make(game, pack, move_id, decider=None, target=False, **kwargs):
         move_id,
         "pc",
         decider or ScriptedDecider(),
-        target_id="goblin" if target else None,
+        target_id={True: "goblin", "obstacle": "grate", False: None}[target],
         **kwargs,
     )
 
@@ -107,9 +108,11 @@ def test_every_basic_move_resolves_in_every_band(dungeon_world, move_id, band):
     resolution = make(game, dungeon_world, move_id, target=needs_target, **kwargs)
 
     assert resolution.band == band
-    assert resolution.text
     assert isinstance(resolution.events[1], MoveMade)
-    if band == "miss":
+    if band != "miss":
+        assert resolution.text
+    else:
+        # The GM move the miss brings tells what happens.
         assert XpMarked(character_id="pc", amount=1) in resolution.events
         assert GmMoveTriggered(severity="hard") in resolution.events
 
@@ -126,6 +129,30 @@ def test_every_class_move_resolves(dungeon_world, class_id, move_id, band):
     resolution = make(game, dungeon_world, move_id, target=needs_target)
 
     assert resolution.band == band
+
+
+@pytest.mark.parametrize(
+    ("band", "cleared"), [("strong", True), ("partial", True), ("miss", False)]
+)
+def test_bend_bars_clears_the_obstacle_unless_it_misses(dungeon_world, band, cleared):
+    game = start(dungeon_world, "fighter", band, "str")
+
+    resolution = make(game, dungeon_world, "bend_bars_lift_gates", target="obstacle")
+
+    assert (ObstacleCleared(obstacle_id="grate") in resolution.events) == cleared
+
+
+def test_fighting_moves_are_flagged_as_combat(dungeon_world):
+    combat = {move.id for move in dungeon_world.moves.values() if "combat" in move.flags}
+
+    assert combat == {"hack_and_slash", "volley", "defend", "defend_spend_hold", "backstab"}
+
+
+def test_acting_near_danger_means_defying_it(dungeon_world):
+    danger = dungeon_world.manifest.danger
+
+    assert danger is not None
+    assert (danger.move, danger.default_stat, danger.exempt) == ("defy_danger", "dex", ["combat"])
 
 
 def test_hack_and_slash_partial_trades_blows(dungeon_world):

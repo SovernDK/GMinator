@@ -3,6 +3,7 @@ id: defend_spend_hold
 name: Defend (spend hold)
 category: basic
 trigger: When you or the thing you defend is attacked while you hold Defend
+flags: [combat]
 target: true
 text: You spend 1 hold.
 effects:

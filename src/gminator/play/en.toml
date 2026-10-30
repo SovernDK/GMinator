@@ -5,8 +5,9 @@ help = """Commands:
   /look              where you are, the way on, and who is here
   /go <place>        go through an exit
   /moves             the moves you can make now
-  /move <move> [target] [stat]
-                     make a move, e.g. /move hack_and_slash corwin or /move defy_danger dex
+  /move <move> [target] [stat] [then <place>]
+                     make a move, e.g. /move hack_and_slash corwin or /move defy_danger dex;
+                     with then, go on to <place> if the move doesn't miss
   /sheet             your character
   /clocks            the dangers and their grim portents so far
   /secrets           the secrets you have uncovered
@@ -16,6 +17,7 @@ free_text = "Without the narrator, play goes through commands. Type /help for th
 ended = "The story has ended: {title}."
 go_where = "Go where? Use /go <place>; /look shows the way on."
 no_exit = "You can't go to {place} from here."
+blocked = "{obstacle} blocks the way to {place}."
 move_which = "Which move? Use /move <move>; /moves lists them."
 no_move = "You can't make the move {move}. /moves lists the ones you can."
 not_now = "You can't make {move} right now."
@@ -28,8 +30,11 @@ location = "== {name} =="
 exits = "Ways on: {exits}"
 no_exits = "There is no way on."
 here = "Here: {characters}"
-dead = "{name} (dead)"
 named = "{name} ({id})"
+obstacle = "In the way: {obstacle}"
+blocking = "In the way: {obstacle}, blocking {place}"
+remains = "Remains: {remains}"
+body = "the body of {name}"
 
 [moves]
 title = "Moves you can make:"
@@ -76,8 +81,19 @@ chosen = "Chosen: {chosen}."
 asked = "{who} asks: {question}"
 secret = "Revealed: {text}"
 moved = "{who} goes to {location}."
-gm_move = "The GM makes a move, {name}: {text}"
+cleared = "{obstacle} is out of the way."
 ending = "THE END: {title}"
+
+# The story the narrator is told: the same events, without numbers or rules.
+[story]
+made = "{who} makes {move}."
+strong = "{who} tries {move}, and it goes well."
+partial = "{who} tries {move}, and it only half works."
+miss = "{who} tries {move}, and it goes wrong."
+hurt = "{who} is hurt."
+unhurt = "{who} comes through unhurt."
+healed = "{who} recovers some strength."
+down = "{who} falls."
 
 [band]
 strong = "a strong hit"
@@ -85,7 +101,9 @@ partial = "a weak hit"
 miss = "a miss"
 
 [table]
-confirm_move = "Make {move}{stat}{target}?"
+confirm_move = "Make {move}{stat}{target}{then}?"
+then = ", then go to {place}"
+danger = "{threats}: you {move} +{stat} first. "
 stat = " +{stat}"
 target = " against {target}"
 confirm_go = "Go to {place}?"

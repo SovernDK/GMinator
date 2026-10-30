@@ -3,6 +3,7 @@ id: hack_and_slash
 name: Hack and Slash
 category: basic
 trigger: When you attack an enemy in melee
+flags: [combat]
 target: true
 roll: stat.str
 outcomes:
@@ -25,6 +26,5 @@ outcomes:
       - deal_damage: {amount: self.damage}
       - take_damage: {amount: target.damage}
   miss:
-    text: The GM makes a move.
     effects:
       - gm_move: hard

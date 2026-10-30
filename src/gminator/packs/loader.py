@@ -18,6 +18,7 @@ from gminator.packs.models import (
     AnyOf,
     CharacterClass,
     ChooseN,
+    ClearObstacle,
     ClockFull,
     Condition,
     DealDamage,
@@ -102,6 +103,7 @@ def load_pack(root: Path) -> Pack:
 
     checker = Checker(manifest.model, tags_by_id, items_by_id, moves_by_id)
     loader.problems += checker.manifest(manifest)
+    loader.problems += _check_danger(manifest, moves_by_id)
     for located in items_by_id.values():
         loader.problems += checker.item(located)
     for located in moves_by_id.values():
@@ -121,6 +123,24 @@ def load_pack(root: Path) -> Pack:
         tags={key: located.model for key, located in tags_by_id.items()},
         gm_moves={key: located.model for key, located in gm_moves_by_id.items()},
     )
+
+
+def _check_danger(located: Located[Manifest], moves: dict[str, Located]) -> Iterator[Problem]:
+    danger = located.model.danger
+    if danger is None:
+        return
+    if danger.move not in moves:
+        yield located.problem(("danger", "move"), f"unknown move {danger.move!r}")
+        return
+    options = moves[danger.move].model.stat_options
+    if options is None:
+        yield located.problem(("danger", "move"), f"{danger.move!r} has no stat_options")
+        return
+    stats = [(("danger", "default_stat"), danger.default_stat)]
+    stats += [(("danger", "stat_by_flag", flag), s) for flag, s in danger.stat_by_flag.items()]
+    for loc, stat in stats:
+        if stat not in options:
+            yield located.problem(loc, f"{danger.move!r} cannot roll {stat!r}")
 
 
 class Loader:
@@ -223,7 +243,7 @@ class Checker:
     def move(self, located: Located[Move]) -> Iterator[Problem]:
         move = located.model
         allowed = self._stat_refs | self._self_refs
-        if move.target:
+        if move.target is True:
             allowed |= self._target_refs
         if move.stat_options is not None:
             allowed |= {"stat.chosen"}
@@ -232,11 +252,13 @@ class Checker:
                     yield located.problem(("stat_options", index), f"unknown stat {stat!r}")
         if move.roll is not None:
             yield from references(located, ("roll",), move.roll, allowed)
+        obstacle = move.target == "obstacle"
         if move.outcomes is not None:
             for band in ("strong", "partial", "miss"):
                 effects = getattr(move.outcomes, band).effects
-                yield from self._effects(located, ("outcomes", band, "effects"), effects, allowed)
-        yield from self._effects(located, ("effects",), move.effects, allowed)
+                loc = ("outcomes", band, "effects")
+                yield from self._effects(located, loc, effects, allowed, obstacle)
+        yield from self._effects(located, ("effects",), move.effects, allowed, obstacle)
 
     def gm_move(
         self, located: Located[GmMoveDefinition], target: bool = False
@@ -300,8 +322,14 @@ class Checker:
             yield located.problem(loc, f"unknown item {item_id!r}")
 
     def _effects(
-        self, located: Located, loc: Loc, effects: list[Effect], allowed: set[str]
+        self,
+        located: Located,
+        loc: Loc,
+        effects: list[Effect],
+        allowed: set[str],
+        obstacle: bool = False,
     ) -> Iterator[Problem]:
+        """`obstacle` says whether the move is made against an obstacle."""
         has_target = bool(allowed & self._target_refs)
         for index, effect in enumerate(effects):
             at = (*loc, index)
@@ -339,7 +367,14 @@ class Checker:
                 case ChooseN(choose_n=args):
                     for o, option in enumerate(args.options):
                         option_loc = (*at, "choose_n", "options", o, "effects")
-                        yield from self._effects(located, option_loc, option.effects, allowed)
+                        yield from self._effects(
+                            located, option_loc, option.effects, allowed, obstacle
+                        )
+                case ClearObstacle() if not obstacle:
+                    yield located.problem(
+                        at,
+                        "clear_obstacle needs a move made against an obstacle (target: obstacle)",
+                    )
             if target == "target" and not has_target:
                 yield located.problem(
                     at, "this effect hits the move's target, but the move has none (target: true)"

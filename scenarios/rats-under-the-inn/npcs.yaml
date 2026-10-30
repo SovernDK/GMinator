@@ -36,6 +36,17 @@
   damage: d6
   drive: Eat.
   attitude: hostile
+  moves:
+    - id: rats_circle
+      name: The rats circle
+      severity: soft
+      text: The rats fan out around you, teeth bared, waiting for an opening.
+    - id: rats_bite
+      name: The rats bite
+      severity: hard
+      text: A rat darts in under your guard and sinks its teeth into your leg.
+      effects:
+        - take_damage: {amount: target.damage}
 - id: swarm
   name: The swarm
   description: Thousands of rats moving as one.
@@ -44,3 +55,14 @@
   damage: d6
   drive: Feed and multiply.
   attitude: hostile
+  moves:
+    - id: swarm_surges
+      name: The swarm surges
+      severity: soft
+      text: The swarm surges toward you, a carpet of fur and teeth, and pulls back.
+    - id: swarm_engulfs
+      name: The swarm engulfs you
+      severity: hard
+      text: The swarm pours over you, biting everywhere at once.
+      effects:
+        - take_damage: {amount: target.damage}

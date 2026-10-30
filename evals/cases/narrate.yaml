@@ -101,11 +101,16 @@
   command: /move defend
   said: I stand over the trapdoor so the rats can't get upstairs
   mentions: [trapdoor, rat, stand, guard, hold]
-- id: smash_the_barrels
+- id: bend_the_grate
+  scene: {commands: [/go cellar, /go broken_wall, /go gallery]}
+  command: /move bend_bars_lift_gates rusted_grate
+  said: I wrench the bars of the rusted grate apart
+  mentions: [grate, bar, iron, rust, bend, wrench]
+- id: past_the_rats
   scene: *cellar
-  command: /move bend_bars_lift_gates
-  said: I smash apart the barrels blocking the far wall
-  mentions: [barrel, smash, wood, splinter, break]
+  command: /go broken_wall
+  said: I dodge past the rats and through the hole in the wall
+  mentions: [rat, wall, tunnel, rubble, dodge, past]
 - id: study_the_room
   command: /move discern_realities
   said: I study the room for anything out of place

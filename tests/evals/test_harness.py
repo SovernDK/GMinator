@@ -3,8 +3,10 @@ import json
 import pytest
 
 from gminator.ai.provider import FakeProvider, ProviderError, Request
+from gminator.core.characters import quick_start
 from gminator.evals.cases import Cases, ClassifyCase, Expected, NarrateCase, Scene, VoiceCase
 from gminator.evals.harness import Harness
+from support import seed_for
 
 IN_THE_CELLAR = Scene(commands=["/go cellar"])
 STAB = ClassifyCase(
@@ -208,6 +210,20 @@ def test_good_cases_have_no_problems(harness):
             "classify case stab: defy_danger does not take luck",
         ),
         (
+            Cases(
+                classify=[
+                    STAB.model_copy(
+                        update={
+                            "expect": [
+                                Expected(kind="move", move_id="defy_danger", then="river_exit")
+                            ]
+                        }
+                    )
+                ]
+            ),
+            "classify case stab: river_exit is not a way on from here",
+        ),
+        (
             Cases(narrate=[SWING.model_copy(update={"command": "/look"})]),
             "narrate case swing: /look changes nothing",
         ),
@@ -219,3 +235,13 @@ def test_good_cases_have_no_problems(harness):
 )
 def test_bad_cases_are_reported(harness, cases, problem):
     assert harness.validate(cases) == [problem]
+
+
+def test_a_scene_that_does_not_get_where_it_goes_is_reported(harness, dungeon_world):
+    [created, *_] = quick_start(dungeon_world, "fighter", "pc", "Hero")
+    seed = seed_for("miss", created.stats["dex"])  # Defy Danger past the rats, missed
+    scene = Scene(seed=seed, commands=["/go cellar", "/go broken_wall"])
+
+    problems = harness.validate(Cases(classify=[STAB.model_copy(update={"scene": scene})]))
+
+    assert problems == [f"classify case stab: /go broken_wall does not get there with seed {seed}"]

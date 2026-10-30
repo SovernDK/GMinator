@@ -20,10 +20,12 @@ for reading through.
 `cases/classify.yaml`, `cases/narrate.yaml` and `cases/voice.yaml` hold about 30 cases each,
 all in *Rats Under the Inn*. A case's `scene` is a quick-start character (`class_id`, `seed`)
 in a new game plus the slash `commands` played to get somewhere. Every scene command must
-change the game, so a broken case is caught by `uv run pytest`, not by a confused score.
+change the game, and a `/go` must get there (a danger move on the way can miss; pick
+another `seed`), so a broken case is caught by `uv run pytest`, not by a confused score.
 
 - **classify:** `said` and `expect`, one intent or a list of acceptable ones. A `stat` counts
-  only when given.
+  only when given; `then` (the place a move goes on to) must match, so a case without one
+  wants none. The "speech without markers" section measures telling talk from action.
 - **narrate:** the slash `command` whose outcome is narrated, what the player `said`, and
   optional `mentions` (at least one must appear) and `forbidden` words (such as a secret
   not yet revealed).
@@ -38,7 +40,7 @@ Scoring is deterministic: no model judges another.
 | answered | all | the model answered (not down, not retracted twice) |
 | intent | classify | the intent is one of those expected |
 | fact_check | narrate, voice | nothing was retracted by the fact check |
-| no_rules_talk | narrate, voice | no digits, HP, dice, XP or hit bands |
+| no_rules_talk | narrate, voice | no digits, HP, dice, XP, damage, stats in capitals or hit bands; the same check retracts narration in play |
 | length | narrate, voice | 2–4 sentences of narration, 1–3 of dialogue |
 | speaker | narrate | the narration addresses the player as "you" |
 | mentions | narrate, voice | at least one of the case's `mentions` |
