@@ -23,7 +23,11 @@ lines = session.handle("/move hack_and_slash corwin", decider)
 | `/sheet` | no | the character sheet |
 | `/clocks` | no | each danger's clock and the portents so far |
 | `/secrets` | no | the secrets uncovered |
+| `/say [@someone] <words>` | no | say something to someone here, who answers (needs the AI) |
+| `/gm <question>` | no | ask the GM out of character (needs the AI) |
 | `/help` | no | the list |
+
+`/say` and `/gm` are handled by the `Table`, not the `Session`. `@someone` is an id or the start of a word of a name, ignoring case; without it, the words go to the only person here.
 
 In `/move`, arguments that are stat names are the stat; the first other argument is the target (a character here, or an obstacle for `target: obstacle` moves).
 
@@ -75,19 +79,22 @@ reply.narration  # an iterator of text chunks and Retract markers
 
 `handle`:
 
+- `/say` / `/gm` → `say(words)` / `ask_gm(question)`, without classifying; with no provider, a fixed line;
 - `/...`, or any line with no provider → `play(line)`: the session handles it, and if it changed the game the story is narrated.
-- otherwise → `classify`, then by intent kind:
+- a line that is only quoted speech → `say(speech)`;
+- otherwise → `classify` the line without its quoted speech, then by intent kind:
   - `move` → a question naming the move, stat, target, `then` and any danger gate move, and a `/move …` command;
   - `travel` → a question (with any gate move) and `/go <place>`;
   - `talk` → `talk(npc, line)`: the NPC answers in character; nothing changes;
   - `look` / `inventory` → `/look` / `/sheet`;
-  - `ooc` / `unclear` → a fixed line.
+  - `ooc` → `ask_gm(line)`: the GM answers out of character; nothing changes;
+  - `unclear` → a fixed line.
 
   A move or travel is played only if `confirmer.confirm(question)` says yes.
 
 `Table` keeps the recent story lines and NPC dialogue as **recent facts**, and the last narration actually told (after retractions), for the next prompt's context.
 
-`Confirmer` and `Decider` are protocols the interfaces implement; see [Interfaces and saves](Interfaces-and-Saves.md).
+`Confirmer` and `Decider` are protocols the interfaces implement; see [Interfaces and saves](Interfaces%20and%20saves.md).
 
 ## Player-facing text — `play/en.toml`
 

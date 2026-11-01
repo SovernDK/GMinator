@@ -261,3 +261,27 @@
   expect:
     - {kind: unclear}
     - {kind: move, move_id: discern_realities}
+
+# Action with quoted speech: the quotes are left out before classifying, as the table does,
+# so these measure the action that is left.
+- id: quoted_attack_shouting
+  scene: *cellar
+  said: I swing my sword at the giant rats, yelling "Die, vermin!"
+  expect: {kind: move, move_id: hack_and_slash, target: giant_rats}
+- id: quoted_travel_calling_back
+  said: I climb down through the trapdoor. "Wait for me up here, Maud."
+  expect: {kind: travel, target: cellar}
+- id: quoted_speech_after_action
+  said: I slam my mug on the table. "Corwin, where do you go at night?"
+  expect:
+    - {kind: unclear}
+    - {kind: talk, target: corwin}
+- id: quoted_threat_with_a_blade
+  said: I press my dagger to Corwin's throat. "Talk, or bleed."
+  expect:
+    - {kind: move, move_id: parley, target: corwin}
+    - {kind: move, move_id: hack_and_slash, target: corwin}
+- id: quoted_single_quotes
+  scene: *cellar
+  said: I leap aside as they swarm, muttering 'not today'
+  expect: {kind: move, move_id: defy_danger, stat: dex}

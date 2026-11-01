@@ -5,13 +5,14 @@ from collections.abc import Iterator, Sequence
 
 from gminator.ai.provider import Message, ProviderError, Schema, answering, post
 
-DEFAULT_URL = "http://localhost:8080/v1"
-
 
 class OpenAICompatibleProvider:
-    def __init__(self, model: str, url: str = DEFAULT_URL, api_key: str | None = None) -> None:
+    def __init__(
+        self, model: str, url: str, api_key: str | None = None, timeout: float = 120
+    ) -> None:
         self.model = model
         self.url = url.rstrip("/")
+        self.timeout = timeout
         self._headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
 
     def complete(
@@ -28,7 +29,7 @@ class OpenAICompatibleProvider:
                 "json_schema": {"name": "answer", "schema": schema},
             }
         url = f"{self.url}/chat/completions"
-        with post(url, body, self._headers) as response, answering(url):
+        with post(url, body, self._headers, self.timeout) as response, answering(url):
             reply = json.load(response)
         try:
             return reply["choices"][0]["message"]["content"] or ""
@@ -40,7 +41,7 @@ class OpenAICompatibleProvider:
     ) -> Iterator[str]:
         body = self._body(messages, stream=True, temperature=temperature)
         url = f"{self.url}/chat/completions"
-        with post(url, body, self._headers) as response, answering(url):
+        with post(url, body, self._headers, self.timeout) as response, answering(url):
             for raw in response:
                 line = raw.decode().strip()
                 if not line.startswith("data:"):

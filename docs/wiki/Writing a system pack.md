@@ -82,7 +82,7 @@ outcomes:
 - A move spent later from hold (Defend, Trap Expert) is usually a second, unrolled move whose effects start with `spend_hold: {move: defend}`.
 - `text` is the templated line shown with the outcome; the narrator gets the story, not this text.
 
-The effects are listed in the [reference](Effects-and-Conditions.md#effects); the formulas in the [expression language](Expressions.md).
+The effects are listed in the [reference](Effects%20and%20conditions%20reference.md#effects); the formulas in the [expression language](Expressions.md).
 
 ### Which moves the player can make
 
@@ -156,7 +156,7 @@ Every tag used by an item, a tag effect, or a condition must be defined in the p
   # effects: [...]           (optional) applied to the player character
 ```
 
-When a move calls for `gm_move: soft` or `hard`, the engine picks one GM move of that severity from the NPCs here, the scenario's dangers and these general ones. See [GM moves](Play-Layer.md#gm-moves).
+When a move calls for `gm_move: soft` or `hard`, the engine picks one GM move of that severity from the NPCs here, the scenario's dangers and these general ones. See [GM moves](Play%20layer.md#gm-moves).
 
 A GM move's `text` is what the player is told happens, so write it as fiction. A miss outcome needs no text of its own: the GM move it brings tells it.
 

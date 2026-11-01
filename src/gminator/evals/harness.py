@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from typing import Literal, get_args
 
 from gminator.ai.provider import LLMProvider, ProviderError
-from gminator.ai.tasks import Retract, classify
+from gminator.ai.tasks import Retract, classify, split_speech
 from gminator.core.characters import quick_start
 from gminator.evals.cases import Cases, ClassifyCase, NarrateCase, Scene, VoiceCase
 from gminator.evals.scoring import Check, Speaker, intent_check, prose_checks
@@ -83,9 +83,11 @@ class Harness:
 
     def _classify(self, case: ClassifyCase, provider: LLMProvider) -> CaseResult:
         table = self._sit(case.scene, provider)
+        # As the table does: quoted speech is left out, unless it is all the player said.
+        said = split_speech(case.said)[0] or case.said
         start = self.clock()
         try:
-            intent = classify(provider, table.context(), table.options(), case.said)
+            intent = classify(provider, table.context(), table.options(), said)
         except ProviderError as error:
             checks = [Check("answered", False), Check("intent", False)]
             return CaseResult("classify", case.id, checks, str(error), self.clock() - start)

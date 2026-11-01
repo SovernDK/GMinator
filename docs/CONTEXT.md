@@ -58,10 +58,12 @@ Shared terms used across code, docs and packs. When a term here and the code dis
 
 - **LLMProvider:** the interface to a language model backend. Implementations: Ollama, OpenAI-compatible, Fake (for tests).
   Each task can have its own provider, and so its own model.
-- **AI tasks:** the three jobs the AI may do.
+- **AI tasks:** the four jobs the AI may do.
   - **Classify:** player text → `{kind, move_id?, stat?, target?, then?}`. `then` is the place a move goes on to if it doesn't miss (`/move … then <place>`); it is kept only if the player's words name the place.
   - **Narrate:** prose for an outcome the engine has already decided, told from the **story**: the turn's events without numbers or rules.
-  - **NPC voice:** dialogue in character, based on the NPC profile.
+  - **NPC voice:** dialogue in character, based on the NPC profile. `/say [@someone] <words>` goes straight to it.
+  - **GM answer:** an out-of-character answer to the player (`/gm <question>`, or free text classified `ooc`). It may talk about the rules; it never changes the game.
+- **Quoted speech:** speech in quotes in the player's words. It is left out of what is classified, so one input can be an action and speech; a line that is only a quote is said to the only person here.
 - **Intent kind:** `move | travel | talk | look | inventory | ooc | unclear`.
 - **ContextBuilder:** assembles the small factual context for each AI call from state, the entity graph and recent events. It is where vector retrieval will plug in later.
 - **Fact check:** a post-check that flags narration naming an NPC, place, obstacle or item of the scenario or pack that the prompt never gave the model, or talking about the rules (numbers, dice, HP, damage, stats). Streamed text that fails is **retracted**; the model is asked once more, and a second failure leaves the template alone. Names the scenario has never heard of are beyond it.
@@ -74,7 +76,7 @@ Shared terms used across code, docs and packs. When a term here and the code dis
 
 ## Interface
 
-- **Slash command:** an explicit command (`/go`, `/move`, `/sheet`, …) that bypasses the AI.
+- **Slash command:** an explicit command (`/go`, `/move`, `/sheet`, …) that bypasses classify. `/say` and `/gm` still need the AI to answer.
 - **Confirmation strip:** the TUI prompt where the player accepts or cancels the suggested move.
 - **Story log:** the main TUI pane showing narration, dialogue and roll results.
 - **Choice modal:** the TUI dialog where the player picks the options a move offers (`choose_n`).

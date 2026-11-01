@@ -1,5 +1,6 @@
-"""The three jobs the AI may do: classify the player's words, narrate an outcome the engine
-has already decided, and voice an NPC. None of them changes the game."""
+"""The jobs the AI may do: classify the player's words, narrate an outcome the engine has
+already decided, voice an NPC, and answer the player as the GM. None of them changes the
+game."""
 
 import json
 import re
@@ -11,7 +12,14 @@ from pydantic import BaseModel, ConfigDict
 
 from gminator.ai.context import Context
 from gminator.ai.factcheck import FactCheck, rules_talk
-from gminator.ai.provider import LLMProvider, Message, ProviderError, Schema
+from gminator.ai.provider import (
+    Answers,
+    DecisionProvider,
+    LLMProvider,
+    Message,
+    ProviderError,
+    Schema,
+)
 
 Kind = Literal["move", "travel", "talk", "look", "inventory", "ooc", "unclear"]
 
@@ -19,9 +27,12 @@ CLASSIFY_TEMPERATURE = 0.0
 NARRATE_TEMPERATURE = 0.7
 NARRATION_SENTENCES = 4
 NPC_SENTENCES = 3
+GM_SENTENCES = 4
 
 # A sentence ends at . ! or ?, then any closing quotes or brackets, then a space.
 _SENTENCE_END = re.compile(r"[.!?]+[\"'\u201d\u2019)]*(?=\s)")
+# Quoted speech: double or curly quotes, or single quotes that aren't apostrophes.
+_QUOTED = re.compile(r"\"[^\"]*\"|\u201c[^\u201d]*\u201d|(?<!\w)'[^']*'(?!\w)")
 # Words in place names that say nothing about which place it is.
 _COMMON = {"a", "an", "the", "of", "to", "in", "on", "at", "and", "s"}
 
@@ -79,6 +90,19 @@ give that place as then.
 - unclear: nothing else fits.
 Answer with JSON only."""
 
+# For a decision model: what each kind of action means, and the answer for "none of these".
+DECISION_KINDS = {
+    "move": "the player does something in the story that triggers one of the listed moves: "
+    "fighting, sneaking, persuading, studying, recalling lore, resting, helping",
+    "travel": "the player goes, walks or heads to another place",
+    "talk": "the player just speaks to or asks a person here something, without a move",
+    "look": "the player looks around at where they are",
+    "inventory": "the player checks their own character, health or gear",
+    "ooc": "the player talks to the game itself or about real life, not in the story",
+    "unclear": "the words make no sense or fit nothing else",
+}
+NONE = "none of these"
+
 NARRATE_SYSTEM = """\
 You narrate a fantasy tabletop roleplaying game for one player.
 Write 2 to 4 sentences of vivid prose in the second person and present tense.
@@ -92,9 +116,26 @@ Say only what this character would know. Do not decide what anyone else does.
 
 {profile}"""
 
+GM_SYSTEM = """\
+You are the game master of a fantasy tabletop roleplaying game, answering the player out of \
+character. Answer in 1 to 4 plain sentences, from the facts and options below only.
+You may explain the moves and how they work. Do not decide what happens in the story, and \
+do not tell anything the facts don't say: if they don't answer the question, say so."""
+
+
+def split_speech(text: str) -> tuple[str, str]:
+    """The player's `text` as the action and the quoted speech in it. Only the action is
+    classified: a small model tells one action apart better without the speech around it."""
+    speech = " ".join(match.group()[1:-1].strip() for match in _QUOTED.finditer(text))
+    action = " ".join(_QUOTED.sub(" ", text).split())
+    return action, speech
+
 
 def classify(provider: LLMProvider, context: Context, options: Options, text: str) -> Intent:
     """The player's `text` as an intent, or `unclear` after two answers that can't be used."""
+    if isinstance(provider, DecisionProvider) and provider.decides():
+        state = f"{context.render()}\n\nPlayer: {text}"
+        return _decided(provider.decide(state, _questions(options)), options, text)
     messages = [
         Message("system", CLASSIFY_SYSTEM),
         Message("user", f"{context.render()}\n\n{_render_options(options)}\n\nPlayer: {text}"),
@@ -107,6 +148,76 @@ def classify(provider: LLMProvider, context: Context, options: Options, text: st
             if intent.then is not None and not _names(text, intent.then, options):
                 intent = intent.model_copy(update={"then": None})
             return intent
+    return Intent(kind="unclear")
+
+
+def _questions(options: Options) -> dict[str, object]:
+    """What a decision model is asked about the player's words. Each part of the intent is its
+    own question; one with nothing to choose from is left out."""
+
+    def choice(instructions: str, criteria: dict[str, str]) -> dict[str, object]:
+        return {"type": "choice", "instructions": instructions, "criteria": criteria}
+
+    moves = {move_id: move.description for move_id, move in options.moves.items()}
+    stats = list(dict.fromkeys(stat for move in options.moves.values() for stat in move.stats))
+    questions = {
+        "kind": choice("What kind of action is the player taking?", DECISION_KINDS),
+        "move": choice(
+            "If the player does something that triggers a move, which move?",
+            {**moves, NONE: "the player triggers no move"},
+        ),
+    }
+    if options.people:
+        questions["person"] = choice(
+            "Which person here is the player acting on or speaking to?",
+            {**options.people, NONE: "no one"},
+        )
+    if options.places:
+        questions["place"] = choice(
+            "Which place does the player say they go to?",
+            {**options.places, NONE: "the player names no place to go"},
+        )
+    if options.obstacles:
+        questions["obstacle"] = choice(
+            "Which obstacle is the player acting on?", {**options.obstacles, NONE: "none"}
+        )
+    if stats:
+        questions["stat"] = choice(
+            "Which ability does the player use?", {**{s: s for s in stats}, NONE: "unsure"}
+        )
+    return questions
+
+
+def _decided(answers: Answers, options: Options, text: str) -> Intent:
+    """The intent from a decision model's answers. A named move wins over the kind: the model
+    picks the move more reliably than it tells a move from talk or a look. Going where no way
+    leads is `travel` without a target."""
+    picked: dict[str, str | None] = {}
+    for name, answer in answers.items():
+        choice = answer.get("choice") if isinstance(answer, dict) else None
+        picked[name] = None if choice == NONE or not isinstance(choice, str) else choice
+    move_id, person, place = picked.get("move"), picked.get("person"), picked.get("place")
+    kind = "move" if move_id is not None else picked.get("kind")
+    match kind:
+        case "move" if move_id in options.moves:
+            move = options.moves[move_id]
+            stat = picked.get("stat")
+            stat = stat if stat in move.stats else None
+            then = place if place in options.places and _names(text, place, options) else None
+            if move.targeted == "obstacle":
+                target, targets = picked.get("obstacle"), options.obstacles
+            elif move.targeted:
+                target, targets = person, options.people
+            else:
+                return Intent(kind=kind, move_id=move_id, stat=stat, then=then)
+            if target in targets:
+                return Intent(kind=kind, move_id=move_id, stat=stat, target=target, then=then)
+        case "travel":
+            return Intent(kind=kind, target=place if place in options.places else None)
+        case "talk" if person in options.people:
+            return Intent(kind=kind, target=person)
+        case "look" | "inventory" | "ooc" | "unclear":
+            return Intent(kind=kind)
     return Intent(kind="unclear")
 
 
@@ -146,13 +257,27 @@ def voice_npc(
     yield from _checked(provider, check, system, prompt, NPC_SENTENCES)
 
 
+def answer_gm(
+    provider: LLMProvider, check: FactCheck, context: Context, options: Options, question: str
+) -> Iterator[Part]:
+    """The GM's answer to the player, out of character, streamed and fact-checked. Unlike the
+    narrator, the GM may talk about the rules."""
+    prompt = f"{context.render()}\n\n{_render_options(options)}\n\nThe player asks: {question}"
+    yield from _checked(provider, check, GM_SYSTEM, prompt, GM_SENTENCES, rules=True)
+
+
 def _checked(
-    provider: LLMProvider, check: FactCheck, system: str, prompt: str, sentences: int
+    provider: LLMProvider,
+    check: FactCheck,
+    system: str,
+    prompt: str,
+    sentences: int,
+    rules: bool = False,
 ) -> Iterator[Part]:
     """Streams the reply, cut off after `sentences`; if it names what the prompt doesn't or
-    talks about the rules, retracts it and asks once more, telling the model what to leave
-    out. A second failure is
-    retracted for good, and the engine's templated text stands alone."""
+    talks about the rules (unless `rules` may be talked about), retracts it and asks once
+    more, telling the model what to leave out. A second failure is retracted for good, and
+    the engine's templated text stands alone."""
     messages = [Message("system", system), Message("user", prompt)]
     given = f"{system}\n{prompt}"
     for _ in range(2):
@@ -170,7 +295,7 @@ def _checked(
         corrections = []
         if unknown := check.unknown_names(text, given):
             corrections.append(f"Do not mention {', '.join(unknown)}: they are not in this scene.")
-        if rules_talk(text):
+        if not rules and rules_talk(text):
             corrections.append("Do not mention numbers, dice, HP, damage or stats.")
         if not corrections:
             return
@@ -253,7 +378,7 @@ def _read_intent(reply: str, options: Options) -> Intent | None:
                 return Intent(kind=kind, move_id=move_id, stat=stat, then=then)
             if target in targets:
                 return Intent(kind=kind, move_id=move_id, stat=stat, target=target, then=then)
-        case "travel" if target in options.places:
+        case "travel" if target is None or target in options.places:
             return Intent(kind=kind, target=target)
         case "talk" if target in options.people:
             return Intent(kind=kind, target=target)

@@ -65,7 +65,7 @@ Vocabulary is defined in [CONTEXT.md](CONTEXT.md). Key decisions are recorded in
   - The quality bar is set but not met. `granite4.1:3b` is the model for every task for now; it fails the bar on classify (56% of cases against 80%) and on turn time (10.2 s against 10 s). Prompt work and other 3–4B models are left for later ([evals/README.md](../evals/README.md#results))
   - `qwen3.5:2b` (nvfp4, on Ollama 0.40.2) timed out on schema-forced classify and has no valid result
   - Times were measured on an Apple M1 GPU, not on the CPU-only 8 GB reference machine
-  - Per-task settings other than the model (temperature, sentence caps); a config file for per-task models (flags only for now)
+  - Per-task settings other than the model (temperature, sentence caps). Models, URLs, timeouts and the save path are in `config.toml`
   - Scoring is deterministic only; there is no model-as-judge for prose quality
   - The CLI runs without AI unless `--provider` is given; first-run detection of Ollama is M7
 - Left out of M6 (the TUI), for later:

@@ -29,6 +29,24 @@ uv run gminator play --provider ollama --narrate-model other:3b       # a differ
 
 Each AI task (`classify`, `narrate`, `voice`) takes its own `--<task>-model`; the rest use `--model`.
 
+### Settings
+
+The defaults live in [src/gminator/config.toml](src/gminator/config.toml): the backend, each backend's URL,
+timeout and model per task (with per-platform overrides for macOS, Linux and Windows), and the save path.
+Put the keys you want to change in `~/.gminator/config.toml`, or pass another file with `--config`:
+
+```toml
+provider = "ollama"
+
+[providers.ollama.models]
+narrate = "other:3b"
+
+[providers.ollama.platforms.windows]
+classify = "smaller:2b"
+```
+
+Command-line flags override the file.
+
 ## Evals
 
 ```sh

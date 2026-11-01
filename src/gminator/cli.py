@@ -7,10 +7,11 @@ from pathlib import Path
 
 from ruamel.yaml import YAML
 
-from gminator import __version__
+from gminator import __version__, config
 from gminator.ai import ollama, openai_compat
 from gminator.ai.provider import LLMProvider, Providers
 from gminator.ai.tasks import Retract
+from gminator.config import Backend, Config, ConfigError, current_platform, load_config
 from gminator.core.characters import quick_start
 from gminator.evals.cases import load_cases
 from gminator.evals.harness import TASKS, CaseResult, Harness, Task
@@ -28,7 +29,6 @@ _ROOT = Path(__file__).parents[2]
 PACKS = _ROOT / "packs"
 SCENARIO = _ROOT / "scenarios" / "rats-under-the-inn"
 EVALS = _ROOT / "evals"
-SAVE = Path.home() / ".gminator" / "save.json"
 
 
 def main(argv: Sequence[str] | None = None) -> None:
@@ -39,7 +39,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     play_parser.add_argument("--scenario", type=Path, default=SCENARIO)
     play_parser.add_argument("--packs", type=Path, default=PACKS, help="where system packs live")
     play_parser.add_argument("--seed", type=int, default=0)
-    play_parser.add_argument("--save", type=Path, default=SAVE, help="where the game is saved")
+    play_parser.add_argument("--save", type=Path, help="where the game is saved")
     play_parser.add_argument(
         "--plain",
         action="store_true",
@@ -52,12 +52,9 @@ def main(argv: Sequence[str] | None = None) -> None:
     play_parser.add_argument(
         "--provider",
         choices=["none", "ollama", "openai"],
-        default="none",
         help="the narrator's backend; without one, play goes through slash commands",
     )
-    play_parser.add_argument(
-        "--model", help=f"the model to ask (Ollama default: {ollama.DEFAULT_MODEL})"
-    )
+    play_parser.add_argument("--model", help="the model to ask for every task")
     play_parser.add_argument("--url", help="where the backend listens")
     for task in TASKS:
         play_parser.add_argument(
@@ -67,13 +64,12 @@ def main(argv: Sequence[str] | None = None) -> None:
     eval_parser = commands.add_parser("eval", help="score models on the AI tasks")
     eval_parser.add_argument("--scenario", type=Path, default=SCENARIO)
     eval_parser.add_argument("--packs", type=Path, default=PACKS, help="where system packs live")
-    eval_parser.add_argument("--provider", choices=["ollama", "openai"], default="ollama")
+    eval_parser.add_argument("--provider", choices=["ollama", "openai"])
     eval_parser.add_argument(
         "--model",
         dest="models",
         action="append",
-        help="a model to score; repeat to compare several "
-        f"(Ollama default: {ollama.DEFAULT_MODEL})",
+        help="a model to score; repeat to compare several (default: the configured ones)",
     )
     eval_parser.add_argument("--url", help="where the backend listens")
     eval_parser.add_argument(
@@ -83,38 +79,55 @@ def main(argv: Sequence[str] | None = None) -> None:
     eval_parser.add_argument("--bar", type=Path, default=EVALS / "bar.toml")
     eval_parser.add_argument("--out", type=Path, help="save every case result here, as JSON")
 
+    for command_parser in (play_parser, eval_parser):
+        command_parser.add_argument(
+            "--config",
+            type=Path,
+            help=f"a settings file over the defaults (default: {config.USER_CONFIG})",
+        )
+
     args = parser.parse_args(argv)
+    if args.command is None:
+        return
+    try:
+        settings = load_config(args.config or config.USER_CONFIG)
+    except ConfigError as error:
+        raise SystemExit(str(error)) from error
     if args.command == "play":
-        models = {task: getattr(args, f"{task}_model") or args.model for task in TASKS}
-        providers = make_providers(args.provider, models, args.url)
+        kind = args.provider or settings.provider
+        providers = None
+        if kind != "none":
+            backend = settings.backend(kind)
+            configured = backend.models_on(current_platform())
+            models = {
+                task: getattr(args, f"{task}_model") or args.model or getattr(configured, task)
+                for task in TASKS
+            }
+            providers = make_providers(kind, backend, models, args.url)
         if args.plain:
             play(args.scenario, args.packs, args.class_id, args.name, args.seed, providers)
         else:
             pack, scenario = _load(args.scenario, args.packs)
-            GameApp(pack, scenario, providers, save_path=args.save, seed=args.seed).run()
+            save = args.save or settings.save
+            GameApp(pack, scenario, providers, save_path=save, seed=args.seed).run()
     elif args.command == "eval":
-        evaluate(args)
+        evaluate(args, settings)
 
 
 def make_providers(
-    kind: str, models: Mapping[Task, str | None], url: str | None
-) -> Providers | None:
+    kind: str, backend: Backend, models: Mapping[Task, str], url: str | None
+) -> Providers:
     """A provider for each task, sharing one where tasks use the same model."""
-    if kind == "none":
-        return None
-    by_model = {model: make_provider(kind, model, url) for model in set(models.values())}
+    by_model = {model: make_provider(kind, backend, model, url) for model in set(models.values())}
     return Providers(**{task: by_model[models[task]] for task in TASKS})
 
 
-def make_provider(kind: str, model: str | None, url: str | None) -> LLMProvider | None:
-    match kind:
-        case "ollama":
-            return ollama.OllamaProvider(model or ollama.DEFAULT_MODEL, url or ollama.DEFAULT_URL)
-        case "openai":
-            return openai_compat.OpenAICompatibleProvider(
-                model or "", url or openai_compat.DEFAULT_URL
-            )
-    return None
+def make_provider(kind: str, backend: Backend, model: str, url: str | None) -> LLMProvider:
+    url = url or backend.url
+    if kind == "openai":
+        api_key = backend.api_key or None
+        return openai_compat.OpenAICompatibleProvider(model, url, api_key, backend.timeout)
+    return ollama.OllamaProvider(model, url, backend.timeout)
 
 
 def play(
@@ -142,7 +155,7 @@ def play(
         _show_reply(table.handle(line, decider, confirmer))
 
 
-def evaluate(args: argparse.Namespace) -> None:
+def evaluate(args: argparse.Namespace, settings: Config) -> None:
     pack, scenario = _load(args.scenario, args.packs)
     harness = Harness(pack, scenario)
     cases = load_cases(args.cases)
@@ -152,10 +165,12 @@ def evaluate(args: argparse.Namespace) -> None:
         raise SystemExit(1)
     bar = load_bar(args.bar)
 
+    kind = args.provider or ("ollama" if settings.provider == "none" else settings.provider)
+    backend = settings.backend(kind)
+    configured = backend.models_on(current_platform()).model_dump().values()
     results: dict[str, list[CaseResult]] = {}
-    for model in args.models or [ollama.DEFAULT_MODEL]:
-        provider = make_provider(args.provider, model, args.url)
-        assert provider is not None
+    for model in args.models or list(dict.fromkeys(configured)):
+        provider = make_provider(kind, backend, model, args.url)
         results[model] = [
             result
             for task in args.tasks or TASKS

@@ -8,6 +8,10 @@ help = """Commands:
   /move <move> [target] [stat] [then <place>]
                      make a move, e.g. /move hack_and_slash corwin or /move defy_danger dex;
                      with then, go on to <place> if the move doesn't miss
+  /say [@someone] <words>
+                     say something to someone here, e.g. /say @maud Seen any rats?;
+                     without @someone, to the only person here
+  /gm <question>     ask the GM, out of the story, e.g. /gm what can I do here?
   /sheet             your character
   /clocks            the dangers and their grim portents so far
   /secrets           the secrets you have uncovered
@@ -107,10 +111,16 @@ danger = "{threats}: you {move} +{stat} first. "
 stat = " +{stat}"
 target = " against {target}"
 confirm_go = "Go to {place}?"
+no_way = "You can't get there from here. Ways on: {places}."
 cancelled = "Nothing happens."
 speaks = "{name}:"
 said = "{name} says: {words}"
-ooc = "That sounds like a question for the game, not an action in the story. Type /help for the commands."
+gm = "GM:"
+ask_what = "Ask the GM what? Use /gm <question>."
+say_what = "Say what? Use /say [@someone] <words>."
+say_to_whom = "Say it to whom? Use /say @someone <words>. Here: {people}"
+no_one = "There is no one here to talk to."
+no_narrator = "Without the narrator, no one answers. Play on with commands: type /help for the list."
 unclear = "I'm not sure what you want to do. Try saying it another way, or type /help for the commands."
 offline = "The narrator is unavailable ({reason}). Play on with commands: type /help for the list."
 

@@ -10,6 +10,7 @@ dist/
 htmlcov/
 .DS_Store
 BUGS.md
+RP-MODEL.md
 
 # Local saves and logs produced while playing
 saves/

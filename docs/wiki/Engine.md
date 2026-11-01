@@ -57,7 +57,7 @@ Adding an event means adding the model, putting it in the `Event` union, handlin
    - on a miss, apply the manifest's `miss_effects` (mark XP in DW);
    - apply the band's effects.
 
-Effects are applied in order by `_Run._apply_one`; the full list is in the [reference](Effects-and-Conditions.md#effects). Damage is the rolled amount minus the victim's armor (their own plus every item they carry), never below 0.
+Effects are applied in order by `_Run._apply_one`; the full list is in the [reference](Effects%20and%20conditions%20reference.md#effects). Damage is the rolled amount minus the victim's armor (their own plus every item they carry), never below 0.
 
 Choices (`choose_n`, `ask_questions`) go to a **`Decider`**: an object with `choose(prompt, options, n) -> indices`. The TUI opens a modal, the plain CLI prompts, tests script it.
 
@@ -67,7 +67,7 @@ Both run through `_commit`: play on a copy of the game; record the new events on
 
 ## Conditions — `core/conditions.py`
 
-`holds(condition, state, pc_id)` checks a [condition](Effects-and-Conditions.md#conditions) against the state. `is_dead(character)` is true at 0 HP or with the `dead` tag; dead NPCs become **remains**.
+`holds(condition, state, pc_id)` checks a [condition](Effects%20and%20conditions%20reference.md#conditions) against the state. `is_dead(character)` is true at 0 HP or with the `dead` tag; dead NPCs become **remains**.
 
 ## Characters — `core/characters.py`
 

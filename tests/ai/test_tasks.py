@@ -12,6 +12,7 @@ from gminator.ai.tasks import (
     Retract,
     classify,
     narrate,
+    split_speech,
     voice_npc,
 )
 
@@ -210,6 +211,101 @@ def test_classify_lets_a_provider_failure_through():
         classify(FakeProvider([ProviderError("down")]), CONTEXT, OPTIONS, "Hm")
 
 
+# Classify with a decision model
+
+
+class FakeDecisionProvider(FakeProvider):
+    """A decision model that answers each question with the choice given, or "none of these"."""
+
+    def __init__(self, decides: bool = True, **choices: str) -> None:
+        super().__init__([])
+        self._decides = decides
+        self.choices = choices
+        self.asked: list[tuple[str, dict]] = []
+
+    def decides(self) -> bool:
+        return self._decides
+
+    def decide(self, state, questions):
+        self.asked.append((state, dict(questions)))
+        return {name: {"choice": self.choices.get(name, "none of these")} for name in questions}
+
+
+def test_classify_asks_a_decision_model_about_the_words_in_the_scene():
+    provider = FakeDecisionProvider(kind="look")
+
+    assert classify(provider, CONTEXT, OPTIONS, "I look around") == Intent(kind="look")
+
+    state, questions = provider.asked[0]
+    assert "The inn" in state
+    assert state.endswith("Player: I look around")
+    assert set(questions["move"]["criteria"]) == {"defy_danger", "hack_and_slash", "none of these"}
+    assert set(questions["person"]["criteria"]) == {"corwin", "none of these"}
+    assert set(questions["stat"]["criteria"]) == {"str", "dex", "none of these"}
+    assert "obstacle" not in questions
+    assert provider.requests == []
+
+
+def test_classify_leaves_out_questions_with_nothing_to_choose():
+    provider = FakeDecisionProvider(kind="look")
+
+    classify(provider, CONTEXT, Options(moves=OPTIONS.moves), "I look around")
+
+    assert {"person", "place"}.isdisjoint(provider.asked[0][1])
+
+
+def test_classify_takes_a_named_move_over_the_kind():
+    provider = FakeDecisionProvider(kind="talk", move="hack_and_slash", person="corwin")
+
+    assert classify(provider, CONTEXT, OPTIONS, "I punch Corwin") == Intent(
+        kind="move", move_id="hack_and_slash", target="corwin"
+    )
+
+
+@pytest.mark.parametrize(
+    ("choices", "meant"),
+    [
+        ({"kind": "travel", "place": "cellar"}, Intent(kind="travel", target="cellar")),
+        ({"kind": "talk", "person": "corwin"}, Intent(kind="talk", target="corwin")),
+        (
+            {"move": "defy_danger", "stat": "dex"},
+            Intent(kind="move", move_id="defy_danger", stat="dex"),
+        ),
+        ({"move": "defy_danger", "stat": "wis"}, Intent(kind="move", move_id="defy_danger")),
+        ({"kind": "travel"}, Intent(kind="travel")),
+        ({"kind": "talk"}, Intent(kind="unclear")),
+        ({"move": "hack_and_slash"}, Intent(kind="unclear")),
+    ],
+)
+def test_classify_builds_the_intent_from_the_answers(choices, meant):
+    assert classify(FakeDecisionProvider(**choices), CONTEXT, OPTIONS, "Hm") == meant
+
+
+def test_classify_aims_an_obstacle_move_with_a_decision_model():
+    provider = FakeDecisionProvider(move="bend_bars", obstacle="grate", person="corwin")
+
+    assert classify(provider, CONTEXT, WITH_A_GRATE, "I bend the bars") == Intent(
+        kind="move", move_id="bend_bars", target="grate"
+    )
+
+
+@pytest.mark.parametrize(
+    ("said", "then"), [("I dodge and run to the cellar", "cellar"), ("I dodge", None)]
+)
+def test_classify_with_a_decision_model_goes_on_only_where_the_player_said(said, then):
+    provider = FakeDecisionProvider(move="defy_danger", place="cellar")
+
+    assert classify(provider, CONTEXT, OPTIONS, said).then == then
+
+
+def test_classify_chats_with_a_model_that_is_not_a_decision_model():
+    provider = FakeDecisionProvider(decides=False)
+    provider._replies = [intent("look")]
+
+    assert classify(provider, CONTEXT, OPTIONS, "I look around") == Intent(kind="look")
+    assert provider.asked == []
+
+
 # Narrate
 
 
@@ -316,3 +412,24 @@ def test_npc_stops_after_three_sentences(check):
     parts = list(voice_npc(provider, check, CONTEXT, "Name: Corwin", "Hm?"))
 
     assert "".join(parts) == '"One." Two. Three.'
+
+
+# Speech
+
+
+@pytest.mark.parametrize(
+    ("text", "action", "speech"),
+    [
+        ('I draw my sword. "Back, vermin!"', "I draw my sword.", "Back, vermin!"),
+        ("I shout \u201cRun!\u201d and run", "I shout and run", "Run!"),
+        ("I yell 'Duck!' at Pip", "I yell at Pip", "Duck!"),
+        (
+            "I'll keep quiet about what you're hiding",
+            "I'll keep quiet about what you're hiding",
+            "",
+        ),
+        ('"Who goes there?"', "", "Who goes there?"),
+    ],
+)
+def test_split_speech_leaves_quoted_speech_out_of_the_action(text, action, speech):
+    assert split_speech(text) == (action, speech)

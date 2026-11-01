@@ -190,6 +190,32 @@ def test_each_task_can_use_its_own_model(monkeypatch, capsys, ollama):
     assert [body["model"] for _, body, _ in ollama.requests] == ["tiny", "big"]
 
 
+def test_play_takes_the_backend_and_models_from_the_config(monkeypatch, capsys, ollama, tmp_path):
+    settings = f"""\
+        provider = "ollama"
+        [providers.ollama]
+        url = "{ollama.url}"
+        [providers.ollama.models]
+        classify = "tiny"
+        narrate = "big"
+        """
+    write_files(tmp_path, {"config.toml": settings})
+    ollama.reply_json(classified(kind="travel", target="cellar"))
+    ollama.reply(*stream("Damp stairs creak underfoot."))
+    args = ["--config", str(tmp_path / "config.toml"), "--narrate-model", "flag"]
+
+    play(monkeypatch, capsys, *args, typed="I go down to the cellar\n\n/quit\n")
+
+    assert [body["model"] for _, body, _ in ollama.requests] == ["tiny", "flag"]
+
+
+def test_play_refuses_a_config_that_does_not_fit(tmp_path):
+    write_files(tmp_path, {"config.toml": 'provider = "llamafile"\n'})
+
+    with pytest.raises(SystemExit, match="do not fit"):
+        main(["play", "--plain", "--config", str(tmp_path / "config.toml")])
+
+
 # Evals
 
 CASES = {

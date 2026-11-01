@@ -10,6 +10,12 @@ def dungeon_world():
     return load_pack(DUNGEON_WORLD)
 
 
+@pytest.fixture(autouse=True)
+def _no_user_config(monkeypatch, tmp_path_factory):
+    """Tests run on the default settings, never on the player's own file."""
+    monkeypatch.setattr("gminator.config.USER_CONFIG", tmp_path_factory.mktemp("home") / "none")
+
+
 @pytest.fixture
 def unused_url():
     """The URL of a local port nothing listens on."""

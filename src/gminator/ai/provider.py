@@ -4,12 +4,13 @@ import json
 import re
 import urllib.error
 import urllib.request
-from collections.abc import Callable, Iterable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Literal, Protocol
+from typing import Literal, Protocol, runtime_checkable
 
 Schema = dict[str, object]
+Answers = dict[str, dict]
 
 
 class ProviderError(Exception):
@@ -37,6 +38,20 @@ class LLMProvider(Protocol):
         self, messages: Sequence[Message], *, temperature: float | None = None
     ) -> Iterator[str]:
         """The reply, chunk by chunk as the model writes it."""
+        ...
+
+
+@runtime_checkable
+class DecisionProvider(Protocol):
+    """A backend that may serve a decision model: one that picks from named options in a
+    single pass instead of writing text."""
+
+    def decides(self) -> bool:
+        """Whether the model is a decision model, which answers `decide` and not chat."""
+        ...
+
+    def decide(self, state: str, questions: Mapping[str, object]) -> Answers:
+        """Each question's answer, by name, about `state`."""
         ...
 
 

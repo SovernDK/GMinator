@@ -1,0 +1,35 @@
+# GMinator's settings. These are the defaults; ~/.gminator/config.toml (or the file given with
+# --config) overrides them key by key, and command-line flags override both.
+
+# The backend the AI tasks use: "none" (play through slash commands only), "ollama" or "openai".
+# `gminator eval` uses it too, and Ollama when this is "none".
+provider = "none"
+
+# Where the game is saved. A leading ~ is your home folder.
+save = "~/.gminator/save.json"
+
+[providers.ollama]
+url = "http://localhost:11434"
+timeout = 120  # seconds to wait for an answer
+
+# The model for each AI task, chosen by the evals (evals/README.md).
+[providers.ollama.models]
+classify = "d1:2b-nvfp4"
+narrate = "granite4.1:3b"
+voice = "granite4.1:3b"
+
+# Models that replace the ones above on one platform: macos, linux or windows. For example:
+# [providers.ollama.platforms.macos]
+# classify = "some-model:2b-nvfp4"
+
+# LM Studio, llama-server, vLLM or any other server with an OpenAI-compatible API.
+[providers.openai]
+url = "http://localhost:8080/v1"
+timeout = 120
+api_key = ""  # sent as a bearer token when set
+
+# An empty name leaves the choice to the server, which then answers with the model it has loaded.
+[providers.openai.models]
+classify = ""
+narrate = ""
+voice = ""

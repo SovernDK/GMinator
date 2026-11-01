@@ -149,15 +149,145 @@ def test_each_task_can_have_its_own_model(dungeon_world, scenario):
     assert "Name: Corwin" in text_of(voice.requests[0])
 
 
-@pytest.mark.parametrize("kind", ["ooc", "unclear"])
-def test_out_of_character_or_unclear_words_point_to_help(dungeon_world, scenario, kind):
-    table = sit(dungeon_world, scenario, FakeProvider([intent(kind)]))
+def test_unclear_words_point_to_help(dungeon_world, scenario):
+    table = sit(dungeon_world, scenario, FakeProvider([intent("unclear")]))
     before = table.session.game.events
 
     reply = table.handle("hmm", ScriptedDecider(), ScriptedConfirmer())
 
     assert "/help" in "\n".join(reply.lines)
     assert table.session.game.events == before
+
+
+def test_going_nowhere_from_here_names_the_ways_on(dungeon_world, scenario):
+    table = sit(dungeon_world, scenario, FakeProvider([intent("travel")]))
+    before = table.session.game.events
+
+    reply = table.handle("I go to the broken wall", ScriptedDecider(), ScriptedConfirmer())
+
+    assert reply.lines == ["You can't get there from here. Ways on: The cellar."]
+    assert table.session.game.events == before
+
+
+def test_out_of_character_words_are_answered_by_the_gm(dungeon_world, scenario):
+    provider = FakeProvider([intent("ooc"), "You can make Defy Danger here."])
+    table = sit(dungeon_world, scenario, provider)
+    before = table.session.game.events
+
+    reply = table.handle("what can I do here?", ScriptedDecider(), ScriptedConfirmer())
+
+    assert reply.lines == ["GM:"]
+    assert told(reply) == "You can make Defy Danger here."
+    assert "The player asks: what can I do here?" in text_of(provider.requests[1])
+    assert table.session.game.events == before
+
+
+# Talking without being classified
+
+
+def test_say_to_someone_here_gets_their_answer_without_classifying(dungeon_world, scenario):
+    provider = FakeProvider(["Only a few rats, friend."])
+    table = sit(dungeon_world, scenario, provider)
+    before = table.session.game.events
+
+    reply = table.handle("/say @corwin What's down there?", ScriptedDecider(), ScriptedConfirmer())
+
+    assert "Corwin" in "\n".join(reply.lines)
+    assert told(reply) == "Only a few rats, friend."
+    assert table.session.game.events == before
+    assert len(provider.requests) == 1
+    assert "The player character says: What's down there?" in text_of(provider.requests[0])
+
+
+@pytest.mark.parametrize("line", ["/say @COR hello", "/say hello"])
+def test_say_takes_a_name_prefix_or_the_only_person_here(dungeon_world, scenario, line):
+    provider = FakeProvider(["Evening."])
+    table = sit(dungeon_world, scenario, provider)
+
+    reply = table.handle(line, ScriptedDecider(), ScriptedConfirmer())
+
+    assert told(reply) == "Evening."
+    assert "Name: Corwin" in text_of(provider.requests[0])
+
+
+def test_say_asks_whom_when_it_could_be_anyone_here(dungeon_world, cellar):
+    provider = FakeProvider([])
+    table = in_the_cellar(dungeon_world, cellar, provider)
+    table.session.game.record(CharacterMoved(character_id="corwin", location_id="cellar"))
+
+    reply = table.handle("/say hello", ScriptedDecider(), ScriptedConfirmer())
+
+    assert "Corwin (corwin)" in "\n".join(reply.lines)
+    assert "The rats (rats)" in "\n".join(reply.lines)
+    assert provider.requests == []
+
+
+@pytest.mark.parametrize("line", ["/say @maud hello", "/say @corwin", "/say"])
+def test_say_to_no_one_here_or_saying_nothing_is_refused(dungeon_world, scenario, line):
+    provider = FakeProvider([])
+    table = sit(dungeon_world, scenario, provider)
+
+    reply = table.handle(line, ScriptedDecider(), ScriptedConfirmer())
+
+    assert "/say" in "\n".join(reply.lines)
+    assert provider.requests == []
+
+
+def test_say_with_no_one_here_says_so(dungeon_world, scenario):
+    provider = FakeProvider([])
+    table = sit(dungeon_world, scenario, provider)
+    table.session.game.record(CharacterMoved(character_id="corwin", location_id="cellar"))
+
+    reply = table.handle("/say hello", ScriptedDecider(), ScriptedConfirmer())
+
+    assert "no one here" in "\n".join(reply.lines)
+
+
+def test_only_quoted_speech_is_said_without_classifying(dungeon_world, scenario):
+    provider = FakeProvider(["Rats, mostly."])
+    table = sit(dungeon_world, scenario, provider)
+
+    reply = table.handle('"What\'s down there?"', ScriptedDecider(), ScriptedConfirmer())
+
+    assert told(reply) == "Rats, mostly."
+    assert len(provider.requests) == 1
+
+
+def test_quoted_speech_is_left_out_of_classifying_but_narrated(dungeon_world, scenario):
+    provider = FakeProvider([intent("move", "defy_danger", "dex"), "You vault the bar."])
+    table = sit(dungeon_world, scenario, provider, seed_for("strong", 1))
+    line = 'I vault over the bar shouting "Stand back, Corwin!"'
+
+    told(table.handle(line, ScriptedDecider(), ScriptedConfirmer()))
+
+    classified = text_of(provider.requests[0])
+    assert "Player: I vault over the bar shouting" in classified
+    assert "Stand back" not in classified
+    assert f"The player said: {line}" in text_of(provider.requests[1])
+
+
+def test_the_gm_answers_out_of_character_and_may_talk_rules(dungeon_world, scenario):
+    provider = FakeProvider(["Hack and Slash rolls +STR and deals your damage."])
+    table = sit(dungeon_world, scenario, provider)
+    before = table.session.game.events
+
+    reply = table.handle("/gm how does fighting work?", ScriptedDecider(), ScriptedConfirmer())
+
+    assert told(reply) == "Hack and Slash rolls +STR and deals your damage."
+    prompt = text_of(provider.requests[0])
+    assert "hack_and_slash" in prompt
+    assert "The player asks: how does fighting work?" in prompt
+    assert table.session.game.events == before
+
+
+def test_the_gm_needs_a_question(dungeon_world, scenario):
+    provider = FakeProvider([])
+    table = sit(dungeon_world, scenario, provider)
+
+    reply = table.handle("/gm", ScriptedDecider(), ScriptedConfirmer())
+
+    assert "/gm" in "\n".join(reply.lines)
+    assert provider.requests == []
 
 
 def test_classify_is_offered_only_what_can_be_done_now(dungeon_world, scenario):
@@ -197,6 +327,16 @@ def test_free_text_without_the_narrator_points_to_commands(dungeon_world, scenar
     table = sit(dungeon_world, scenario, None)
 
     reply = table.handle("I attack Corwin", ScriptedDecider(), ScriptedConfirmer())
+
+    assert "/help" in "\n".join(reply.lines)
+    assert told(reply) == ""
+
+
+@pytest.mark.parametrize("line", ["/say @corwin hello", "/gm what now?"])
+def test_say_and_gm_without_the_narrator_point_to_commands(dungeon_world, scenario, line):
+    table = sit(dungeon_world, scenario, None)
+
+    reply = table.handle(line, ScriptedDecider(), ScriptedConfirmer())
 
     assert "/help" in "\n".join(reply.lines)
     assert told(reply) == ""

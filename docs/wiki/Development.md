@@ -65,12 +65,12 @@ uv run python -m gminator.packs.schema
 
 | To add | Touch |
 |---|---|
-| An effect | the args and effect model and `EFFECT_TYPES` in `packs/models.py`; `_Run._apply_one` in `core/moves.py`; reference checks in `Checker._effects` in `packs/loader.py`; regenerate schemas; the [reference](Effects-and-Conditions.md) |
+| An effect | the args and effect model and `EFFECT_TYPES` in `packs/models.py`; `_Run._apply_one` in `core/moves.py`; reference checks in `Checker._effects` in `packs/loader.py`; regenerate schemas; the [reference](Effects%20and%20conditions%20reference.md) |
 | A condition | the model and `CONDITION_TYPES`; `core/conditions.py`; `Checker.condition`; regenerate schemas; the reference |
 | An event | `core/events.py` and the `Event` union; `state.apply`; `Session._describe` (and `_tell`); consider the save `VERSION` |
 | A slash command | `Session._commands`; help text in `en.toml` |
 | An AI backend | a class with `complete` and `stream` raising `ProviderError`; `make_provider` in `cli.py` |
-| A move, class or item | YAML only; see [Writing a pack](Writing-a-Pack.md) |
+| A move, class or item | YAML only; see [Writing a pack](Writing%20a%20system%20pack.md) |
 
 ## CI
 

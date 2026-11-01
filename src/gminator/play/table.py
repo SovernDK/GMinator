@@ -1,5 +1,6 @@
 """The turn controller with the AI: free text in, classified and confirmed, then played as a
-slash command through the `Session`, then narrated.
+slash command through the `Session`, then narrated. `/say` and `/gm` go to an NPC or the GM
+without being classified; quoted speech is left out of what is classified.
 
 The AI only ever proposes. Every change to the game goes through a session command the
 player has confirmed, so the engine stays the only thing that changes state.
@@ -18,8 +19,10 @@ from gminator.ai.tasks import (
     Options,
     Part,
     Retract,
+    answer_gm,
     classify,
     narrate,
+    split_speech,
     voice_npc,
 )
 from gminator.core.conditions import is_dead
@@ -67,10 +70,18 @@ class Table:
 
     def handle(self, line: str, decider: Decider, confirmer: Confirmer) -> Reply:
         line = line.strip()
+        command, _, rest = line.partition(" ")
+        if command in ("/say", "/gm"):
+            if self.providers is None:
+                return Reply([t("table.no_narrator")])
+            return self.say(rest) if command == "/say" else self.ask_gm(rest)
         if line.startswith("/") or self.providers is None:
             return self.play(line, decider)
+        action, speech = split_speech(line)
+        if not action:
+            return self.say(speech)
         try:
-            intent = classify(self.providers.classify, self.context(), self.options(), line)
+            intent = classify(self.providers.classify, self.context(), self.options(), action)
         except ProviderError as error:
             return Reply([t("table.offline", reason=error)])
 
@@ -81,6 +92,9 @@ class Table:
                 question = t("table.confirm_go", place=self._place(place))
                 question = self._danger([TRAVEL]) + question
                 command = f"/go {place}"
+            case Intent(kind="travel"):
+                places = ", ".join(self.options().places.values())
+                return Reply([t("table.no_way", places=places)])
             case Intent(kind="talk", target=npc_id) if npc_id is not None:
                 return self.talk(npc_id, line)
             case Intent(kind="look"):
@@ -88,7 +102,7 @@ class Table:
             case Intent(kind="inventory"):
                 return Reply(self.session.handle("/sheet", decider))
             case Intent(kind="ooc"):
-                return Reply([t("table.ooc")])
+                return self.ask_gm(line)
             case _:
                 return Reply([t("table.unclear")])
 
@@ -110,6 +124,43 @@ class Table:
         prose = narrate(self.providers.narrate, self._check, context, story, said)
         kept = _kept(prose, self._remember_narration, fallback=" ".join(gm_lines))
         return Reply([line for line in lines if line not in gm_lines], kept)
+
+    def say(self, words: str) -> Reply:
+        """`/say [@someone] <words>`: the words to someone here, who answers. Without
+        `@someone`, to the only person here."""
+        target, _, rest = words.strip().partition(" ")
+        if not target.startswith("@"):
+            target, rest = "", words.strip()
+        if not rest:
+            return Reply([t("table.say_what")])
+        people = self.options().people
+        if not people:
+            return Reply([t("table.no_one")])
+        named = target[1:].lower()
+        matches = [
+            npc_id
+            for npc_id, name in people.items()
+            if named
+            and (npc_id.startswith(named) or any(w.startswith(named) for w in name.lower().split()))
+        ]
+        if not target and len(people) == 1:
+            matches = list(people)
+        if len(matches) != 1:
+            here = ", ".join(
+                t("look.named", name=name, id=npc_id) for npc_id, name in people.items()
+            )
+            return Reply([t("table.say_to_whom", people=here)])
+        return self.talk(matches[0], rest)
+
+    def ask_gm(self, question: str) -> Reply:
+        """The GM's answer to the player, out of character. Nothing in the game changes."""
+        assert self.providers is not None
+        if not question.strip():
+            return Reply([t("table.ask_what")])
+        answer = answer_gm(
+            self.providers.narrate, self._check, self.context(), self.options(), question
+        )
+        return Reply([t("table.gm")], _kept(answer, lambda text: None))
 
     def talk(self, npc_id: str, said: str) -> Reply:
         assert self.providers is not None

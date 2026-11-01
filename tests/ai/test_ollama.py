@@ -88,3 +88,43 @@ def test_a_reply_cut_off_mid_stream_is_a_provider_error(server):
 
     with pytest.raises(ProviderError):
         list(OllamaProvider("m", server.url).stream(MESSAGES))
+
+
+# Decision models
+
+
+def test_a_model_ollama_lists_as_a_decision_model_decides(server):
+    server.capabilities = ["decision", "vision"]
+
+    assert OllamaProvider("d1", server.url).decides() is True
+
+
+def test_a_chat_model_does_not_decide(server):
+    assert OllamaProvider("granite", server.url).decides() is False
+
+
+def test_an_unreachable_server_is_taken_to_serve_a_chat_model(unused_url):
+    assert OllamaProvider("m", unused_url).decides() is False
+
+
+def test_decide_posts_the_questions_and_returns_the_answers(server):
+    answers = {"kind": {"type": "choice", "choice": "look", "confidence": 0.9}}
+    server.reply_json({"model": "d1", "answers": answers, "usage": {}})
+    questions = {"kind": {"type": "choice", "instructions": "?", "criteria": {"look": "looks"}}}
+
+    assert OllamaProvider("d1", server.url).decide("Player: hi", questions) == answers
+
+    path, body, _ = server.requests[0]
+    assert path == "/v1/systemone"
+    assert body == {"model": "d1", "state": "Player: hi", "questions": questions}
+
+
+@pytest.mark.parametrize(
+    ("reply", "status"),
+    [({"error": "criteria must contain 2-26 candidates"}, 400), ({"answers": None}, 200)],
+)
+def test_a_decision_that_fails_is_a_provider_error(server, reply, status):
+    server.reply_json(reply, status=status)
+
+    with pytest.raises(ProviderError):
+        OllamaProvider("d1", server.url).decide("Player: hi", {})

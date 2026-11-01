@@ -64,7 +64,7 @@ Exits are one-way: list the way back on the other location too. An obstacle that
   knows: [inn_smuggling, corwin_is_wererat]
 ```
 
-An NPC can have GM moves of its own (Dungeon World's monster moves), written like any [GM move](Writing-a-Pack.md#general-gm-moves--gm_movesyaml). They are candidates only while the NPC is alive and with the player character, and refer to the NPC as `target`. A **hostile** NPC's moves come before any other: when the player misses against the rats, the rats bite.
+An NPC can have GM moves of its own (Dungeon World's monster moves), written like any [GM move](Writing%20a%20system%20pack.md#general-gm-moves--gm_movesyaml). They are candidates only while the NPC is alive and with the player character, and refer to the NPC as `target`. A **hostile** NPC's moves come before any other: when the player misses against the rats, the rats bite.
 
 ```yaml
   attitude: hostile
@@ -126,11 +126,11 @@ At the start of a game each danger gets a clock with one segment per portent. `a
   when: {npc_dead: corwin}
 ```
 
-After every turn the engine checks the endings **in order** and the first that holds ends the game. Put death first (`pc_has_tag: dead`, which DW's Last Breath sets) so it wins over anything else that turn. Conditions are listed in the [reference](Effects-and-Conditions.md#conditions).
+After every turn the engine checks the endings **in order** and the first that holds ends the game. Put death first (`pc_has_tag: dead`, which DW's Last Breath sets) so it wins over anything else that turn. Conditions are listed in the [reference](Effects%20and%20conditions%20reference.md#conditions).
 
 ## Scenario moves
 
-A move of the scenario's own, written like a [pack move](Writing-a-Pack.md#moves--movesyaml) plus a `requires` condition. It can only be made while the condition holds, and its id must not clash with a pack move.
+A move of the scenario's own, written like a [pack move](Writing%20a%20system%20pack.md#moves--movesyaml) plus a `requires` condition. It can only be made while the condition holds, and its id must not clash with a pack move.
 
 ```yaml
 id: search_the_cache

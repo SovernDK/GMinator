@@ -26,6 +26,8 @@ another `seed`), so a broken case is caught by `uv run pytest`, not by a confuse
 - **classify:** `said` and `expect`, one intent or a list of acceptable ones. A `stat` counts
   only when given; `then` (the place a move goes on to) must match, so a case without one
   wants none. The "speech without markers" section measures telling talk from action.
+  Quoted speech is left out of `said` before classifying, as the table does (unless the
+  quote is all there is); the "action with quoted speech" section measures what is left.
 - **narrate:** the slash `command` whose outcome is narrated, what the player `said`, and
   optional `mentions` (at least one must appear) and `forbidden` words (such as a secret
   not yet revealed).
@@ -56,8 +58,9 @@ the 90th percentile.
 
 ## Results
 
-**Chosen for now: `granite4.1:3b` for every task.** It is the only 3–4B model with a valid
-result, and it does not meet the bar yet. Raw answers are in [results/](results/).
+**Chosen for now: `d1:2b-nvfp4` to classify, `granite4.1:3b` to narrate and voice.** granite
+is the only 3–4B chat model with a valid result; together they meet the classify bar, and the
+turn time is not yet measured with both. Raw answers are in [results/](results/).
 
 Run on 2026-10-29, Ollama 0.40.2, Apple M1 (GPU, 16 GB), not the CPU-only reference machine:
 
@@ -65,11 +68,16 @@ Run on 2026-10-29, Ollama 0.40.2, Apple M1 (GPU, 16 GB), not the CPU-only refere
 |---|---|---|---|---|---|---|
 | `granite4.1:3b` | 56% | 87% | 100% | 1.2 s | 10.2 s | not met |
 | `qwen3.5:2b` (nvfp4) | — | — | — | — | — | no valid result |
+| `d1:2b-nvfp4` (decision model) | 84% | — | — | — | — | classify only; meets the classify bar |
 
 - **granite4.1:3b:** classify is the weak task. It sends clear travel to the wrong place or a
   move ("I wade toward the water" became Make Camp), and takes scenario moves as talk
   (questioning Pip). Narration sometimes repeats numbers from the facts ("dealing 8
   damage"). Its voice answers were re-scored offline after the NPC speaker check was dropped
   and two `mentions` lists were loosened; nothing was asked of the model again.
+- **d1:2b-nvfp4** (2026-10-30, same machine): a decision model, so it can only classify; it
+  answers through `/v1/systemone` in one pass (p50 1.2 s, p90 1.4 s per case). Now the
+  classify model in `config.toml`. It still fails on dodges read as other moves, speech to no
+  one or to someone not here, and one bribe. Narrate and voice stay on granite4.1:3b.
 - **qwen3.5:2b (nvfp4):** schema-forced classify calls ran into the 120 s timeout, then the
   Ollama server stopped, so the run measures the setup, not the model.

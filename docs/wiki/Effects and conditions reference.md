@@ -19,7 +19,7 @@ The effect set is a public API: extend it only when a pack needs something it ca
 | `spend_hold` | `move`, `amount` = 1 | spends hold from `move`; fails if there is not enough |
 | `add_tag` / `remove_tag` | `tag`, `target` = `self` | a tag must exist in the pack's or scenario's `tags.yaml` |
 | `advance_clock` | `clock`, `amount` = 1 | in a scenario, clocks are the dangers' ids |
-| `gm_move` | `soft` or `hard` | asks for a GM move; the [selector](Play-Layer.md#gm-moves) picks one after the action |
+| `gm_move` | `soft` or `hard` | asks for a GM move; the [selector](Play%20layer.md#gm-moves) picks one after the action |
 | `mark_xp` | a positive integer | XP for the actor |
 | `add_forward` | `amount`, `target` = `self` | a bonus (or penalty) on the next roll |
 | `use_item` | `tag` | uses one use of the first carried item with that tag and uses left; fails if there is none |
