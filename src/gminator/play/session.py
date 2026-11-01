@@ -71,6 +71,9 @@ class Session:
             "clocks": lambda args, decider: self.clocks(),
             "secrets": lambda args, decider: self._secrets(),
         }
+        self.describe_arrivals = True
+        """Whether arriving somewhere shows the scenario's description of it. With a narrator
+        that describes the place, it is off."""
         self._story: list[str] = []
         self._gm_lines: list[str] = []
 
@@ -138,7 +141,7 @@ class Session:
             decider,
             flags=[TRAVEL],
         )
-        return lines if self.state.ending else [*lines, *self.look()]
+        return lines if self.state.ending else [*lines, *self.look(self.describe_arrivals)]
 
     def _refuse_exit(self, place: str, blocked: bool = True) -> list[str]:
         """Why the player character can't go to `place` from here, if they can't. A `blocked`
@@ -198,7 +201,11 @@ class Session:
         gated = danger is None or move_id != danger.move
         lines = self._turn(act, decider, flags=flags if gated else None)
         moved = place is not None and self._pc_location() == place
-        return [*lines, *self.look()] if moved and not self.state.ending else lines
+        return (
+            [*lines, *self.look(self.describe_arrivals)]
+            if moved and not self.state.ending
+            else lines
+        )
 
     def _turn(
         self,
@@ -317,11 +324,11 @@ class Session:
 
     # Commands that only tell
 
-    def look(self) -> list[str]:
+    def look(self, describe: bool = True) -> list[str]:
         location = self.scenario.locations[self._pc_location()]
         graph = build_graph(self.scenario, self.state, self.pc_id)
         lines = [t("look.location", name=location.name)]
-        if location.description:
+        if describe and location.description:
             lines.append(location.description)
         exits = [
             t("look.named", name=e.name, id=e.id) for e in graph.objects(location.id, "connects")

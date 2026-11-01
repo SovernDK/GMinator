@@ -282,3 +282,14 @@ def test_eval_refuses_cases_that_cannot_be_set_up(tmp_path, capsys, unused_url):
 
     assert exit_info.value.code == 1
     assert "voice case ask_swarm: swarm is not here" in capsys.readouterr().err
+
+
+def test_lines_of_a_turn_come_one_at_a_time(monkeypatch, capsys):
+    from gminator import cli
+
+    pauses = []
+    monkeypatch.setattr(cli.time, "sleep", pauses.append)
+    cli._show(["one", "two", "three"], delay=0.5)
+
+    assert capsys.readouterr().out == "one\ntwo\nthree\n"
+    assert pauses == [0.5, 0.5]

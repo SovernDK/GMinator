@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+import time
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 
@@ -216,6 +217,8 @@ class PromptConfirmer:
 
 def _show_reply(reply: Reply) -> None:
     _show(reply.lines)
+    if reply.lines and LINE_DELAY:
+        time.sleep(LINE_DELAY)
     mid_line = False
     for part in reply.narration:
         if isinstance(part, Retract):
@@ -230,6 +233,13 @@ def _show_reply(reply: Reply) -> None:
         print()
 
 
-def _show(lines: Sequence[str]) -> None:
-    for line in lines:
-        print(line)
+LINE_DELAY = 0.4
+"""Seconds between one line of a turn's result and the next, so they don't land all at once."""
+
+
+def _show(lines: Sequence[str], delay: float | None = None) -> None:
+    delay = LINE_DELAY if delay is None else delay
+    for i, line in enumerate(lines):
+        if i:
+            time.sleep(delay)
+        print(line, flush=True)

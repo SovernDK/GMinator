@@ -60,6 +60,8 @@ class Table:
         self._check = FactCheck(session.scenario, session.rules)
         self._recent: list[str] = []
         self._narration = ""
+        # The narrator describes the place on arrival; the scenario's own text would repeat it.
+        session.describe_arrivals = self.providers is None
 
     @property
     def ending(self) -> Ending | None:

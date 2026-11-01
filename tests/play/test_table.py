@@ -570,3 +570,34 @@ def test_without_the_narrator_a_gm_move_is_shown(dungeon_world, scenario):
     reply = table.handle("/move defy_danger dex", ScriptedDecider(), ScriptedConfirmer())
 
     assert SPOT in reply.lines
+
+
+# Describing a place
+
+
+def back_at_the_inn(table: Table) -> Reply:
+    table.handle("/go cellar", ScriptedDecider(), ScriptedConfirmer())
+    return table.handle("/go inn", ScriptedDecider(), ScriptedConfirmer())
+
+
+def test_arriving_with_a_narrator_leaves_the_description_to_it(dungeon_world, scenario):
+    table = sit(dungeon_world, scenario, FakeProvider(["Down.", "Up."]))
+
+    reply = back_at_the_inn(table)
+
+    assert "== The inn ==" in reply.lines
+    assert "Warm and loud." not in reply.lines
+
+
+def test_arriving_without_a_narrator_shows_the_scenarios_description(dungeon_world, scenario):
+    reply = back_at_the_inn(sit(dungeon_world, scenario, None))
+
+    assert "Warm and loud." in reply.lines
+
+
+def test_looking_around_still_shows_the_description_with_a_narrator(dungeon_world, scenario):
+    table = sit(dungeon_world, scenario, FakeProvider([]))
+
+    reply = table.handle("/look", ScriptedDecider(), ScriptedConfirmer())
+
+    assert "Warm and loud." in reply.lines

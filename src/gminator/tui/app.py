@@ -6,6 +6,7 @@ modal or the confirmation strip while the interface stays live, and hands everyt
 back to the interface's own thread.
 """
 
+import time
 from collections.abc import Callable, Sequence
 from concurrent.futures import Future
 from pathlib import Path
@@ -42,6 +43,10 @@ from gminator.play.text import t
 from gminator.scenario.models import Scenario
 
 T = TypeVar("T")
+
+
+LINE_DELAY = 0.4
+"""Seconds between one line of a turn's result and the next, so they don't land all at once."""
 
 
 class GameApp(App[None]):
@@ -289,7 +294,12 @@ class GameScreen(Screen[None]):
     @work(thread=True)
     def _play(self, line: str) -> None:
         reply = self.table.handle(line, self, self)
-        self.app.call_from_thread(self._write, reply.lines)
+        for i, text in enumerate(reply.lines):
+            if i:
+                time.sleep(LINE_DELAY)
+            self.app.call_from_thread(self._write, [text])
+        if reply.lines and LINE_DELAY:
+            time.sleep(LINE_DELAY)
         for part in reply.narration:
             if isinstance(part, Retract):
                 self.app.call_from_thread(self._retract)
