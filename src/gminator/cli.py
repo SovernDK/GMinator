@@ -216,11 +216,18 @@ class PromptConfirmer:
 
 
 def _show_reply(reply: Reply) -> None:
-    _show(reply.lines)
-    if reply.lines and LINE_DELAY:
-        time.sleep(LINE_DELAY)
+    """The reply's lines, paced as it asks at a terminal, then its narration. The pause before
+    the narration counts the time the narrator took to start."""
+    pause = reply.pause if sys.stdout.isatty() else 0
+    for i, line in enumerate(reply.lines):
+        if i and pause:
+            time.sleep(pause)
+        print(line, flush=True)
+    shown = time.monotonic()
     mid_line = False
-    for part in reply.narration:
+    for i, part in enumerate(reply.narration):
+        if not i and reply.lines and pause:
+            time.sleep(max(0.0, pause - (time.monotonic() - shown)))
         if isinstance(part, Retract):
             if mid_line:
                 print()
@@ -233,13 +240,6 @@ def _show_reply(reply: Reply) -> None:
         print()
 
 
-LINE_DELAY = 0.4
-"""Seconds between one line of a turn's result and the next, so they don't land all at once."""
-
-
-def _show(lines: Sequence[str], delay: float | None = None) -> None:
-    delay = LINE_DELAY if delay is None else delay
-    for i, line in enumerate(lines):
-        if i:
-            time.sleep(delay)
-        print(line, flush=True)
+def _show(lines: Sequence[str]) -> None:
+    for line in lines:
+        print(line)

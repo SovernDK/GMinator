@@ -71,11 +71,9 @@ class Session:
             "clocks": lambda args, decider: self.clocks(),
             "secrets": lambda args, decider: self._secrets(),
         }
-        self.describe_arrivals = True
-        """Whether arriving somewhere shows the scenario's description of it. With a narrator
-        that describes the place, it is off."""
         self._story: list[str] = []
         self._gm_lines: list[str] = []
+        self._arrival_lines: list[str] = []
 
     @classmethod
     def begin(
@@ -114,6 +112,12 @@ class Session:
         own words; they stand in when it can't."""
         return self._gm_lines
 
+    @property
+    def arrival_lines(self) -> list[str]:
+        """The scenario's description of the place the last turn arrived at, if it did. The
+        narrator describes the place in its own words; the description stands in when it can't."""
+        return self._arrival_lines
+
     def opening(self) -> list[str]:
         intro = self.scenario.manifest.intro
         return [intro, *self.look()] if intro else self.look()
@@ -141,7 +145,7 @@ class Session:
             decider,
             flags=[TRAVEL],
         )
-        return lines if self.state.ending else [*lines, *self.look(self.describe_arrivals)]
+        return lines if self.state.ending else [*lines, *self._arrive()]
 
     def _refuse_exit(self, place: str, blocked: bool = True) -> list[str]:
         """Why the player character can't go to `place` from here, if they can't. A `blocked`
@@ -201,11 +205,7 @@ class Session:
         gated = danger is None or move_id != danger.move
         lines = self._turn(act, decider, flags=flags if gated else None)
         moved = place is not None and self._pc_location() == place
-        return (
-            [*lines, *self.look(self.describe_arrivals)]
-            if moved and not self.state.ending
-            else lines
-        )
+        return [*lines, *self._arrive()] if moved and not self.state.ending else lines
 
     def _turn(
         self,
@@ -231,6 +231,7 @@ class Session:
         for event in events:
             self.game.record(event)
         self._story = self._render(events, before, story=True)
+        self._arrival_lines = []
         self._gm_lines = [
             line
             for event in events
@@ -324,11 +325,17 @@ class Session:
 
     # Commands that only tell
 
-    def look(self, describe: bool = True) -> list[str]:
+    def _arrive(self) -> list[str]:
+        """What the player character sees on arriving; the place's description is kept apart."""
+        description = self.scenario.locations[self._pc_location()].description
+        self._arrival_lines = [description] if description else []
+        return self.look()
+
+    def look(self) -> list[str]:
         location = self.scenario.locations[self._pc_location()]
         graph = build_graph(self.scenario, self.state, self.pc_id)
         lines = [t("look.location", name=location.name)]
-        if describe and location.description:
+        if location.description:
             lines.append(location.description)
         exits = [
             t("look.named", name=e.name, id=e.id) for e in graph.objects(location.id, "connects")

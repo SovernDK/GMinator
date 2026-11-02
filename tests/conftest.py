@@ -19,8 +19,7 @@ def _no_user_config(monkeypatch, tmp_path_factory):
 @pytest.fixture(autouse=True)
 def _no_line_delay(monkeypatch):
     """Tests don't wait between the lines of a turn."""
-    monkeypatch.setattr("gminator.cli.LINE_DELAY", 0)
-    monkeypatch.setattr("gminator.tui.app.LINE_DELAY", 0)
+    monkeypatch.setattr("gminator.play.table.LINE_DELAY", 0)
 
 
 @pytest.fixture

@@ -9,6 +9,7 @@ import pytest
 import gminator
 from gminator.ai.provider import Providers
 from gminator.cli import PromptConfirmer, PromptDecider, main
+from gminator.play.table import Reply
 from gminator.play.text import t
 from gminator.tui.app import GameApp
 from llm_server import llm_server
@@ -284,12 +285,44 @@ def test_eval_refuses_cases_that_cannot_be_set_up(tmp_path, capsys, unused_url):
     assert "voice case ask_swarm: swarm is not here" in capsys.readouterr().err
 
 
-def test_lines_of_a_turn_come_one_at_a_time(monkeypatch, capsys):
+@pytest.fixture
+def pauses(monkeypatch):
     from gminator import cli
 
-    pauses = []
-    monkeypatch.setattr(cli.time, "sleep", pauses.append)
-    cli._show(["one", "two", "three"], delay=0.5)
+    slept: list[float] = []
+    monkeypatch.setattr(cli.time, "sleep", slept.append)
+    monkeypatch.setattr(cli.time, "monotonic", lambda: 0.0)
+    return slept
 
-    assert capsys.readouterr().out == "one\ntwo\nthree\n"
+
+def at_a_terminal(monkeypatch):
+    """Output looks like a terminal's. Inside the test: capsys replaces stdout as it starts."""
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
+
+
+def test_a_turn_comes_line_by_line_then_its_narration(pauses, monkeypatch, capsys):
+    from gminator import cli
+
+    at_a_terminal(monkeypatch)
+    cli._show_reply(Reply(["one", "two"], iter(["Told."]), pause=0.5))
+
+    assert capsys.readouterr().out == "one\ntwo\nTold.\n"
     assert pauses == [0.5, 0.5]
+
+
+def test_a_turn_without_narration_does_not_wait_after_its_lines(pauses, monkeypatch):
+    from gminator import cli
+
+    at_a_terminal(monkeypatch)
+    cli._show_reply(Reply(["one", "two"], pause=0.5))
+
+    assert pauses == [0.5]
+
+
+def test_a_turn_piped_elsewhere_is_not_paced(pauses, capsys):
+    from gminator import cli
+
+    cli._show_reply(Reply(["one", "two"], iter(["Told."]), pause=0.5))
+
+    assert capsys.readouterr().out == "one\ntwo\nTold.\n"
+    assert pauses == []

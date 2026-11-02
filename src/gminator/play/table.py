@@ -32,6 +32,9 @@ from gminator.play.text import t
 from gminator.scenario.graph import build_graph
 from gminator.scenario.models import Ending
 
+LINE_DELAY = 0.4
+"""Seconds between one line of a turn's result and the next, so they don't land all at once."""
+
 
 class Confirmer(Protocol):
     """Asks the player to accept or cancel what their words were taken to mean."""
@@ -41,11 +44,13 @@ class Confirmer(Protocol):
 
 @dataclass
 class Reply:
-    """Templated lines, shown at once, then any prose, streamed. The lines are the truth;
-    the prose is flavour."""
+    """Templated lines, then any prose, streamed. The lines are the truth; the prose is
+    flavour. A turn that changed the game shows its lines `pause` seconds apart, and pauses
+    as long again before the prose; anything else comes at once."""
 
     lines: list[str]
     narration: Iterator[Part] = field(default_factory=lambda: iter(()))
+    pause: float = 0.0
 
 
 class Table:
@@ -60,8 +65,6 @@ class Table:
         self._check = FactCheck(session.scenario, session.rules)
         self._recent: list[str] = []
         self._narration = ""
-        # The narrator describes the place on arrival; the scenario's own text would repeat it.
-        session.describe_arrivals = self.providers is None
 
     @property
     def ending(self) -> Ending | None:
@@ -114,18 +117,22 @@ class Table:
 
     def play(self, command: str, decider: Decider, said: str = "") -> Reply:
         """Plays a slash command; narrates it if it changed the game. The narrator tells the
-        turn's GM moves, so their lines are only shown if it can't."""
+        turn's GM moves and describes where it arrived, so their lines are only shown if it
+        can't."""
         before = len(self.session.game.events)
         lines = self.session.handle(command, decider)
-        if self.providers is None or len(self.session.game.events) == before:
+        if len(self.session.game.events) == before:
             return Reply(lines)
+        if self.providers is None:
+            return Reply(lines, pause=LINE_DELAY)
         gm_lines = self.session.gm_lines
+        told_by_narrator = [*self.session.arrival_lines, *gm_lines]
         context = self.context()
         story = self.session.story
         self._recent += story
         prose = narrate(self.providers.narrate, self._check, context, story, said)
-        kept = _kept(prose, self._remember_narration, fallback=" ".join(gm_lines))
-        return Reply([line for line in lines if line not in gm_lines], kept)
+        kept = _kept(prose, self._remember_narration, fallback=" ".join(told_by_narrator))
+        return Reply([line for line in lines if line not in told_by_narrator], kept, LINE_DELAY)
 
     def say(self, words: str) -> Reply:
         """`/say [@someone] <words>`: the words to someone here, who answers. Without

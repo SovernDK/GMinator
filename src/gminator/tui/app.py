@@ -45,10 +45,6 @@ from gminator.scenario.models import Scenario
 T = TypeVar("T")
 
 
-LINE_DELAY = 0.4
-"""Seconds between one line of a turn's result and the next, so they don't land all at once."""
-
-
 class GameApp(App[None]):
     CSS = """
     TitleScreen, CreationScreen { align: center middle; }
@@ -295,12 +291,13 @@ class GameScreen(Screen[None]):
     def _play(self, line: str) -> None:
         reply = self.table.handle(line, self, self)
         for i, text in enumerate(reply.lines):
-            if i:
-                time.sleep(LINE_DELAY)
+            if i and reply.pause:
+                time.sleep(reply.pause)
             self.app.call_from_thread(self._write, [text])
-        if reply.lines and LINE_DELAY:
-            time.sleep(LINE_DELAY)
-        for part in reply.narration:
+        shown = time.monotonic()
+        for i, part in enumerate(reply.narration):
+            if not i and reply.lines and reply.pause:
+                time.sleep(max(0.0, reply.pause - (time.monotonic() - shown)))
             if isinstance(part, Retract):
                 self.app.call_from_thread(self._retract)
             else:

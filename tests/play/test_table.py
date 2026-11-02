@@ -601,3 +601,41 @@ def test_looking_around_still_shows_the_description_with_a_narrator(dungeon_worl
     reply = table.handle("/look", ScriptedDecider(), ScriptedConfirmer())
 
     assert "Warm and loud." in reply.lines
+
+
+def test_arriving_when_the_narrator_fails_still_describes_the_place(dungeon_world, scenario):
+    table = sit(dungeon_world, scenario, FakeProvider([ProviderError("down")]))
+
+    reply = back_at_the_inn(table)
+
+    assert "Warm and loud." in told(reply)
+
+
+def test_arriving_leaves_the_session_as_it_was(dungeon_world, scenario):
+    session = sit(dungeon_world, scenario, FakeProvider([])).session
+
+    session.handle("/go cellar", ScriptedDecider())
+    reply = session.handle("/go inn", ScriptedDecider())
+
+    assert "Warm and loud." in reply
+
+
+# Pacing
+
+
+def test_a_turn_that_changes_the_game_comes_line_by_line(dungeon_world, scenario, monkeypatch):
+    monkeypatch.setattr("gminator.play.table.LINE_DELAY", 0.4)
+    table = sit(dungeon_world, scenario, None)
+
+    reply = table.handle("/go cellar", ScriptedDecider(), ScriptedConfirmer())
+
+    assert reply.pause == 0.4
+
+
+def test_a_command_that_only_tells_comes_at_once(dungeon_world, scenario, monkeypatch):
+    monkeypatch.setattr("gminator.play.table.LINE_DELAY", 0.4)
+    table = sit(dungeon_world, scenario, None)
+
+    reply = table.handle("/sheet", ScriptedDecider(), ScriptedConfirmer())
+
+    assert reply.pause == 0
