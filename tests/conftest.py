@@ -16,6 +16,12 @@ def _no_user_config(monkeypatch, tmp_path_factory):
     monkeypatch.setattr("gminator.config.USER_CONFIG", tmp_path_factory.mktemp("home") / "none")
 
 
+@pytest.fixture(autouse=True)
+def _no_line_delay(monkeypatch):
+    """Tests don't wait between the lines of a turn."""
+    monkeypatch.setattr("gminator.play.table.LINE_DELAY", 0)
+
+
 @pytest.fixture
 def unused_url():
     """The URL of a local port nothing listens on."""

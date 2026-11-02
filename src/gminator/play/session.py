@@ -73,6 +73,7 @@ class Session:
         }
         self._story: list[str] = []
         self._gm_lines: list[str] = []
+        self._arrival_lines: list[str] = []
 
     @classmethod
     def begin(
@@ -111,6 +112,12 @@ class Session:
         own words; they stand in when it can't."""
         return self._gm_lines
 
+    @property
+    def arrival_lines(self) -> list[str]:
+        """The scenario's description of the place the last turn arrived at, if it did. The
+        narrator describes the place in its own words; the description stands in when it can't."""
+        return self._arrival_lines
+
     def opening(self) -> list[str]:
         intro = self.scenario.manifest.intro
         return [intro, *self.look()] if intro else self.look()
@@ -138,7 +145,7 @@ class Session:
             decider,
             flags=[TRAVEL],
         )
-        return lines if self.state.ending else [*lines, *self.look()]
+        return lines if self.state.ending else [*lines, *self._arrive()]
 
     def _refuse_exit(self, place: str, blocked: bool = True) -> list[str]:
         """Why the player character can't go to `place` from here, if they can't. A `blocked`
@@ -198,7 +205,7 @@ class Session:
         gated = danger is None or move_id != danger.move
         lines = self._turn(act, decider, flags=flags if gated else None)
         moved = place is not None and self._pc_location() == place
-        return [*lines, *self.look()] if moved and not self.state.ending else lines
+        return [*lines, *self._arrive()] if moved and not self.state.ending else lines
 
     def _turn(
         self,
@@ -224,6 +231,7 @@ class Session:
         for event in events:
             self.game.record(event)
         self._story = self._render(events, before, story=True)
+        self._arrival_lines = []
         self._gm_lines = [
             line
             for event in events
@@ -316,6 +324,12 @@ class Session:
         return next((o for o in obstacles if o.blocks == place and o.id not in state.cleared), None)
 
     # Commands that only tell
+
+    def _arrive(self) -> list[str]:
+        """What the player character sees on arriving; the place's description is kept apart."""
+        description = self.scenario.locations[self._pc_location()].description
+        self._arrival_lines = [description] if description else []
+        return self.look()
 
     def look(self) -> list[str]:
         location = self.scenario.locations[self._pc_location()]

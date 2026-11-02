@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+import time
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 
@@ -215,9 +216,18 @@ class PromptConfirmer:
 
 
 def _show_reply(reply: Reply) -> None:
-    _show(reply.lines)
+    """The reply's lines, paced as it asks at a terminal, then its narration. The pause before
+    the narration counts the time the narrator took to start."""
+    pause = reply.pause if sys.stdout.isatty() else 0
+    for i, line in enumerate(reply.lines):
+        if i and pause:
+            time.sleep(pause)
+        print(line, flush=True)
+    shown = time.monotonic()
     mid_line = False
-    for part in reply.narration:
+    for i, part in enumerate(reply.narration):
+        if not i and reply.lines and pause:
+            time.sleep(max(0.0, pause - (time.monotonic() - shown)))
         if isinstance(part, Retract):
             if mid_line:
                 print()

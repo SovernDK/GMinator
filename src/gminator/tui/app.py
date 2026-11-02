@@ -6,6 +6,7 @@ modal or the confirmation strip while the interface stays live, and hands everyt
 back to the interface's own thread.
 """
 
+import time
 from collections.abc import Callable, Sequence
 from concurrent.futures import Future
 from pathlib import Path
@@ -289,8 +290,14 @@ class GameScreen(Screen[None]):
     @work(thread=True)
     def _play(self, line: str) -> None:
         reply = self.table.handle(line, self, self)
-        self.app.call_from_thread(self._write, reply.lines)
-        for part in reply.narration:
+        for i, text in enumerate(reply.lines):
+            if i and reply.pause:
+                time.sleep(reply.pause)
+            self.app.call_from_thread(self._write, [text])
+        shown = time.monotonic()
+        for i, part in enumerate(reply.narration):
+            if not i and reply.lines and reply.pause:
+                time.sleep(max(0.0, reply.pause - (time.monotonic() - shown)))
             if isinstance(part, Retract):
                 self.app.call_from_thread(self._retract)
             else:
